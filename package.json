@@ -6,7 +6,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node src/eval/runner.js",
+    "smoke-test": "node tests/smoke_test.js",
+    "test": "node tests/smoke_test.js && node src/eval/runner.js",
+    "build": "node tests/smoke_test.js && node src/eval/runner.js",
     "eval": "node src/eval/runner.js"
   },
   "keywords": [],

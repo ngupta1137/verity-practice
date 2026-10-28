@@ -361,10 +361,6 @@ document.addEventListener('DOMContentLoaded', () => {
         [${d.status.toUpperCase()}] ${d.doc_id} v${d.version} - ${d.title.substring(0, 50)}...
       </option>
     `).join('');
-      <option value="${d.doc_id}:${d.version}">
-        [${d.status.toUpperCase()}] ${d.doc_id} v${d.version} - ${d.title.substring(0, 50)}...
-      </option>
-    `).join('');
 
     sendCheckPatientSelect.innerHTML = state.patients.map(p => `
       <option value="${p.patient_id}">
@@ -896,10 +892,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const auditData = await auditRes.json();
 
       // Stat Cards
-      document.getElementById('statComplianceRate').textContent = `${dashData.summary.complianceRate}%`;
-      document.getElementById('statBlockedCount').textContent = dashData.summary.blockedSends;
-      document.getElementById('statSuccessCount').textContent = dashData.summary.successfulSends;
-      document.getElementById('statOverdueCount').textContent = dashData.summary.expiredDocsCount;
+      if (dashData && dashData.summary) {
+        const statComp = document.getElementById('statComplianceRate');
+        const statBlocked = document.getElementById('statBlockedCount');
+        const statSuccess = document.getElementById('statSuccessCount');
+        const statOverdue = document.getElementById('statOverdueCount');
+        if (statComp) statComp.textContent = `${dashData.summary.complianceRate}%`;
+        if (statBlocked) statBlocked.textContent = dashData.summary.blockedSends;
+        if (statSuccess) statSuccess.textContent = dashData.summary.successfulSends;
+        if (statOverdue) statOverdue.textContent = dashData.summary.expiredDocsCount;
+      }
 
       // Most Used Docs
       const mostUsedList = document.getElementById('mostUsedList');

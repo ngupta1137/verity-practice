@@ -784,6 +784,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadDsmesRecords();
       } else {
         alert(`BLOCKED: ${result.message}`);
+        loadDashboard();
       }
     } catch (err) {
       alert(`Error during delivery: ${err.message}`);
@@ -1233,17 +1234,29 @@ document.addEventListener('DOMContentLoaded', () => {
       const dashData = await dashRes.json();
       const auditData = await auditRes.json();
 
+      // Compute stats directly from the same events shown in the ledger
+      const entries = (auditData && auditData.entries) ? auditData.entries : [];
+      const successfulSends = entries.filter(e => e.action === 'SEND_COMPLETED' || (e.action && e.action.includes('SEND') && e.gate_result === 'PASS'));
+      const blockedSends = entries.filter(e => e.action === 'SEND_BLOCKED' || e.action === 'PRE_SEND_CHECK_FAIL' || (e.action && e.action.includes('SEND') && e.gate_result === 'FAIL'));
+      const totalSends = successfulSends.length + blockedSends.length;
+
       // Stat Cards
-      if (dashData && dashData.summary) {
-        const statComp = document.getElementById('statComplianceRate');
-        const statBlocked = document.getElementById('statBlockedCount');
-        const statSuccess = document.getElementById('statSuccessCount');
-        const statOverdue = document.getElementById('statOverdueCount');
-        if (statComp) statComp.textContent = `${dashData.summary.complianceRate}%`;
-        if (statBlocked) statBlocked.textContent = dashData.summary.blockedSends;
-        if (statSuccess) statSuccess.textContent = dashData.summary.successfulSends;
-        if (statOverdue) statOverdue.textContent = dashData.summary.expiredDocsCount;
+      const statComp = document.getElementById('statComplianceRate');
+      const statBlocked = document.getElementById('statBlockedCount');
+      const statSuccess = document.getElementById('statSuccessCount');
+      const statOverdue = document.getElementById('statOverdueCount');
+
+      if (statComp) {
+        if (totalSends === 0) {
+          statComp.textContent = 'No sends yet';
+        } else {
+          const compRate = Math.round((successfulSends.length / totalSends) * 100);
+          statComp.textContent = `${compRate}%`;
+        }
       }
+      if (statBlocked) statBlocked.textContent = blockedSends.length;
+      if (statSuccess) statSuccess.textContent = successfulSends.length;
+      if (statOverdue) statOverdue.textContent = dashData?.summary?.expiredDocsCount ?? 0;
 
       // Most Used Docs
       const mostUsedList = document.getElementById('mostUsedList');
@@ -1955,13 +1968,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const result = await res.json();
         if (result.success) {
-          alert('✓ Demo data restored: Seed documents, patients, conflict CONF-001 locked, and clean audit ledger.');
+          alert('✓ Demo data restored: Seed documents, patients, conflict CONF-001 locked, and seeded demo audit history.');
           await loadInitialData();
           renderLibraryTable();
           renderSendCheckSelectors();
           loadDashboard();
           loadDsmesRecords();
           loadEvaluationData();
+          await loadExposureQueue();
         } else {
           alert('Reset failed: ' + result.message);
         }

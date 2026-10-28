@@ -49,6 +49,9 @@ function loadJSON(relPath) {
 let documents = loadJSON('data/documents.json');
 let patients = loadJSON('data/synthetic_patients.json');
 let seededAudit = loadJSON('data/audit_log.json');
+if (!Array.isArray(seededAudit) || seededAudit.length === 0) {
+  seededAudit = loadJSON('data/seed_audit_log.json');
+}
 let dsmesRecords = loadJSON('data/dsmes_records.json');
 
 // Seeded Exposure Review Queue (Workstream 5)
@@ -581,8 +584,12 @@ app.post('/api/conflicts/resolve', (req, res) => {
 
   // Workstream 5: Add any synthetic patient who previously received the withdrawn version to Exposure Queue
   for (const p of patients) {
-    const gotWithdrawn = (p.assigned_documents || []).some(ad => ad.doc_id === doc_to_retire);
-    if (gotWithdrawn && !exposureQueue.some(eq => eq.patient_id === p.patient_id && eq.doc_id === doc_to_retire)) {
+    const gotWithdrawnInProfile = (p.assigned_documents || []).some(ad => ad.doc_id === doc_to_retire);
+    const gotWithdrawnInAudit = auditLedger.getEntries(500).some(e => e.action === 'SEND_COMPLETED' && e.doc_id === doc_to_retire && (e.patient_id === p.patient_id || e.recipient_name === p.name));
+
+    if ((gotWithdrawnInProfile || gotWithdrawnInAudit) && !exposureQueue.some(eq => eq.patient_id === p.patient_id && eq.doc_id === doc_to_retire)) {
+      const deliveredEntry = auditLedger.getEntries(500).find(e => e.action === 'SEND_COMPLETED' && e.doc_id === doc_to_retire && (e.patient_id === p.patient_id || e.recipient_name === p.name));
+      const delivered_date = deliveredEntry?.timestamp || '2026-10-22T14:15:00Z';
       exposureQueue.push({
         exposure_id: `EXP-${Date.now()}-${p.patient_id}`,
         patient_id: p.patient_id,
@@ -592,7 +599,7 @@ app.post('/api/conflicts/resolve', (req, res) => {
         version: 1,
         doc_title: retireDoc ? retireDoc.title : doc_to_retire,
         withdrawn_reason: rationale,
-        delivered_date: '2026-10-22T14:15:00Z',
+        delivered_date,
         exposure_status: 'PENDING_REVIEW',
         reviewed_by: null,
         reviewed_at: null,
@@ -709,14 +716,9 @@ app.post('/api/demo/reset', (req, res) => {
   // Restore seed synthetic patients
   patients = loadJSON('data/synthetic_patients.json');
 
-  // Reset audit log to empty
-  auditLedger.events = [];
-  try {
-    const auditPath = path.resolve(process.cwd(), 'data/audit_log.json');
-    if (fs.existsSync(auditPath)) {
-      fs.writeFileSync(auditPath, JSON.stringify([], null, 2), 'utf8');
-    }
-  } catch (err) {}
+  // Restore SEEDED demo history (8-10 audit events: successful sends, blocked attempts, past delivery of DOC-GEST-001 to Maria Santos)
+  const seedAudit = loadJSON('data/seed_audit_log.json') || [];
+  auditLedger.resetToSeed(seedAudit);
 
   // Reset exposure queue to empty
   exposureQueue = [];
@@ -727,22 +729,9 @@ app.post('/api/demo/reset', (req, res) => {
   // Re-index retrieval engine
   rightDocEngine.updateDocuments(documents);
 
-  // Log the reset event in fresh audit log
-  auditLedger.logEvent({
-    actor: 'Dr. Sarah Jenkins, RDN',
-    role: 'owner',
-    action: 'DEMO_DATA_RESET',
-    doc_id: 'SYSTEM',
-    version: 1,
-    doc_title: 'System Seed Reset',
-    status: 'RESET',
-    gate_result: 'PASS',
-    details: 'Practice Owner reset demo data: seed documents, patients, conflict CONF-001 locked, and empty audit log restored.'
-  });
-
   res.json({
     success: true,
-    message: 'Demo data successfully reset: seed documents, patients, conflict CONF-001 re-locked, and empty audit log restored.',
+    message: 'Demo data successfully reset: seed documents, synthetic patients, conflict CONF-001 re-locked, and seeded demo audit history restored.',
     activeConflicts: detectConflicts(documents).length,
     eventsCount: auditLedger.getEntries().length
   });

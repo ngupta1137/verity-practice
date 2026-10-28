@@ -52,8 +52,11 @@ export class AuditLedger {
 
 
     this.entries.unshift(entry);
+    this.persist();
+    return entry;
+  }
 
-    // Persist to disk (wrapped in try/catch for read-only serverless execution)
+  persist() {
     try {
       const candidates = [
         path.resolve(process.cwd(), 'data/audit_log.json'),
@@ -69,8 +72,12 @@ export class AuditLedger {
     } catch (err) {
       console.warn('Audit ledger persistence notice:', err.message);
     }
+  }
 
-    return entry;
+  resetToSeed(seedEntries = []) {
+    this.entries = [...seedEntries].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    this.persist();
+    return this.entries;
   }
 
   getEntries(limit = 100) {
@@ -82,8 +89,8 @@ export class AuditLedger {
 
   getOwnerDashboardStats(allDocuments) {
     const totalEvents = this.entries.length;
-    const sendCompleted = this.entries.filter(e => e.action === 'SEND_COMPLETED');
-    const sendBlocked = this.entries.filter(e => e.action === 'SEND_BLOCKED');
+    const sendCompleted = this.entries.filter(e => e.action === 'SEND_COMPLETED' || (e.action && e.action.includes('SEND') && e.gate_result === 'PASS'));
+    const sendBlocked = this.entries.filter(e => e.action === 'SEND_BLOCKED' || e.action === 'PRE_SEND_CHECK_FAIL' || (e.action && e.action.includes('SEND') && e.gate_result === 'FAIL'));
     
     // Most used documents
     const usageMap = {};
@@ -106,7 +113,10 @@ export class AuditLedger {
     const totalSendAttempts = sendCompleted.length + sendBlocked.length;
     const complianceRate = totalSendAttempts > 0 
       ? Math.round((sendCompleted.length / totalSendAttempts) * 100) 
-      : 100;
+      : null;
+    const complianceRateDisplay = totalSendAttempts > 0
+      ? `${complianceRate}%`
+      : 'No sends yet';
 
     return {
       summary: {
@@ -114,6 +124,7 @@ export class AuditLedger {
         successfulSends: sendCompleted.length,
         blockedSends: sendBlocked.length,
         complianceRate,
+        complianceRateDisplay,
         expiredDocsCount: staleness.expired.length,
         dueSoonCount: staleness.dueSoon.length,
         activeConflictsCount: conflicts.length

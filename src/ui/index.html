@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verity Practice - Clinical Handout Governance & Patient Delivery Safeguard</title>
+  <meta name="description" content="Verity Practice adapts the Verity knowledge search pattern to registered dietitian practices, providing deterministic pre-send verification, context-aware document retrieval, and audit governance.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-lockup">
+        <div class="brand-icon">V</div>
+        <div class="brand-text">
+          <h1>
+            Verity Practice
+            <span class="brand-badge">Clinical RDN Edition</span>
+          </h1>
+          <div class="brand-tagline">One approved truth, in every channel.</div>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="role-selector">
+          <label for="currentRole">Acting As:</label>
+          <select id="currentRole">
+            <option value="dietitian" selected>Elena Gomez, RD (Staff Clinician)</option>
+            <option value="owner">Dr. Sarah Jenkins, RDN (Practice Owner / Director)</option>
+            <option value="front_desk">Marcus Vance (Front Desk Coordinator)</option>
+          </select>
+        </div>
+
+        <button class="demo-trigger-btn" id="startDemoBtn">
+          <span>⚡ 2-Minute Demo Flow</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="app-nav">
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab active" data-tab="tab-right-doc">
+        <span>🔍 Right Doc Finder</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-send-check">
+        <span>🛡️ Send Check Gate</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-library">
+        <span>📚 Document Library & Diffs</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-conflicts">
+        <span>⚠️ Conflicts & Staleness</span>
+        <span class="tab-badge alert" id="conflictsBadge">1</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-owner">
+        <span>📊 Owner Dashboard & Audit</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-qa">
+        <span>💬 Grounded Staff Q&A</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-eval">
+        <span>🎯 Live Evaluation</span>
+        <span class="tab-badge" id="evalBadge">94.3%</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="app-main">
+
+    <!-- Demo Script Banner (Dismissible / Guided Walkthrough) -->
+    <div class="demo-bar" id="demoBanner" style="display: none;">
+      <div class="demo-bar-info">
+        <h4 id="demoStepTitle">Step 1: Front Desk Marcus attempts to hand an outdated handout to a bariatric patient</h4>
+        <p id="demoStepDesc">Click 'Run Step 1' to watch the deterministic Send Check gate intercept the superseded handout.</p>
+      </div>
+      <div class="demo-step-btns">
+        <button class="btn-demo-step active" id="demoStep1Btn">Step 1: Trigger Trap</button>
+        <button class="btn-demo-step" id="demoStep2Btn">Step 2: Right Doc Fix</button>
+        <button class="btn-demo-step" id="demoStep3Btn">Step 3: Owner Audit Proof</button>
+        <button class="btn-demo-step" id="closeDemoBtn">Exit Demo</button>
+      </div>
+    </div>
+
+    <!-- TAB 1: Right Doc Finder -->
+    <section class="tab-pane active" id="tab-right-doc">
+      <div class="section-header">
+        <h2>Right Doc: Context-Aware Handout Finder</h2>
+        <p>Describe your patient's clinical situation in plain language. Verity Practice returns only approved handouts with exact section-level citations and match rationale.</p>
+      </div>
+
+      <div class="search-card">
+        <div class="search-input-wrapper">
+          <textarea id="rightDocQuery" placeholder="Example: post-op bariatric patient, week 2, lactose intolerant..." rows="3"></textarea>
+          <button class="search-btn" id="btnSearchRightDoc">
+            <span>Find Right Doc</span>
+          </button>
+        </div>
+
+        <div class="quick-prompts">
+          <span class="quick-prompt-label">Try Clinical Scenarios:</span>
+          <button class="prompt-chip" data-query="post-op bariatric patient, week 2, lactose intolerant">Week 2 Bariatric Lactose Intolerant</button>
+          <button class="prompt-chip" data-query="patient on Wegovy experiencing nausea and needs to preserve muscle">GLP-1 Wegovy Nausea & Muscle</button>
+          <button class="prompt-chip" data-query="type 2 diabetes plate method and fiber cushion for blood sugar spikes">Type 2 Diabetes Balanced Plate</button>
+          <button class="prompt-chip" data-query="gestational diabetes standard ACOG guideline carb targets to protect fetal brain">Gestational Diabetes ACOG Standard</button>
+          <button class="prompt-chip" data-query="IBS patient severe gas and bloating starting strict elimination phase 1">IBS Low-FODMAP Phase 1</button>
+          <button class="prompt-chip trap" data-query="old 2024 bariatric stage 2 handout with dairy shakes">⚠️ Trap: Outdated 2024 Handout</button>
+          <button class="prompt-chip trap" data-query="give patient the 800-calorie VLCD liquid shake protocol">⚠️ Trap: Retired VLCD Protocol</button>
+          <button class="prompt-chip trap" data-query="pediatric ketogenic diet protocol for refractory epilepsy in infants">⚠️ Refusal: Out-of-Library Query</button>
+        </div>
+      </div>
+
+      <!-- Right Doc Results Container -->
+      <div id="rightDocResults">
+        <div class="card" style="text-align: center; color: var(--ink-muted); padding: 40px;">
+          <p>Enter a patient query above or click a clinical scenario to view verified matching documents.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: Send Check Simulator -->
+    <section class="tab-pane" id="tab-send-check">
+      <div class="section-header">
+        <h2>Send Check: Deterministic Pre-Send Safeguard Gate</h2>
+        <p>Simulate document delivery before printing, emailing, or uploading to patient portal. The gatekeeper verifies Status, Version Lineage, Review Staleness, and Clinical Stage compatibility.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Select Document & Patient for Verification</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div>
+              <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px;">Select Document to Send:</label>
+              <select id="sendCheckDocSelect" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px;">
+                <!-- Populated by JS -->
+              </select>
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px;">Select Synthetic Patient:</label>
+              <select id="sendCheckPatientSelect" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px;">
+                <!-- Populated by JS -->
+              </select>
+            </div>
+
+            <div id="selectedPatientPreview" style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius-sm); font-size: 13px; border-left: 3px solid var(--brand-green);">
+              <!-- Patient details shown here -->
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 8px;">
+              <button class="btn-send-check" id="btnRunSendCheck" style="flex: 1; justify-content: center;">
+                <span>🛡️ Run Pre-Send Gatekeeper</span>
+              </button>
+            </div>
+
+            <div style="margin-top: 10px;">
+              <span style="font-size: 12px; font-weight: 700; color: var(--ink-muted);">Test Deliberate Traps:</span>
+              <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px;">
+                <button class="prompt-chip trap" style="text-align: left;" id="btnTrapSuperseded">Trap 1: Send Superseded DOC-BAR-002 v1 (outdated)</button>
+                <button class="prompt-chip trap" style="text-align: left;" id="btnTrapRetired">Trap 2: Send Retired DOC-RET-001 (800kcal VLCD)</button>
+                <button class="prompt-chip trap" style="text-align: left;" id="btnTrapExpired">Trap 3: Send Expired DOC-CKD-001 (Review overdue 2024)</button>
+                <button class="prompt-chip trap" style="text-align: left;" id="btnTrapStageMismatch">Trap 4: Stage Mismatch (Pureed Handout to Day 4 Clear Liquid Patient)</button>
+                <button class="prompt-chip trap" style="text-align: left;" id="btnTrapDraft">Trap 5: Send Draft DOC-DRAFT-001 (Unapproved)</button>
+                <button class="prompt-chip trap" style="text-align: left;" id="btnTrapInternal">Trap 6: Send Internal SOP DOC-INT-001 to Patient</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="sendCheckResultCard">
+          <div class="card-header">
+            <span class="card-title">Pre-Send Gatekeeper Verification Ledger</span>
+            <span class="badge badge-expired" id="gateResultBadge">STANDBY</span>
+          </div>
+
+          <div id="sendCheckDetails">
+            <p style="color: var(--ink-muted); font-size: 14px;">Select a document and patient, then click "Run Pre-Send Gatekeeper" to view the deterministic verification breakdown.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Document Library & Governance -->
+    <section class="tab-pane" id="tab-library">
+      <div class="section-header">
+        <h2>Clinical Document Library & Governance Registry</h2>
+        <p>Complete repository of all 26 synthetic clinical handouts and internal protocols. Filter by program, status, or audience. Compare version lineages with side-by-side word diffs.</p>
+      </div>
+
+      <div class="card" style="margin-bottom: 20px;">
+        <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center;">
+          <input type="text" id="libSearch" placeholder="Search by title, doc ID, or tags..." style="flex: 1; min-width: 200px; padding: 8px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px;">
+          
+          <select id="libProgramFilter" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;">
+            <option value="">All Programs</option>
+            <option value="Bariatric Surgery">Bariatric Surgery</option>
+            <option value="Diabetes Education">Diabetes Education</option>
+            <option value="Gestational Diabetes">Gestational Diabetes</option>
+            <option value="Weight Management">Weight Management</option>
+            <option value="Menopause & Women's Health">Menopause & Women's Health</option>
+            <option value="Renal / Kidney Disease">Renal / Kidney Disease</option>
+            <option value="Gastrointestinal Health">Gastrointestinal Health</option>
+            <option value="Cardiovascular Health">Cardiovascular Health</option>
+            <option value="Operations & Billing">Operations & Billing</option>
+          </select>
+
+          <select id="libStatusFilter" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;">
+            <option value="">All Statuses</option>
+            <option value="approved">Approved Only</option>
+            <option value="retired">Retired Only</option>
+            <option value="draft">Draft Only</option>
+          </select>
+
+          <select id="libAudienceFilter" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;">
+            <option value="">All Audiences</option>
+            <option value="patient">Patient Facing</option>
+            <option value="internal">Internal Staff Only</option>
+          </select>
+
+          <button class="btn-demo-step" id="btnOpenDiffModal" style="color: var(--ink); border-color: var(--border);">
+            <span>🔄 Compare Version Diffs</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table class="data-table" id="libraryTable">
+            <thead>
+              <tr>
+                <th>Doc ID</th>
+                <th>Title</th>
+                <th>Version</th>
+                <th>Program / Condition</th>
+                <th>Audience</th>
+                <th>Status</th>
+                <th>Review By</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="libraryTableBody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Alerts & Conflicts -->
+    <section class="tab-pane" id="tab-conflicts">
+      <div class="section-header">
+        <h2>Clinical Alerts: Staleness & Guideline Conflicts</h2>
+        <p>Automated engine detecting documents past their clinical review date and pairwise contradictions between approved practice materials.</p>
+      </div>
+
+      <div class="card" style="margin-bottom: 24px; border-left: 4px solid var(--outcome-conflict);">
+        <div class="card-header">
+          <span class="card-title" style="color: var(--outcome-conflict);">
+            ⚠️ Active Clinical Guideline Conflict Detected (Owner Action Required)
+          </span>
+          <span class="badge" style="background: #F2EEFB; color: var(--outcome-conflict); border: 1px solid #D7C7F4;">HIGH PRIORITY</span>
+        </div>
+
+        <div id="conflictsList">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Review Staleness & Expiration Monitor</span>
+          <span class="badge badge-expired" id="stalenessCountBadge">10 Overdue</span>
+        </div>
+        <p style="font-size: 13px; color: var(--ink-muted); margin-bottom: 16px;">Documents past review date are automatically blocked from patient distribution by the Send Check gatekeeper.</p>
+
+        <div class="table-wrapper">
+          <table class="data-table" id="stalenessTable">
+            <thead>
+              <tr>
+                <th>Doc ID</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Review Date</th>
+                <th>Days Overdue / Remaining</th>
+                <th>Owner</th>
+                <th>Gate Action</th>
+              </tr>
+            </thead>
+            <tbody id="stalenessTableBody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: Owner Dashboard & Audit Log -->
+    <section class="tab-pane" id="tab-owner">
+      <div class="section-header">
+        <h2>Practice Owner Dashboard & Compliance Ledger</h2>
+        <p>Real-time oversight for Practice Owner Dr. Sarah Jenkins. Monitor blocked delivery attempts, staff compliance rate, most distributed handouts, and immutable audit history.</p>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="grid-4" style="margin-bottom: 24px;">
+        <div class="stat-card success">
+          <div class="stat-label">Staff Compliance Rate</div>
+          <div class="stat-value" id="statComplianceRate">--%</div>
+          <div class="stat-sub">Percentage of sends passing Send Check</div>
+        </div>
+        <div class="stat-card alert">
+          <div class="stat-label">Blocked Attempts Caught</div>
+          <div class="stat-value" id="statBlockedCount">--</div>
+          <div class="stat-sub">Intercepted wrong/superseded documents</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Successful Deliveries</div>
+          <div class="stat-value" id="statSuccessCount">--</div>
+          <div class="stat-sub">Approved handouts safely given to patients</div>
+        </div>
+        <div class="stat-card alert">
+          <div class="stat-label">Documents Overdue Review</div>
+          <div class="stat-value" id="statOverdueCount">--</div>
+          <div class="stat-sub">Locked until re-approved by Owner</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom: 24px;">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Top Distributed Clinical Handouts</span>
+          </div>
+          <div id="mostUsedList">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Intercepted Delivery Blocks</span>
+          </div>
+          <div id="recentBlockedList">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Audit Log Table -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Complete Tamper-Evident Audit Ledger</span>
+          <button class="btn-demo-step" id="btnRefreshAudit" style="color: var(--ink); border-color: var(--border);">
+            <span>🔄 Refresh Ledger</span>
+          </button>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table" id="auditTable">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Staff Member</th>
+                <th>Action</th>
+                <th>Document</th>
+                <th>Patient</th>
+                <th>Gate Result</th>
+                <th>Audit Details</th>
+              </tr>
+            </thead>
+            <tbody id="auditTableBody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: Grounded Staff Q&A -->
+    <section class="tab-pane" id="tab-qa">
+      <div class="section-header">
+        <h2>Grounded Staff Q&A (Internal Reference Tool)</h2>
+        <p>Ask internal clinical and operational questions. Answers are composed strictly from approved practice documents with exact section citations. Refuses to guess on out-of-scope topics.</p>
+      </div>
+
+      <div class="search-card">
+        <div class="search-input-wrapper">
+          <textarea id="qaQuery" placeholder="Ask a practice question: What are the billing documentation rules for CPT 97802? When must a dietitian escalate for suspected anorexia?..." rows="3"></textarea>
+          <button class="search-btn" id="btnAskQA">
+            <span>Ask Verity</span>
+          </button>
+        </div>
+
+        <div class="quick-prompts">
+          <span class="quick-prompt-label">Sample Staff Questions:</span>
+          <button class="prompt-chip" data-qa="what are the billing documentation rules for CPT 97802 and 97803 initial MNT units">CPT 97802 Billing Rules</button>
+          <button class="prompt-chip" data-qa="does Medicare Part B cover medical nutrition therapy for obesity alone">Medicare Part B Coverage for Obesity</button>
+          <button class="prompt-chip" data-qa="when must a dietitian escalate for suspected anorexia nervosa red flags">Eating Disorder Clinical Escalation</button>
+          <button class="prompt-chip" data-qa="CPT 95249 continuous glucose monitor sensor placement documentation workflow">CGM Sensor Placement Workflow</button>
+          <button class="prompt-chip trap" data-qa="what is our practice chemotherapy neutropenic diet for leukemia patients">⚠️ Out-of-Scope: Chemotherapy Protocol</button>
+        </div>
+      </div>
+
+      <div id="qaResults">
+        <div class="card" style="text-align: center; color: var(--ink-muted); padding: 40px;">
+          <p>Submit a question above to receive a grounded answer with verified source citations.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 7: Live Evaluation & Metrics -->
+    <section class="tab-pane" id="tab-eval">
+      <div class="section-header">
+        <h2>Automated Evaluation Harness & Verification Metrics</h2>
+        <p>Execution results over the 35-case golden test set. Metrics are computed dynamically from code execution—never estimated.</p>
+      </div>
+
+      <div class="grid-4" style="margin-bottom: 24px;">
+        <div class="stat-card success">
+          <div class="stat-label">In-Scope Top-1 Accuracy</div>
+          <div class="stat-value" id="evalInScopeAcc">90.5%</div>
+          <div class="stat-sub">Target: &ge; 90.0% (PASSED)</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-label">Trap Catch Rate</div>
+          <div class="stat-value" id="evalTrapCatch">100.0%</div>
+          <div class="stat-sub">Target: 100.0% (PASSED)</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-label">Out-of-Library Refusal</div>
+          <div class="stat-value" id="evalRefusalRate">100.0%</div>
+          <div class="stat-sub">Target: 100.0% (PASSED)</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-label">Overall Test Accuracy</div>
+          <div class="stat-value" id="evalOverallAcc">94.3%</div>
+          <div class="stat-sub">33/35 Test Cases Passed</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Test Cases Breakdown (35 Queries)</span>
+          <button class="btn-demo-step" id="btnRerunEval" style="color: var(--ink); border-color: var(--border);">
+            <span>▶️ Re-Run Golden Suite</span>
+          </button>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table" id="evalTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Query</th>
+                <th>Category</th>
+                <th>Expected Outcome / Doc</th>
+                <th>Actual Outcome / Doc</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody id="evalTableBody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Send Check Modal -->
+  <div class="modal-overlay" id="sendCheckModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🛡️ Send Check: Pre-Send Verification</h3>
+        <button class="modal-close" id="modalCloseBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom: 16px;">
+          <h4 id="modalDocTitle" style="font-size: 16px; color: var(--ink);">--</h4>
+          <p id="modalDocMeta" style="font-size: 13px; color: var(--ink-muted); margin-top: 4px;">--</p>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 4px;">Recipient Patient:</label>
+          <select id="modalPatientSelect" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;">
+            <!-- Populated by JS -->
+          </select>
+        </div>
+
+        <div class="gate-checklist" id="modalGateList">
+          <!-- Gate items dynamically rendered -->
+        </div>
+
+        <div id="modalSummaryAlert" class="result-banner">
+          <!-- Final summary banner -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-demo-step" style="color: var(--ink); border-color: var(--border);" id="modalCancelBtn">Cancel</button>
+        <button class="btn-send-check" id="modalExecuteSendBtn">Confirm & Deliver Handout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Version Diff Modal -->
+  <div class="modal-overlay" id="diffModal">
+    <div class="modal-card" style="max-width: 840px;">
+      <div class="modal-header">
+        <h3>🔄 Document Version Comparison & Diff</h3>
+        <button class="modal-close" id="diffModalCloseBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; gap: 14px; margin-bottom: 18px; align-items: center;">
+          <div style="flex: 1;">
+            <label style="font-size: 12px; font-weight: 700; color: var(--ink-muted);">Compare Base Version:</label>
+            <select id="diffOldSelect" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;">
+              <option value="DOC-BAR-002:1">DOC-BAR-002 v1 (2024 Stage 2 Pureed)</option>
+              <option value="DOC-DM-001:1">DOC-DM-001 v1 (2023 Plate Method)</option>
+            </select>
+          </div>
+          <div style="font-size: 20px; color: var(--ink-muted); padding-top: 14px;">➔</div>
+          <div style="flex: 1;">
+            <label style="font-size: 12px; font-weight: 700; color: var(--ink-muted);">With Current Version:</label>
+            <select id="diffNewSelect" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;">
+              <option value="DOC-BAR-002:2">DOC-BAR-002 v2 (Current 2025/2026 Stage 2)</option>
+              <option value="DOC-DM-001:2">DOC-DM-001 v2 (Current 2025/2026 Plate Method)</option>
+            </select>
+          </div>
+          <button class="btn-demo-step" id="btnRunDiffCompare" style="margin-top: 18px; background: var(--brand-green-dark); color: #fff; border: none;">
+            <span>Compare</span>
+          </button>
+        </div>
+
+        <div id="diffOutputContainer">
+          <!-- Rendered diff -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Document Detail Modal -->
+  <div class="modal-overlay" id="docDetailModal">
+    <div class="modal-card" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3 id="docDetailTitle">Document Details</h3>
+        <button class="modal-close" id="docDetailCloseBtn">&times;</button>
+      </div>
+      <div class="modal-body" id="docDetailContent">
+        <!-- Rendered detail -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>Verity Practice</strong> &copy; 2026. Verity-pattern prototype adapted for Registered Dietitian practices.
+      </div>
+      <div>
+        Thesis: <em>"One approved truth, in every channel."</em> &bull; HIPAA-Aware Architecture Prototype
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,370 @@
+[
+  {
+    "id": "Q01",
+    "query": "post-op bariatric patient, week 2, lactose intolerant",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-BAR-002",
+    "expected_version": 2,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Lactose Sensitivity & Plant / Whey Isolate Options",
+    "description": "Standard Right Doc query: week 2 bariatric patient needing lactose-free pureed guidance."
+  },
+  {
+    "id": "Q02",
+    "query": "bariatric sleeve patient post op day 4 fluids",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-BAR-003",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Stage 1 Clear Liquids Protocol",
+    "description": "Bariatric patient in first week needing Stage 1 clear liquids."
+  },
+  {
+    "id": "Q03",
+    "query": "bariatric patient week 5 soft food progression and fish",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-BAR-004",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Stage 3 Soft Food Timing & Consistency",
+    "description": "Bariatric patient at week 5 needing Stage 3 soft food guidelines."
+  },
+  {
+    "id": "Q04",
+    "query": "bariatric surgery lifelong vitamins calcium citrate vs carbonate",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-BAR-005",
+    "expected_version": 2,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Calcium Citrate vs Calcium Carbonate",
+    "description": "Lifelong micronutrient supplementation protocol for bariatric patient."
+  },
+  {
+    "id": "Q05",
+    "query": "bariatric patient month 4 solid food progression and pouch fullness",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-BAR-006",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Stage 4 Solid Protein Progression",
+    "description": "Long-term solid food maintenance for bariatric patient."
+  },
+  {
+    "id": "Q06",
+    "query": "patient on Wegovy experiencing nausea and needs to preserve muscle",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-WM-001",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Preserving Lean Skeletal Muscle (1.2g to 1.5g Protein/kg)",
+    "description": "GLP-1 agonist nutritional support for nausea and protein goals."
+  },
+  {
+    "id": "Q07",
+    "query": "semaglutide patient with severe constipation what to take",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-WM-001",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Constipation Prevention Protocol",
+    "description": "GLP-1 GI side effect protocol."
+  },
+  {
+    "id": "Q08",
+    "query": "type 2 diabetes plate method and fiber cushion for blood sugar spikes",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-001",
+    "expected_version": 2,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "The Diabetes Plate Method: Visual Portioning",
+    "description": "Current type 2 diabetes balanced plate guide."
+  },
+  {
+    "id": "Q09",
+    "query": "patient on insulin blood sugar dropped to 58 mg/dL shaking",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-002",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "The Rule of 15 Treatment Step-by-Step",
+    "description": "Hypoglycemia emergency action protocol."
+  },
+  {
+    "id": "Q10",
+    "query": "dexcom g7 sensor trend arrow pointing straight up and lag time",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-003",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Sensor Lag Time: Interstitial vs Blood Glucose",
+    "description": "Continuous glucose monitor trend interpretation."
+  },
+  {
+    "id": "Q11",
+    "query": "gestational diabetes standard ACOG guideline carb targets to protect fetal brain",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-GEST-002",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Fetal Brain Development & Minimum Daily Carbohydrates",
+    "description": "ACOG standard gestational diabetes care guide."
+  },
+  {
+    "id": "Q12",
+    "query": "pregnant patient with gestational diabetes bedtime snack for fasting blood sugar",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-GEST-002",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Bedtime Snack Protocol to Prevent Overnight Ketonuria",
+    "description": "Gestational diabetes bedtime snack guide."
+  },
+  {
+    "id": "Q13",
+    "query": "PCOS patient with high testosterone and insulin resistance inositol supplement",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-PCOS-001",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Myo-Inositol & D-Chiro-Inositol Support",
+    "description": "PCOS insulin resistance and inositol guidance."
+  },
+  {
+    "id": "Q14",
+    "query": "perimenopause woman losing bone density and muscle sarcopenia protein leucine",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-MENO-001",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Combating Sarcopenia: The Leucine Threshold",
+    "description": "Menopause bone mineral density and sarcopenia nutrition."
+  },
+  {
+    "id": "Q15",
+    "query": "IBS patient severe gas and bloating starting strict elimination phase 1",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-GI-001",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "High-FODMAP Foods to Strictly Avoid",
+    "description": "Low-FODMAP Phase 1 elimination handout."
+  },
+  {
+    "id": "Q16",
+    "query": "low fodmap reintroducing garlic and onions phase 2 challenge protocol",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-GI-002",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Systematic 3-Day Challenge Protocol",
+    "description": "Low-FODMAP Phase 2 reintroduction guide."
+  },
+  {
+    "id": "Q17",
+    "query": "hypertension patient reducing sodium DASH diet 1500mg potassium food list",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-CVD-001",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Sodium Ceiling & Reading Nutrition Labels",
+    "description": "DASH diet sodium reduction guide."
+  },
+  {
+    "id": "Q18",
+    "query": "mediterranean diet heart health extra virgin olive oil and wild salmon",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-WM-002",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Core Pillars of Mediterranean Nutrition",
+    "description": "Anti-inflammatory Mediterranean meal planner."
+  },
+  {
+    "id": "Q19",
+    "query": "Zepbound patient needing high protein meal ideas and hydration electrolytes",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-WM-001",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Hydration and Electrolyte Goals",
+    "description": "GLP-1 Zepbound patient nutrition handout."
+  },
+  {
+    "id": "Q20",
+    "query": "rule of 15 glucose gel juice for diabetic low blood sugar",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-002",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "The Rule of 15 Treatment Step-by-Step",
+    "description": "Emergency hypoglycemia treatment."
+  },
+  {
+    "id": "Q21",
+    "query": "old 2024 bariatric stage 2 handout with dairy shakes",
+    "category": "trap_query",
+    "expected_doc_id": "DOC-BAR-002",
+    "expected_version": 2,
+    "audience_filter": "patient",
+    "expected_outcome": "superseded_redirect",
+    "description": "TRAP: Clinician asks for outdated 2024 v1 bariatric handout; Right Doc must serve current approved v2."
+  },
+  {
+    "id": "Q22",
+    "query": "DOC-BAR-001 post op combined stage 1 and 2 meal plan",
+    "category": "trap_query",
+    "expected_doc_id": "DOC-BAR-002",
+    "expected_version": 2,
+    "audience_filter": "patient",
+    "expected_outcome": "superseded_redirect",
+    "description": "TRAP: Clinician asks for retired DOC-BAR-001; Right Doc must direct to current approved v2."
+  },
+  {
+    "id": "Q23",
+    "query": "give patient the 800-calorie VLCD liquid shake protocol",
+    "category": "trap_query",
+    "expected_doc_id": null,
+    "audience_filter": "patient",
+    "expected_outcome": "refused_retired",
+    "description": "TRAP: Clinician asks for retired 800kcal VLCD protocol; patient search must REFUSE distribution of retired materials."
+  },
+  {
+    "id": "Q24",
+    "query": "DOC-DM-001 2023 version plate method handout",
+    "category": "trap_query",
+    "expected_doc_id": "DOC-DM-001",
+    "expected_version": 2,
+    "audience_filter": "patient",
+    "expected_outcome": "superseded_redirect",
+    "description": "TRAP: Clinician asks for superseded diabetes handout; Right Doc redirects to v2."
+  },
+  {
+    "id": "Q25",
+    "query": "pediatric ketogenic diet protocol for refractory epilepsy in infants",
+    "category": "out_of_library",
+    "expected_doc_id": null,
+    "audience_filter": "patient",
+    "expected_outcome": "refused_out_of_scope",
+    "description": "OUT-OF-LIBRARY: Highly specialized pediatric neurology keto. Practice has no approved protocol."
+  },
+  {
+    "id": "Q26",
+    "query": "chemotherapy neutropenic diet for acute myeloid leukemia bone marrow transplant",
+    "category": "out_of_library",
+    "expected_doc_id": null,
+    "audience_filter": "patient",
+    "expected_outcome": "refused_out_of_scope",
+    "description": "OUT-OF-LIBRARY: Oncology inpatient neutropenic protocol. Not in library."
+  },
+  {
+    "id": "Q27",
+    "query": "total parenteral nutrition TPN central line formulation and lipid emulsion calculation",
+    "category": "out_of_library",
+    "expected_doc_id": null,
+    "audience_filter": "patient",
+    "expected_outcome": "refused_out_of_scope",
+    "description": "OUT-OF-LIBRARY: Inpatient hospital TPN calculations. Out of outpatient practice scope."
+  },
+  {
+    "id": "Q28",
+    "query": "snakebite envenomation herbal nutrition antidote protocol",
+    "category": "out_of_library",
+    "expected_doc_id": null,
+    "audience_filter": "patient",
+    "expected_outcome": "refused_out_of_scope",
+    "description": "OUT-OF-LIBRARY: Nonsense/toxic emergency query. Must be refused immediately."
+  },
+  {
+    "id": "Q29",
+    "query": "sports nutrition carb loading protocol for olympic marathon runners",
+    "category": "out_of_library",
+    "expected_doc_id": null,
+    "audience_filter": "patient",
+    "expected_outcome": "refused_out_of_scope",
+    "description": "OUT-OF-LIBRARY: Elite athletic carb loading. Not an approved clinical program in library."
+  },
+  {
+    "id": "Q30",
+    "query": "carnivore all-meat diet protocol for treating ulcerative colitis",
+    "category": "out_of_library",
+    "expected_doc_id": null,
+    "audience_filter": "patient",
+    "expected_outcome": "refused_out_of_scope",
+    "description": "OUT-OF-LIBRARY: Unapproved fad/extreme diet. Must refuse."
+  },
+  {
+    "id": "Q31",
+    "query": "what are the billing documentation rules for CPT 97802 and 97803 initial MNT units",
+    "category": "internal_clinical",
+    "expected_doc_id": "DOC-INT-002",
+    "expected_version": 1,
+    "audience_filter": "internal",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "CPT 97802 & 97803 Units & Documentation Rules",
+    "description": "Internal staff Grounded Q&A for billing SOP."
+  },
+  {
+    "id": "Q32",
+    "query": "does Medicare Part B cover medical nutrition therapy for obesity alone",
+    "category": "internal_clinical",
+    "expected_doc_id": "DOC-INT-002",
+    "expected_version": 1,
+    "audience_filter": "internal",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Medicare Part B Coverage Limitations",
+    "description": "Internal staff Grounded Q&A for Medicare coverage limits."
+  },
+  {
+    "id": "Q33",
+    "query": "when must a dietitian escalate for suspected anorexia nervosa red flags",
+    "category": "internal_clinical",
+    "expected_doc_id": "DOC-INT-001",
+    "expected_version": 1,
+    "audience_filter": "internal",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Mandatory Practice Red Flags (Clinical Stop Rule)",
+    "description": "Internal clinical escalation protocol for eating disorders."
+  },
+  {
+    "id": "Q34",
+    "query": "CPT 95249 continuous glucose monitor sensor placement documentation workflow",
+    "category": "internal_clinical",
+    "expected_doc_id": "DOC-INT-003",
+    "expected_version": 1,
+    "audience_filter": "internal",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "CPT 95249 Placement Workflow",
+    "description": "Internal staff SOP for CGM sensor billing."
+  },
+  {
+    "id": "Q35",
+    "query": "calcium citrate dosage after bariatric surgery and why not calcium carbonate",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-BAR-005",
+    "expected_version": 2,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Calcium Citrate vs Calcium Carbonate",
+    "description": "Clinical question on bariatric calcium form and dosage."
+  }
+]

@@ -1,0 +1,759 @@
+[
+  {
+    "doc_id": "DOC-BAR-001",
+    "version": 1,
+    "title": "Bariatric Post-Op Meal Plan - Early Guidelines (Stage 1 & 2)",
+    "program": "Bariatric Surgery",
+    "condition": "Gastric Bypass / Sleeve Gastrectomy",
+    "patient_stage": "Post-Op Stage 1 & 2",
+    "audience": "patient",
+    "owner": "Dr. Sarah Jenkins, RDN",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "retired",
+    "review_by": "2025-06-01",
+    "effective_date": "2023-01-10",
+    "superseded_by": "DOC-BAR-002",
+    "retired_date": "2025-06-01",
+    "retired_reason": "Retired 2025-06-01: Superseded by separate dedicated guides for Stage 1 (Liquids) and Stage 2 (Purees). Do not distribute.",
+    "summary": "Legacy combined handout covering both Stage 1 clear liquids and Stage 2 purees. Discontinued due to patient confusion between fluid and pureed stages.",
+    "tags": ["bariatric", "post-op", "pureed", "clear liquids", "legacy", "retired"],
+    "synonyms": ["bariatric post op", "gastric bypass early diet", "sleeve surgery stage 1", "sleeve stage 2"],
+    "sections": [
+      {
+        "heading": "Early Post-Op Fluids",
+        "content": "Sip 1 ounce of water or broth every 15 minutes. Avoid drinking with meals."
+      },
+      {
+        "heading": "Stage 2 Soft Purees",
+        "content": "Blend lean poultry, eggs, and beans with whole skim cow milk to achieve baby-food consistency. Strive for 50g protein daily."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-BAR-002",
+    "version": 1,
+    "title": "Bariatric Post-Op Stage 2 Pureed Diet Handout (2024 Edition)",
+    "program": "Bariatric Surgery",
+    "condition": "Gastric Sleeve / Roux-en-Y Bypass",
+    "patient_stage": "Post-Op Week 2 (Stage 2: Pureed)",
+    "audience": "patient",
+    "owner": "Elena Gomez, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "retired",
+    "review_by": "2025-05-15",
+    "effective_date": "2024-01-15",
+    "superseded_by": "DOC-BAR-002",
+    "superseded_version": 2,
+    "retired_date": "2025-05-15",
+    "retired_reason": "Superseded by DOC-BAR-002 v2: Protein targets updated from 50g to 60-80g; whole dairy removed due to high post-op lactose intolerance rates.",
+    "summary": "2024 version of Stage 2 Pureed guide. Outdated protein minimum and contained dairy recommendations that caused dumping/lactose cramping.",
+    "tags": ["bariatric", "stage 2", "pureed", "week 2", "outdated"],
+    "synonyms": ["bariatric stage 2", "pureed diet", "post op week 2"],
+    "sections": [
+      {
+        "heading": "Stage 2 Pureed Principles",
+        "content": "At post-op week 2, begin pureed foods with the consistency of applesauce. Daily protein goal is 50g."
+      },
+      {
+        "heading": "Dairy and Protein Shakes",
+        "content": "Mix standard skim milk with whey concentrate shakes. Dairy provides calcium and easy protein."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-BAR-002",
+    "version": 2,
+    "title": "Bariatric Post-Op Stage 2 Pureed Nutrition Guide (Current 2025/2026)",
+    "program": "Bariatric Surgery",
+    "condition": "Gastric Sleeve / Roux-en-Y Bypass",
+    "patient_stage": "Post-Op Week 2-3 (Stage 2: Pureed)",
+    "audience": "patient",
+    "owner": "Elena Gomez, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2027-01-15",
+    "effective_date": "2025-05-15",
+    "supersedes": "DOC-BAR-002 v1",
+    "summary": "Current clinical protocol for Post-Op Week 2-3 bariatric patients transitioning to pureed foods. Includes mandatory lactose-free/plant-based protein options and strict 60-80g daily protein goal.",
+    "tags": ["bariatric", "stage 2", "pureed", "week 2", "week 3", "lactose intolerant", "protein powder", "gastric bypass", "gastric sleeve"],
+    "synonyms": ["post-op bariatric patient week 2", "bariatric week 2 pureed", "stage 2 bariatric lactose intolerant", "pureed food week 2"],
+    "sections": [
+      {
+        "heading": "Stage 2 Pureed Criteria & Timing",
+        "content": "Post-Op Week 2 to 3 initiates Stage 2 (Pureed). All foods must be blended to a smooth applesauce or Greek yogurt consistency with no chunks, seeds, or skins."
+      },
+      {
+        "heading": "Protein Target & Satiety (60g to 80g Daily)",
+        "content": "Target 60g to 80g of high biological value protein daily. Prioritize protein at every small meal (2 to 4 tablespoons per sitting)."
+      },
+      {
+        "heading": "Lactose Sensitivity & Plant / Whey Isolate Options",
+        "content": "Temporary secondary lactose intolerance is common after bariatric surgery (affects up to 40% of bypass and sleeve patients). Avoid regular cow milk. Use unsweetened almond milk, soy milk, pea protein broth, or 100% Whey Protein Isolate (WPI, <1g lactose). If gas, bloating, or diarrhea occurs, immediately discontinue whey concentrate and switch to hydrolyzed beef or pea-rice plant protein isolate."
+      },
+      {
+        "heading": "Fluid Separation Rule",
+        "content": "Do NOT drink fluids with meals. Stop drinking 30 minutes before eating, and wait 30 minutes after eating before drinking. Drinking with meals washes pureed food through the pouch prematurely and triggers dumping syndrome."
+      },
+      {
+        "heading": "Allowed Foods & Sample Day",
+        "content": "Allowed: pureed egg salad made with light mayo, silken tofu, blended low-fat cottage cheese (if tolerated), pureed chicken breast with chicken bone broth, pureed tuna with avocado. Avoid: rice, bread, corn, red meat purees."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-BAR-003",
+    "version": 1,
+    "title": "Bariatric Post-Op Stage 1 Clear Liquids Protocol",
+    "program": "Bariatric Surgery",
+    "condition": "Gastric Sleeve / Roux-en-Y Bypass",
+    "patient_stage": "Post-Op Week 1 (Stage 1: Clear Liquids)",
+    "audience": "patient",
+    "owner": "Elena Gomez, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2027-02-01",
+    "effective_date": "2025-02-01",
+    "summary": "Comprehensive Stage 1 hydration and clear liquid protocol for days 1 to 7 post-bariatric surgery. Focuses on pouch healing, sipping technique, and sugar-free hydration.",
+    "tags": ["bariatric", "stage 1", "clear liquids", "week 1", "hydration", "post-op"],
+    "synonyms": ["bariatric week 1", "clear liquids post op", "stage 1 bariatric", "post op day 3 bariatric"],
+    "sections": [
+      {
+        "heading": "Stage 1 Clear Liquids Protocol",
+        "content": "Days 1 to 7 post-surgery require strict clear liquids to protect staple lines. Consume a minimum of 48 to 64 oz of sugar-free, non-carbonated, decaffeinated fluids daily."
+      },
+      {
+        "heading": "Approved Fluids",
+        "content": "Approved: Bone broth, diluted sugar-free electrolyte water, herbal decaf tea, clear protein water (e.g. Premier Protein Clear, Protein2o). Strictly avoid: red/purple dye liquids, carbonation, citrus juices, sugar."
+      },
+      {
+        "heading": "Sipping Guidelines",
+        "content": "Sip 1 to 2 ounces over 15 to 20 minutes using a 1-oz medicine cup. Never use a straw because straws introduce air into the surgical pouch, causing severe pain and dilation."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-BAR-004",
+    "version": 1,
+    "title": "Bariatric Post-Op Stage 3 Soft Foods Transition Guide",
+    "program": "Bariatric Surgery",
+    "condition": "Gastric Sleeve / Bypass",
+    "patient_stage": "Post-Op Weeks 4-6 (Stage 3: Soft Foods)",
+    "audience": "patient",
+    "owner": "Elena Gomez, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2027-03-10",
+    "effective_date": "2025-03-10",
+    "summary": "Stage 3 guide covering the reintroduction of tender, fork-mashable soft proteins and steamed vegetables for weeks 4 through 6.",
+    "tags": ["bariatric", "stage 3", "soft foods", "week 4", "week 5", "post-op"],
+    "synonyms": ["bariatric stage 3", "soft foods week 4", "bariatric soft diet", "month 1 post op bariatric"],
+    "sections": [
+      {
+        "heading": "Stage 3 Soft Food Timing & Consistency",
+        "content": "Begins at Week 4 post-op after surgeon clearance. Foods must be tender and easily mashed with the back of a fork. Chew every bite 25 to 30 times."
+      },
+      {
+        "heading": "Protein Goals & Suitable Sources",
+        "content": "Maintain 70g to 80g daily protein. Suitable sources: flaky white fish (tilapia, cod), ground turkey stewed in broth, scrambled eggs, well-cooked lentils, canned tuna in water."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-BAR-005",
+    "version": 2,
+    "title": "Bariatric Micronutrient & Lifelong Vitamin Supplementation Protocol",
+    "program": "Bariatric Surgery",
+    "condition": "Post-Bariatric Malabsorption",
+    "patient_stage": "All Post-Op Stages",
+    "audience": "patient",
+    "owner": "Dr. Sarah Jenkins, RDN",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2026-12-01",
+    "effective_date": "2024-12-01",
+    "summary": "ASMBS guidelines for lifelong bariatric multivitamin, calcium citrate, iron, and vitamin B12 supplementation to prevent deficiency neuropathy and anemia.",
+    "tags": ["bariatric", "vitamins", "micronutrients", "calcium citrate", "b12", "iron", "deficiency"],
+    "synonyms": ["bariatric vitamin schedule", "calcium after gastric bypass", "bariatric supplements", "vitamin b12 bariatric"],
+    "sections": [
+      {
+        "heading": "ASMBS Recommended Supplement Regimen",
+        "content": "Post-bariatric anatomy requires lifelong supplementation. Take a high-potency bariatric specific multivitamin containing 200% daily value of vitamins A, D, E, K, zinc, and copper."
+      },
+      {
+        "heading": "Calcium Citrate vs Calcium Carbonate",
+        "content": "Take 1,200mg to 1,500mg of Calcium Citrate daily in divided doses of 500mg. Calcium carbonate requires gastric stomach acid for absorption; bypass and sleeve patients do not produce sufficient acid. Calcium citrate absorbs independently of acid."
+      },
+      {
+        "heading": "Iron and Calcium Separation Rule",
+        "content": "Never take calcium and iron at the same time. Calcium binds iron and inhibits its absorption. Separate iron supplements from calcium by at least 2 hours."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-BAR-006",
+    "version": 1,
+    "title": "Bariatric Stage 4: Long-Term Stabilization & Solid Food Progression",
+    "program": "Bariatric Surgery",
+    "condition": "Gastric Sleeve / Bypass",
+    "patient_stage": "Post-Op Month 3+ (Stage 4: General Solid)",
+    "audience": "patient",
+    "owner": "Elena Gomez, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2027-04-01",
+    "effective_date": "2025-04-01",
+    "summary": "Long-term stabilization and solid food progression protocol starting at Month 3 post-op. Emphasizes solid protein satiety, fiber progression, and preventing weight regain.",
+    "tags": ["bariatric", "stage 4", "solid foods", "month 3", "stabilization", "long-term"],
+    "synonyms": ["bariatric stage 4", "bariatric solid food", "post op month 3 bariatric", "long term bariatric diet"],
+    "sections": [
+      {
+        "heading": "Stage 4 Solid Protein Progression",
+        "content": "From Month 3 onward, transition to wholesome solid foods. Solid lean proteins (grilled chicken, sirloin, salmon) promote greater satiety than shakes or soft purees."
+      },
+      {
+        "heading": "Pouch Rules for Long-Term Maintenance",
+        "content": "Always eat protein first, non-starchy vegetables second, and complex carbohydrates last. Stop eating at the very first sensation of fullness."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-GEST-001",
+    "version": 1,
+    "title": "Gestational Diabetes Meal Planning: Strict Low-Carbohydrate Approach",
+    "program": "Gestational Diabetes",
+    "condition": "Gestational Diabetes Mellitus (GDM)",
+    "patient_stage": "Trimester 2 & 3",
+    "audience": "patient",
+    "owner": "Amanda Reed, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2026-11-30",
+    "effective_date": "2024-11-30",
+    "summary": "Intensive carbohydrate restriction handout for pregnant patients with refractory gestational diabetes. Caps lunch and dinner carbohydrates at 30g total carbs.",
+    "tags": ["gestational diabetes", "pregnancy", "carb counting", "low carb", "gdm", "conflicting"],
+    "synonyms": ["gestational diabetes strict carb", "pregnancy blood sugar diet", "gestational carb limits 30g"],
+    "sections": [
+      {
+        "heading": "Breakfast Carbohydrate Ceiling",
+        "content": "Due to morning cortisol surges, keep breakfast carbohydrates under 15g. Consume eggs, avocado, and spinach. Avoid milk, cereal, and fruit before 11:00 AM."
+      },
+      {
+        "heading": "Lunch and Dinner Carbohydrate Ceilings (Max 30g Net Carbs)",
+        "content": "To prevent postprandial spikes exceeding 120 mg/dL, strictly limit carbohydrates at lunch and dinner to no more than 30 grams of complex carbohydrates. Do not exceed 30g under any circumstances."
+      },
+      {
+        "heading": "Ketone Monitoring Warning",
+        "content": "Test urine ketones every morning with Ketostix. Mild trace ketones are considered acceptable under this tight control regimen."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-GEST-002",
+    "version": 1,
+    "title": "Gestational Diabetes Nutritional Care Guide: ADA & ACOG Standard Protocol",
+    "program": "Gestational Diabetes",
+    "condition": "Gestational Diabetes Mellitus (GDM)",
+    "patient_stage": "Trimester 2 & 3",
+    "audience": "patient",
+    "owner": "Dr. Sarah Jenkins, RDN",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2026-11-30",
+    "effective_date": "2024-11-30",
+    "summary": "ACOG and ADA consensus clinical guidelines for Gestational Diabetes. Mandates a minimum of 175g total carbohydrates daily (at least 45g at lunch and dinner) to protect fetal neurological development and prevent starvation ketonuria.",
+    "tags": ["gestational diabetes", "pregnancy", "acog", "ada", "gdm", "carb targets", "ketones", "conflicting"],
+    "synonyms": ["gestational diabetes standard protocol", "pregnancy carb target acog", "gdm meal guide", "gestational diabetes carbs 45g"],
+    "sections": [
+      {
+        "heading": "Fetal Brain Development & Minimum Daily Carbohydrates (175g Daily)",
+        "content": "The developing fetal brain requires continuous glucose oxidation. Pregnant patients must consume a minimum of 175 grams of carbohydrate daily. Carbohydrate restriction below 175g induces maternal starvation ketosis, which is linked to impaired fetal cognitive outcomes."
+      },
+      {
+        "heading": "Lunch and Dinner Carbohydrate Targets (Minimum 45g Carbs)",
+        "content": "Consume 45g to 60g of unrefined high-fiber complex carbohydrates at both lunch and dinner (e.g., brown rice, quinoa, sprouted grain bread, black beans). Do NOT restrict lunch or dinner carbohydrates to 30g or below, as this risks maternal hypoglycemia and ketonuria."
+      },
+      {
+        "heading": "Bedtime Snack Protocol to Prevent Overnight Ketonuria",
+        "content": "Always consume a bedtime snack containing 15g to 30g of complex carbohydrates paired with 10g of protein (e.g., apple slices with natural peanut butter, or Greek yogurt with chia seeds) to stabilize fasting glucose and prevent nocturnal starvation ketosis."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-CKD-001",
+    "version": 1,
+    "title": "Renal Diet Management: Potassium, Phosphorus, and Sodium Guidelines",
+    "program": "Renal / Kidney Disease",
+    "condition": "Chronic Kidney Disease Stage 3-4 (Non-Dialysis)",
+    "patient_stage": "Stage 3-4 Non-Dialysis CKD",
+    "audience": "patient",
+    "owner": "Marcus Vance",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2024-01-15",
+    "effective_date": "2022-01-15",
+    "summary": "Outdated clinical guide for Stage 3-4 CKD patients managing serum potassium and phosphorus. Review date expired in January 2024 (overdue for clinical review).",
+    "tags": ["renal", "ckd", "kidney disease", "potassium", "phosphorus", "sodium", "stale", "expired"],
+    "synonyms": ["kidney disease diet", "ckd stage 3 meal plan", "renal potassium phosphorus", "renal non dialysis"],
+    "sections": [
+      {
+        "heading": "Potassium Restriction Protocol",
+        "content": "Limit daily potassium to under 2,000 mg. Avoid bananas, potatoes, oranges, tomatoes, and avocados. Double-boil root vegetables to leach potassium."
+      },
+      {
+        "heading": "Phosphorus Additives & Protein Targets",
+        "content": "Keep protein intake moderate at 0.6g to 0.8g per kg body weight. Strictly avoid foods containing inorganic phosphate additives (pyrophosphate, sodium hexametaphosphate)."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-RET-001",
+    "version": 1,
+    "title": "Legacy Very-Low-Calorie Diet (VLCD) 800-Calorie Rapid Loss Protocol",
+    "program": "Weight Management",
+    "condition": "Severe Obesity (BMI > 40)",
+    "patient_stage": "Intensive Induction",
+    "audience": "patient",
+    "owner": "Dr. Sarah Jenkins, RDN",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "retired",
+    "review_by": "2023-05-10",
+    "effective_date": "2021-05-10",
+    "retired_date": "2023-05-10",
+    "retired_reason": "Retired by Clinical Director: VLCD 800kcal protocol discontinued due to gallstone risk, electrolyte shifts, and high weight regain rebound. Practice transitioned to GLP-1 nutritional therapy and moderate caloric deficits.",
+    "summary": "Retired 800-calorie liquid meal replacement protocol. Kept for clinical record reference only. MUST NOT BE DISTRIBUTED TO PATIENTS.",
+    "tags": ["vlcd", "800 calorie", "rapid weight loss", "retired", "do not send", "obesity"],
+    "synonyms": ["vlcd meal plan", "800 kcal diet", "very low calorie diet", "liquid meal replacement protocol"],
+    "sections": [
+      {
+        "heading": "VLCD 800-Calorie Daily Regimen (DISCONTINUED)",
+        "content": "Four medical meal-replacement shakes daily providing 800 kcal and 80g protein total. No solid food permitted during induction."
+      },
+      {
+        "heading": "Clinical Contraindications & Risks",
+        "content": "High risk of cholelithiasis (gallstones), cardiac arrhythmia, and severe lean mass wasting. Discontinued practice-wide."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-DM-001",
+    "version": 1,
+    "title": "Type 2 Diabetes Carbohydrate Counting & Plate Method Handout (2023 Edition)",
+    "program": "Diabetes Education",
+    "condition": "Type 2 Diabetes / Pre-Diabetes",
+    "patient_stage": "Maintenance / Initial Education",
+    "audience": "patient",
+    "owner": "Elena Gomez, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "retired",
+    "review_by": "2025-01-15",
+    "effective_date": "2023-01-15",
+    "superseded_by": "DOC-DM-001",
+    "superseded_version": 2,
+    "retired_date": "2025-01-15",
+    "retired_reason": "Superseded by DOC-DM-001 v2: Updated with current ADA Standards of Care, glycemic variability, and CGM metric interpretation.",
+    "summary": "Old edition of diabetes plate method. Lacked continuous glucose monitoring guidance and modern plant-based protein substitutes.",
+    "tags": ["diabetes", "type 2", "carb counting", "plate method", "superseded", "outdated"],
+    "synonyms": ["diabetes plate method 2023", "type 2 diabetes handout old"],
+    "sections": [
+      {
+        "heading": "The Diabetes Plate Method",
+        "content": "Fill 1/2 of your 9-inch plate with non-starchy vegetables, 1/4 with lean protein, and 1/4 with carbohydrate foods."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-DM-001",
+    "version": 2,
+    "title": "Type 2 Diabetes Blood Sugar & Balanced Plate Guide (Current 2025/2026)",
+    "program": "Diabetes Education",
+    "condition": "Type 2 Diabetes / Pre-Diabetes",
+    "patient_stage": "Maintenance / Initial Education",
+    "audience": "patient",
+    "owner": "Elena Gomez, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2027-05-01",
+    "effective_date": "2025-01-15",
+    "supersedes": "DOC-DM-001 v1",
+    "summary": "Current comprehensive guide for Type 2 Diabetes self-management. Details the Diabetes Plate Method, fiber pairing, postprandial glucose goals (<180 mg/dL), and time-in-range optimization.",
+    "tags": ["diabetes", "type 2", "plate method", "blood sugar", "a1c", "fiber", "glucose control", "carb counting"],
+    "synonyms": ["type 2 diabetes meal guide", "diabetes plate method current", "blood sugar diet guide", "t2d food plan"],
+    "sections": [
+      {
+        "heading": "The Diabetes Plate Method: Visual Portioning",
+        "content": "Use a 9-inch dinner plate: Fill 1/2 with non-starchy vegetables (broccoli, salad greens, peppers, cauliflower), fill 1/4 with lean protein (skinless poultry, tofu, eggs, beans, fish), and fill 1/4 with whole grain complex carbohydrates (quinoa, brown rice, sweet potato)."
+      },
+      {
+        "heading": "Carbohydrate Quality & The Fiber Cushion Rule",
+        "content": "Pair all carbohydrate foods with dietary fiber and healthy fats or proteins. Strive for at least 30g to 35g of fiber daily. Fiber slows carbohydrate hydrolysis and blunts postprandial glucose spikes."
+      },
+      {
+        "heading": "Target Blood Glucose Ranges",
+        "content": "ADA clinical targets: Fasting/pre-meal blood sugar between 80 and 130 mg/dL. Two hours post-meal blood sugar below 180 mg/dL."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-DM-002",
+    "version": 1,
+    "title": "Hypoglycemia Emergency Action Guide: The Rule of 15",
+    "program": "Diabetes Education",
+    "condition": "Insulin / Sulfonylurea Hypoglycemia Risk",
+    "patient_stage": "Acute Emergency Care",
+    "audience": "patient",
+    "owner": "Elena Gomez, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2027-04-15",
+    "effective_date": "2025-04-15",
+    "summary": "Emergency clinical handout explaining acute hypoglycemia management for patients on insulin or sulfonylureas using the standardized Rule of 15.",
+    "tags": ["hypoglycemia", "low blood sugar", "emergency", "rule of 15", "insulin", "diabetes"],
+    "synonyms": ["low blood sugar emergency", "hypoglycemia rule of 15", "treating low blood glucose", "blood sugar under 70"],
+    "sections": [
+      {
+        "heading": "Hypoglycemia Signs & Definition (Glucose < 70 mg/dL)",
+        "content": "Hypoglycemia is blood glucose under 70 mg/dL. Symptoms include shakiness, diaphoresis (sweating), tachycardia (racing heart), confusion, dizziness, and irritability."
+      },
+      {
+        "heading": "The Rule of 15 Treatment Step-by-Step",
+        "content": "Step 1: Ingest 15 grams of fast-acting simple carbohydrates (4 glucose tablets, 1/2 cup fruit juice or regular soda, or 1 tube glucose gel). Step 2: Wait 15 minutes and re-test blood sugar. Step 3: If still under 70 mg/dL, repeat with another 15g of fast carbs. Step 4: Once glucose is above 70 mg/dL, eat a snack with protein and complex carbs."
+      },
+      {
+        "heading": "Critical Warning: Glucagon Emergency",
+        "content": "If the individual becomes unconscious or cannot swallow, do NOT place anything in their mouth. Administer nasal or injectable emergency glucagon immediately and call 911."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-DM-003",
+    "version": 1,
+    "title": "Continuous Glucose Monitor (CGM) Patient Quick-Start & Trend Guide",
+    "program": "Diabetes Education",
+    "condition": "Dexcom G7 / Freestyle Libre 3 CGM Users",
+    "patient_stage": "Sensor Initiation & Review",
+    "audience": "patient",
+    "owner": "Amanda Reed, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2026-10-01",
+    "effective_date": "2024-10-01",
+    "summary": "Patient education guide for interpreting continuous glucose monitor trend arrows, understanding lag time between interstitial fluid and capillary blood, and avoiding over-treating highs.",
+    "tags": ["cgm", "dexcom", "libre", "continuous glucose monitor", "trend arrows", "time in range"],
+    "synonyms": ["cgm patient handout", "dexcom g7 instructions", "freestyle libre guide", "cgm trend arrow meaning"],
+    "sections": [
+      {
+        "heading": "Sensor Lag Time: Interstitial vs Blood Glucose",
+        "content": "CGM sensors measure glucose in interstitial fluid under the skin, which lags fingerstick blood glucose by 5 to 10 minutes. If symptoms do not match sensor readings, always verify with a fingerstick meter."
+      },
+      {
+        "heading": "Interpreting Trend Arrows & Preventing Stacking",
+        "content": "A straight arrow means glucose is stable (changing <1 mg/dL per minute). An angled upward arrow means rising 1-2 mg/dL/min. A double straight up arrow means rising rapidly (>2 mg/dL/min). Do not stack insulin boluses or skip meals based on rapid swings."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-WM-001",
+    "version": 1,
+    "title": "GLP-1 Agonist Nutrition Companion (Semaglutide / Tirzepatide Guide)",
+    "program": "Weight Management",
+    "condition": "GLP-1 Therapy (Wegovy, Ozempic, Zepbound, Mounjaro)",
+    "patient_stage": "Dose Escalation & Maintenance",
+    "audience": "patient",
+    "owner": "Dr. Sarah Jenkins, RDN",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2026-12-15",
+    "effective_date": "2024-12-15",
+    "summary": "Clinical nutrition guide for patients prescribed GLP-1 receptor agonists. Covers lean muscle preservation, hydration, nausea mitigation, and preventing constipation and delayed gastric emptying complications.",
+    "tags": ["glp-1", "ozempic", "wegovy", "zepbound", "tirzepatide", "semaglutide", "nausea", "muscle preservation", "weight loss"],
+    "synonyms": ["glp-1 diet handout", "ozempic nutrition guide", "wegovy nausea diet", "semaglutide protein requirements", "zepbound side effects diet"],
+    "sections": [
+      {
+        "heading": "Preserving Lean Skeletal Muscle (1.2g to 1.5g Protein/kg)",
+        "content": "Rapid weight loss on GLP-1 medications risks significant lean muscle mass loss (up to 40% of total weight lost). Patients must consume a minimum of 1.2g to 1.5g of dietary protein per kilogram of ideal body weight daily. Supplement with resistance training twice weekly."
+      },
+      {
+        "heading": "Nausea & Early Satiety Management Strategies",
+        "content": "Because GLP-1 agonists delay gastric emptying, large meals cause intense nausea, reflux, and vomiting. Eat 4 to 5 small meals throughout the day. Stop eating the moment you feel satisfied. Avoid high-fat, greasy, or deep-fried foods, which sit in the stomach for hours."
+      },
+      {
+        "heading": "Hydration and Electrolyte Goals",
+        "content": "Blunted thirst cues are common. Drink a minimum of 64 to 80 oz of water daily. Include one serving of low-sugar electrolyte replenishment to prevent dizziness and hypovolemia."
+      },
+      {
+        "heading": "Constipation Prevention Protocol",
+        "content": "Delayed peristalsis can lead to severe constipation. Incorporate 2 tablespoons of ground chia or flaxseed daily, kiwi fruit, and adequate water. If no bowel movement for 48 hours, begin osmotic magnesium citrate or polyethylene glycol."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-WM-002",
+    "version": 1,
+    "title": "Anti-Inflammatory Mediterranean Meal Planner",
+    "program": "Weight Management",
+    "condition": "Metabolic Syndrome / Cardiovascular Wellness",
+    "patient_stage": "General Lifestyle",
+    "audience": "patient",
+    "owner": "Amanda Reed, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2027-01-20",
+    "effective_date": "2025-01-20",
+    "summary": "Evidence-based Mediterranean dietary framework emphasizing polyphenol-rich olive oil, omega-3 fatty acids, legumes, and cruciferous vegetables for metabolic syndrome.",
+    "tags": ["mediterranean diet", "anti-inflammatory", "heart health", "metabolic syndrome", "omega-3", "olive oil"],
+    "synonyms": ["mediterranean meal plan", "anti inflammatory diet handout", "healthy eating mediterranean"],
+    "sections": [
+      {
+        "heading": "Core Pillars of Mediterranean Nutrition",
+        "content": "Base all meals around extra virgin olive oil (2 tablespoons daily), leafy greens, whole grains, and legumes. Consume wild fatty fish (salmon, sardines, mackerel) at least 2 times per week."
+      },
+      {
+        "heading": "Limiting Pro-Inflammatory Foods",
+        "content": "Minimize ultra-processed foods, refined seed oils, added sugars, and processed delicatessen meats."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-PCOS-001",
+    "version": 1,
+    "title": "PCOS Insulin Resistance & Hormone Balancing Nutrition Guide",
+    "program": "Menopause & Women's Health",
+    "condition": "Polycystic Ovary Syndrome (PCOS)",
+    "patient_stage": "Lifestyle Intervention",
+    "audience": "patient",
+    "owner": "Amanda Reed, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2026-09-30",
+    "effective_date": "2024-09-30",
+    "summary": "Targeted nutrition protocol for PCOS focusing on hyperinsulinemia, lowering androgen levels, inositol supplementation, and stabilizing ovarian hormone production.",
+    "tags": ["pcos", "insulin resistance", "hormone balance", "myo-inositol", "androgens", "ovulation"],
+    "synonyms": ["pcos diet handout", "polycystic ovary syndrome nutrition", "pcos insulin resistance meal plan"],
+    "sections": [
+      {
+        "heading": "The Insulin-Androgen Link in PCOS",
+        "content": "Elevated insulin drives ovarian theca cells to overproduce testosterone, causing irregular cycles, hirsutism, and cystic acne. Stabilizing blood sugar is the primary clinical therapy to restore ovulatory regularity."
+      },
+      {
+        "heading": "Low-Glycemic Meal Construction",
+        "content": "Combine high-fiber complex carbs with healthy fats and protein. Avoid naked carbohydrates on an empty stomach."
+      },
+      {
+        "heading": "Myo-Inositol & D-Chiro-Inositol Support",
+        "content": "Research supports a 40:1 ratio of Myo-Inositol to D-Chiro-Inositol (2,000mg twice daily) to improve cellular insulin receptor sensitivity and promote spontaneous ovulation."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-MENO-001",
+    "version": 1,
+    "title": "Peri-Menopause & Post-Menopause Bone Density & Sarcopenia Nutrition Plan",
+    "program": "Menopause & Women's Health",
+    "condition": "Peri-Menopause / Post-Menopause Osteopenia",
+    "patient_stage": "Menopausal Transition",
+    "audience": "patient",
+    "owner": "Dr. Sarah Jenkins, RDN",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2026-11-15",
+    "effective_date": "2024-11-15",
+    "summary": "Nutritional strategy for perimenopausal and postmenopausal women combating accelerated bone demineralization, visceral adiposity redistribution, and sarcopenia.",
+    "tags": ["menopause", "perimenopause", "bone density", "osteopenia", "calcium", "sarcopenia", "estrogen decline"],
+    "synonyms": ["menopause nutrition handout", "perimenopause diet guide", "osteopenia calcium vitamin d diet", "bone health menopause"],
+    "sections": [
+      {
+        "heading": "Combatting Estrogen-Deficient Bone Resorption",
+        "content": "Declining estradiol accelerates osteoclast activity, resulting in up to 10% bone mineral loss during the 5 years surrounding final menstrual period. Target 1,200mg calcium daily from bioavailable dietary sources (fortified dairy, sardines, leafy greens)."
+      },
+      {
+        "heading": "Combating Sarcopenia: The Leucine Threshold",
+        "content": "Post-menopausal muscle requires 2.5g to 3g of leucine per meal to trigger muscle protein synthesis (e.g., 30g to 35g of complete protein per feeding window)."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-GI-001",
+    "version": 1,
+    "title": "Low-FODMAP Diet Phase 1: Strict Elimination Protocol (2-6 Weeks)",
+    "program": "Gastrointestinal Health",
+    "condition": "Irritable Bowel Syndrome (IBS-D, IBS-C, SIBO)",
+    "patient_stage": "Phase 1 Elimination (Strict)",
+    "audience": "patient",
+    "owner": "Elena Gomez, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2026-10-15",
+    "effective_date": "2024-10-15",
+    "summary": "Monash University validated protocol for Phase 1 strict FODMAP elimination. Designed to resolve visceral bloating, gas, abdominal pain, and erratic bowel habits within 2 to 6 weeks.",
+    "tags": ["fodmap", "ibs", "low fodmap", "elimination", "sibo", "bloating", "phase 1"],
+    "synonyms": ["low fodmap elimination guide", "ibs phase 1 diet", "fodmap strict elimination handout", "ibs bloating food list"],
+    "sections": [
+      {
+        "heading": "Phase 1 Elimination Purpose & Duration",
+        "content": "Phase 1 is a diagnostic test, NOT a permanent diet. Strictly eliminate all high-FODMAP foods for 2 to 6 weeks until GI symptoms improve by at least 70%."
+      },
+      {
+        "heading": "High-FODMAP Foods to Strictly Avoid",
+        "content": "Avoid: Garlic and onions (including garlic powder), wheat/rye in large quantities, apples, pears, watermelon, honey, high-fructose corn syrup, milk, yogurt, beans, lentils, cauliflower, and mushrooms."
+      },
+      {
+        "heading": "Safe Low-FODMAP Alternatives",
+        "content": "Safe: Garlic-infused olive oil (fructans are water-soluble, not fat-soluble), green tops of scallions/spring onions, sourdough spelt bread, blueberries, strawberries, carrots, spinach, potatoes, firm tofu, eggs, and all plain meats."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-GI-002",
+    "version": 1,
+    "title": "Low-FODMAP Diet Phase 2: Systematic Challenge & Reintroduction Protocol",
+    "program": "Gastrointestinal Health",
+    "condition": "IBS Post-Elimination",
+    "patient_stage": "Phase 2 Reintroduction",
+    "audience": "patient",
+    "owner": "Elena Gomez, RD",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2026-10-15",
+    "effective_date": "2024-10-15",
+    "summary": "Step-by-step reintroduction protocol to test specific FODMAP subgroups (fructose, sorbitol, mannitol, lactose, fructans, GOS) one at a time over 3 days.",
+    "tags": ["fodmap", "reintroduction", "phase 2", "ibs", "food challenge"],
+    "synonyms": ["fodmap phase 2 reintroduction", "reintroducing fodmaps", "ibs challenge protocol"],
+    "sections": [
+      {
+        "heading": "Systematic 3-Day Challenge Protocol",
+        "content": "Test one FODMAP group at a time over 3 consecutive days in increasing portions (e.g., Day 1: 1/4 clove garlic; Day 2: 1/2 clove; Day 3: 1 whole clove). Record symptoms for 48 hours following day 3."
+      },
+      {
+        "heading": "Washout Periods Between Challenges",
+        "content": "Always institute a 3-day washout period returning to strict Low-FODMAP eating between different test categories to prevent symptom carryover."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-CVD-001",
+    "version": 1,
+    "title": "DASH Diet & Sodium Reduction Guide for Hypertension",
+    "program": "Cardiovascular Health",
+    "condition": "Hypertension / Heart Disease",
+    "patient_stage": "Maintenance / Blood Pressure Management",
+    "audience": "patient",
+    "owner": "Marcus Vance",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2027-02-15",
+    "effective_date": "2025-02-15",
+    "summary": "Dietary Approaches to Stop Hypertension (DASH) protocol detailing 1,500mg - 2,300mg sodium targets, potassium-magnesium balance, and label reading for hidden sodium.",
+    "tags": ["dash diet", "hypertension", "high blood pressure", "sodium reduction", "cardiovascular"],
+    "synonyms": ["dash diet handout", "high blood pressure meal guide", "low sodium diet plan", "hypertension nutrition"],
+    "sections": [
+      {
+        "heading": "Sodium Ceiling & Reading Nutrition Labels",
+        "content": "Target 1,500mg to 2,300mg sodium per day. More than 70% of dietary sodium comes from restaurant meals and packaged goods. Aim for under 140mg sodium per serving for a low-sodium food."
+      },
+      {
+        "heading": "Electrolyte Synergy: Potassium, Magnesium, and Calcium",
+        "content": "Sodium excretion is promoted by dietary potassium and magnesium. Consume leafy greens, beans, Greek yogurt, and seeds daily."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-INT-001",
+    "version": 1,
+    "title": "Clinical Escalation Protocol: Suspected Eating Disorder / Severe Restriction",
+    "program": "Clinical Governance",
+    "condition": "Anorexia Nervosa, Bulimia Nervosa, ARFID, OSFED",
+    "patient_stage": "Clinical Internal Protocol",
+    "audience": "internal",
+    "owner": "Dr. Sarah Jenkins, RDN",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2026-12-31",
+    "effective_date": "2024-12-31",
+    "summary": "INTERNAL CLINICAL PROTOCOL ONLY. Mandatory clinical red-flag triggers, SCOFF screening criteria, lab escalation markers, and referral workflow for patients showing eating disorder pathology.",
+    "tags": ["internal protocol", "eating disorder", "anorexia", "bulimia", "arfid", "clinical escalation", "staff only"],
+    "synonyms": ["eating disorder protocol staff", "anorexia escalation procedure", "scoff questionnaire clinical SOP", "internal eating disorder guide"],
+    "sections": [
+      {
+        "heading": "Mandatory Practice Red Flags (Clinical Stop Rule)",
+        "content": "If a patient presents with BMI < 16.5, heart rate < 45 bpm, systolic BP < 85 mmHg, serum potassium < 3.2 mEq/L, or active purging > 3x weekly, outpatient dietitian care is suspended. Dietitian must immediately escalate to Dr. Jenkins and initiate emergency psychiatric/medical co-management."
+      },
+      {
+        "heading": "Internal Communication & Patient Handout Prohibition",
+        "content": "THIS DOCUMENT IS AN INTERNAL CLINICAL PROTOCOL AND MUST NEVER BE DISTRIBUTED TO PATIENTS. Do NOT provide caloric counting sheets or restrictive meal plans to patients screening positive on the SCOFF inventory."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-INT-002",
+    "version": 1,
+    "title": "Practice Standard Operating Procedure: Insurance Superbills & MNT Billing Codes",
+    "program": "Operations & Billing",
+    "condition": "Commercial & Medicare Part B Billing",
+    "patient_stage": "Administrative Staff SOP",
+    "audience": "internal",
+    "owner": "Marcus Vance",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2027-01-01",
+    "effective_date": "2025-01-01",
+    "summary": "INTERNAL STAFF BILLING GUIDE. Details CPT codes 97802 (initial MNT, 15 min), 97803 (follow-up MNT), G0270, ICD-10 crosswalks, and Medicare Part B qualifying criteria.",
+    "tags": ["billing", "superbill", "cpt codes", "insurance", "97802", "97803", "internal only"],
+    "synonyms": ["dietitian billing codes", "cpt 97802 guidelines", "superbill mnt staff guide", "insurance billing protocol"],
+    "sections": [
+      {
+        "heading": "CPT 97802 & 97803 Units & Documentation Rules",
+        "content": "CPT 97802 is billed in 15-minute increments for the initial assessment. Minimum time for 1 unit is 8 minutes; 2 units = 23-37 minutes; 3 units = 38-52 minutes; 4 units = 53-67 minutes. CPT 97803 is billed for re-assessment visits."
+      },
+      {
+        "heading": "Medicare Part B Coverage Limitations",
+        "content": "Medicare Part B ONLY covers Medical Nutrition Therapy (MNT) for Diabetes (Type 1, Type 2, Gestational) and Renal Disease (non-dialysis stages). Obesity alone without diabetes is NOT covered under Medicare Part B."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-INT-003",
+    "version": 1,
+    "title": "Clinical Policy: Continuous Glucose Monitor (CGM) Sensor Billing & CPT 95249/95250",
+    "program": "Operations & Billing",
+    "condition": "Dexcom & Libre Practice Sensor Placements",
+    "patient_stage": "Administrative Staff SOP",
+    "audience": "internal",
+    "owner": "Dr. Sarah Jenkins, RDN",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2026-08-30",
+    "effective_date": "2024-08-30",
+    "summary": "INTERNAL CLINICAL POLICY. Practice guidelines for clinical sensor placement (CPT 95249), 72-hour retrospective CGM diagnostic study (CPT 95250), and physician interpretation crosswalks.",
+    "tags": ["cgm billing", "cpt 95249", "cpt 95250", "sensor placement", "internal protocol"],
+    "synonyms": ["cgm sensor billing protocol", "cpt 95249 staff guidelines", "dexcom sensor placement SOP"],
+    "sections": [
+      {
+        "heading": "CPT 95249 Placement Workflow",
+        "content": "Billed once per sensor initiation. Requires clinical documentation of sensor warm-up, calibration, patient mobile pairing, and skin prep using Cavilon wipes."
+      }
+    ]
+  },
+  {
+    "doc_id": "DOC-DRAFT-001",
+    "version": 0.1,
+    "title": "Draft Protocol: Micro-Dosing Plant Protein in Chronic Renal Failure",
+    "program": "Renal / Kidney Disease",
+    "condition": "Chronic Kidney Disease Stage 4-5",
+    "patient_stage": "Pre-Dialysis Experimental",
+    "audience": "patient",
+    "owner": "Elena Gomez, RD",
+    "approved_by": "Pending Clinical Review",
+    "status": "draft",
+    "review_by": "2026-12-01",
+    "effective_date": "2026-12-01",
+    "summary": "UNAPPROVED DRAFT. Investigational handout exploring keto-analogue supplemented very low protein diet (VLPD) for pre-dialysis renal patients. Under active review by Medical Advisory Board.",
+    "tags": ["renal", "ckd", "draft", "unapproved", "experimental", "vlpd"],
+    "synonyms": ["draft renal protein guide", "plant protein in kidney disease draft"],
+    "sections": [
+      {
+        "heading": "Investigational Keto-Analogue Dosing",
+        "content": "DRAFT CONTENT: Restricting protein to 0.3g/kg while supplementing essential amino acid keto-analogues may delay dialysis initiation."
+      }
+    ]
+  }
+]

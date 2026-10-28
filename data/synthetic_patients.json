@@ -1,0 +1,92 @@
+[
+  {
+    "patient_id": "SYNTH-PAT-101",
+    "name": "Synthetic Patient 101 (E.V.)",
+    "program": "Bariatric Surgery",
+    "condition": "Gastric Bypass (Roux-en-Y)",
+    "patient_stage": "Post-Op Week 2-3 (Stage 2: Pureed)",
+    "allergies_sensitivities": ["Lactose Intolerance"],
+    "insurance": "Aetna Commercial",
+    "dietitian": "Elena Gomez, RD"
+  },
+  {
+    "patient_id": "SYNTH-PAT-102",
+    "name": "Synthetic Patient 102 (R.C.)",
+    "program": "Diabetes Education",
+    "condition": "Type 2 Diabetes (A1c 8.2%)",
+    "patient_stage": "Maintenance / Initial Education",
+    "allergies_sensitivities": ["None"],
+    "insurance": "Blue Cross Blue Shield",
+    "dietitian": "Elena Gomez, RD"
+  },
+  {
+    "patient_id": "SYNTH-PAT-103",
+    "name": "Synthetic Patient 103 (M.S.)",
+    "program": "Gestational Diabetes",
+    "condition": "Gestational Diabetes Mellitus (28 Weeks)",
+    "patient_stage": "Trimester 2 & 3",
+    "allergies_sensitivities": ["None"],
+    "insurance": "UnitedHealthcare",
+    "dietitian": "Amanda Reed, RD"
+  },
+  {
+    "patient_id": "SYNTH-PAT-104",
+    "name": "Synthetic Patient 104 (D.K.)",
+    "program": "Bariatric Surgery",
+    "condition": "Sleeve Gastrectomy (Post-Op Day 4)",
+    "patient_stage": "Post-Op Week 1 (Stage 1: Clear Liquids)",
+    "allergies_sensitivities": ["None"],
+    "insurance": "Cigna Commercial",
+    "dietitian": "Elena Gomez, RD"
+  },
+  {
+    "patient_id": "SYNTH-PAT-105",
+    "name": "Synthetic Patient 105 (B.J.)",
+    "program": "Renal / Kidney Disease",
+    "condition": "Chronic Kidney Disease Stage 3b (eGFR 38)",
+    "patient_stage": "Stage 3-4 Non-Dialysis CKD",
+    "allergies_sensitivities": ["ACE Inhibitor Cough"],
+    "insurance": "Medicare Part B",
+    "dietitian": "Marcus Vance"
+  },
+  {
+    "patient_id": "SYNTH-PAT-106",
+    "name": "Synthetic Patient 106 (J.M.)",
+    "program": "Weight Management",
+    "condition": "Obesity on Semaglutide 0.5mg (GLP-1)",
+    "patient_stage": "Dose Escalation & Maintenance",
+    "allergies_sensitivities": ["Severe Nausea with Dairy Fats"],
+    "insurance": "Commercial PPO",
+    "dietitian": "Dr. Sarah Jenkins, RDN"
+  },
+  {
+    "patient_id": "SYNTH-PAT-107",
+    "name": "Synthetic Patient 107 (A.T.)",
+    "program": "Menopause & Women's Health",
+    "condition": "Polycystic Ovary Syndrome (PCOS)",
+    "patient_stage": "Lifestyle Intervention",
+    "allergies_sensitivities": ["Gluten Sensitive"],
+    "insurance": "Aetna Open Access",
+    "dietitian": "Amanda Reed, RD"
+  },
+  {
+    "patient_id": "SYNTH-PAT-108",
+    "name": "Synthetic Patient 108 (H.D.)",
+    "program": "Gastrointestinal Health",
+    "condition": "IBS-Diarrhea with Severe Post-Meal Bloating",
+    "patient_stage": "Phase 1 Elimination (Strict)",
+    "allergies_sensitivities": ["Garlic / Onion Intolerance"],
+    "insurance": "Oscar Health",
+    "dietitian": "Elena Gomez, RD"
+  },
+  {
+    "patient_id": "SYNTH-PAT-109",
+    "name": "Synthetic Patient 109 (J.W.)",
+    "program": "Cardiovascular Health",
+    "condition": "Essential Hypertension (BP 148/92)",
+    "patient_stage": "Maintenance / Blood Pressure Management",
+    "allergies_sensitivities": ["None"],
+    "insurance": "Medicare Advantage",
+    "dietitian": "Marcus Vance"
+  }
+]

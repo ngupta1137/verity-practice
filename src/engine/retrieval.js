@@ -4,6 +4,8 @@
 
 import { redactPHI, safetyCheck, SAFETY_ESCALATION_MESSAGE } from './guards.js';
 import { isDocumentEligible, getEligibleDocuments } from './eligibility.js';
+import { runSafetyTriage, evaluatePolicy } from './policy.js';
+
 import {
   expandQueryWithSynonyms,
   computeTextEmbedding,
@@ -75,8 +77,79 @@ export class RightDocEngine {
     const redacted = redactPHI(query);
     const cleanQuery = redacted.text;
 
+    // Step 2.5: Mandatory Safety Triage Before Retrieval (Workstream 2)
+    // Run red-flag rules on query and patient context BEFORE any document search.
+    const triage = runSafetyTriage({ query: cleanQuery, patient: patientContext, user: { role } });
+
+    if (triage.hasRedFlag) {
+      const escalationDoc = this.documents.find(d => d.doc_id === 'DOC-INT-004') || null;
+      let secondaryMatch = null;
+      if (triage.escalation.secondary_allowed && triage.secondaryDocId) {
+        const secDoc = this.documents.find(d => d.doc_id === triage.secondaryDocId);
+        if (secDoc) {
+          secondaryMatch = {
+            document: secDoc,
+            score: 0.85,
+            citation: this.extractBestSection(secDoc, cleanQuery),
+            matchReason: triage.escalation.secondary_label || 'Secondary Handout (not a substitute for escalation)'
+          };
+        }
+      }
+
+      const primaryMatch = escalationDoc ? {
+        document: escalationDoc,
+        score: 1.0,
+        citation: this.extractBestSection(escalationDoc, cleanQuery),
+        matchReason: triage.escalation.title
+      } : null;
+
+      const matchesList = [];
+      if (primaryMatch) matchesList.push(primaryMatch);
+      if (secondaryMatch) matchesList.push(secondaryMatch);
+
+      return {
+        outcome: 'URGENT_CLINICAL_ESCALATION',
+        decision: 'URGENT_CLINICAL_ESCALATION',
+        document_validity: 'valid',
+        patient_applicability: 'not_applicable',
+        delivery_authorization: 'denied',
+        reasons: [triage.escalation.message],
+        policy_version: '2.1.0',
+        query: cleanQuery,
+        redactions: redacted.applied,
+        message: triage.escalation.message,
+        topMatch: primaryMatch,
+        matches: matchesList,
+        secondaryMatch,
+        escalation_protocol: {
+          title: triage.escalation.title,
+          doc_id: 'DOC-INT-004',
+          message: triage.escalation.message
+        }
+      };
+    }
+
+    if (triage.hasOutOfScope) {
+      return {
+        outcome: 'OUT_OF_SCOPE_REFERRAL',
+        decision: 'OUT_OF_SCOPE_REFERRAL',
+        document_validity: 'valid',
+        patient_applicability: 'not_applicable',
+        delivery_authorization: 'denied',
+        reasons: [triage.outOfScope.message],
+        policy_version: '2.1.0',
+        query: cleanQuery,
+        redactions: redacted.applied,
+        message: triage.outOfScope.message,
+        topMatch: null,
+        matches: [],
+        referral: triage.outOfScope
+      };
+    }
+
     // Step 3: Check for trap/retired specific requests
     const lowerQ = cleanQuery.toLowerCase();
+
     
     // Trap check: Specific request for retired 800kcal VLCD
     if (lowerQ.includes('vlcd') || lowerQ.includes('800-calorie') || lowerQ.includes('800 calorie') || lowerQ.includes('800kcal') || lowerQ.includes('800 kcal')) {
@@ -174,6 +247,17 @@ export class RightDocEngine {
       if (includeRetiredForAudit) return true;
       if (!isDocumentEligible(doc, this.documents, { asOfDate: '2026-10-27' })) return false;
       if (audience === 'patient' && doc.audience !== 'patient') return false;
+
+      // Workstream 2: When an ED flag is present, block ALL weight-loss, calorie-restriction, fasting and GLP-1 weight content
+      if (patientContext?.eating_disorder_screen === 'flagged') {
+        const isWeightContent = doc.program === 'Weight Management' || 
+                                (doc.tags || []).includes('glp1') || 
+                                (doc.tags || []).includes('weight-loss') ||
+                                (doc.title || '').toLowerCase().includes('weight') ||
+                                (doc.title || '').toLowerCase().includes('fasting');
+        if (isWeightContent) return false;
+      }
+
       return true;
     });
 
@@ -217,15 +301,33 @@ export class RightDocEngine {
       score: Math.min(Number(m.score.toFixed(3)), 1.0)
     }));
     const top = normalizedMatches[0];
+
+    // Evaluate Unified Clinical Policy (Workstream 1)
+    const policyRes = evaluatePolicy({
+      document: top.document,
+      patient: patientContext,
+      user: { role },
+      query: cleanQuery,
+      allDocuments: this.documents
+    });
+
     return {
       outcome: 'approved_match',
       query: cleanQuery,
       redactions: redacted.applied,
       topMatch: top,
       matches: normalizedMatches,
-      message: `Found approved clinical document: ${top.document.title} (v${top.document.version})`
+      message: `Found approved clinical document: ${top.document.title} (v${top.document.version})`,
+      // Three Decisions Architecture (Workstream 1)
+      document_validity: policyRes.document_validity,
+      patient_applicability: policyRes.patient_applicability,
+      delivery_authorization: policyRes.delivery_authorization,
+      policy_outcome: policyRes.outcome,
+      policy_version: policyRes.policy_version,
+      policy_decision: policyRes
     };
   }
+
 
   tokenize(text) {
     return (text || '').toLowerCase()

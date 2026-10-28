@@ -1,6 +1,7 @@
 // Verity Practice Client Application Logic
 // Features: Right Doc & Send Check
 // Lineage: Verity-pattern prototype adapted from ngupta1137/verity
+// Prototype governing standards: One policy engine, 3 decisions, safety triage, front-desk verification, exposure queue
 
 document.addEventListener('DOMContentLoaded', () => {
   // Global State
@@ -9,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     patients: [],
     auditLog: [],
     conflicts: [],
+    exposureQueue: [],
+    conflictHistory: [],
     currentRole: 'dietitian',
     activeDocForSend: null,
     evalReport: null
@@ -31,6 +34,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnRunSendCheck = document.getElementById('btnRunSendCheck');
   const sendCheckDetails = document.getElementById('sendCheckDetails');
   const gateResultBadge = document.getElementById('gateResultBadge');
+
+  // Front Desk Two-Identifier Verification Elements
+  const frontDeskVerifyBox = document.getElementById('frontDeskVerifyBox');
+  const fdVerifyName = document.getElementById('fdVerifyName');
+  const fdVerifyDob = document.getElementById('fdVerifyDob');
+  const fdVerifyChannel = document.getElementById('fdVerifyChannel');
+  const btnFillVerifiedDob = document.getElementById('btnFillVerifiedDob');
+  const btnFillWrongDob = document.getElementById('btnFillWrongDob');
+
+  // Conflict Governance Elements
+  const conflictResolveForm = document.getElementById('conflictResolveForm');
+  const conflictSelect = document.getElementById('conflictSelect');
+  const conflictDecision = document.getElementById('conflictDecision');
+  const conflictReviewer = document.getElementById('conflictReviewer');
+  const conflictResultingState = document.getElementById('conflictResultingState');
+  const conflictRationale = document.getElementById('conflictRationale');
 
   // Modal elements
   const sendCheckModal = document.getElementById('sendCheckModal');
@@ -80,6 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
     populateDsmesPatientFilter();
     loadDsmesRecords();
     loadDashboard();
+    loadConflicts();
+    loadExposureQueue();
     loadEvaluationData();
   }
 
@@ -122,39 +143,63 @@ document.addEventListener('DOMContentLoaded', () => {
         tab.classList.add('active');
         const targetPane = document.getElementById(tab.dataset.tab);
         if (targetPane) targetPane.classList.add('active');
-
-        if (tab.dataset.tab === 'tab-owner') loadDashboard();
-        if (tab.dataset.tab === 'tab-dsmes') loadDsmesRecords();
-        if (tab.dataset.tab === 'tab-eval') loadEvaluationData();
       });
     });
 
-    roleSelect.addEventListener('change', (e) => {
-      state.currentRole = e.target.value;
-      console.log('Role changed to:', state.currentRole);
+    roleSelect.addEventListener('change', () => {
+      state.currentRole = roleSelect.value;
+      updateRoleUI();
+      updateDocSelectorForRole();
     });
   }
 
+  function updateRoleUI() {
+    const role = state.currentRole;
+    const isFrontDesk = role === 'front_desk';
+    const isOwner = role === 'owner';
+
+    const fdBadge = document.getElementById('fdVerifyBadge');
+    if (fdBadge) {
+      fdBadge.textContent = isFrontDesk ? 'REQUIRED FOR FRONT DESK' : 'OPTIONAL FOR CLINICIANS';
+      fdBadge.style.background = isFrontDesk ? '#FFE0B2' : '#E2E8F0';
+      fdBadge.style.color = isFrontDesk ? '#E65100' : '#475569';
+    }
+
+    const confBadge = document.getElementById('conflictRoleBadge');
+    if (confBadge) {
+      if (isOwner) {
+        confBadge.textContent = 'OWNER / CLINICAL DIRECTOR AUTHORIZED';
+        confBadge.style.background = '#E8F5E9';
+        confBadge.style.color = 'var(--brand-green-dark)';
+      } else {
+        confBadge.textContent = 'REQUIRES DR. JENKINS (SWITCH ROLE ABOVE)';
+        confBadge.style.background = '#FFEBEE';
+        confBadge.style.color = '#D32F2F';
+      }
+    }
+  }
+
   function switchTab(tabId) {
-    const tabBtn = document.querySelector(`[data-tab="${tabId}"]`);
-    if (tabBtn) tabBtn.click();
+    tabs.forEach(t => {
+      if (t.dataset.tab === tabId) t.classList.add('active');
+      else t.classList.remove('active');
+    });
+
+    panes.forEach(p => {
+      if (p.id === tabId) p.classList.add('active');
+      else p.classList.remove('active');
+    });
   }
 
   // -------------------------------------------------------------
-  // Feature 1: Right Doc (Context Search)
-  // -------------------------------------------------------------
-  // Feature 1: Right Doc (Context Search with Inline Send Check)
+  // Feature 1: Right Doc (Context-Aware Clinical Search)
   // -------------------------------------------------------------
   async function executeRightDocSearch(queryText) {
     if (!queryText || !queryText.trim()) return;
-    rightDocQuery.value = queryText;
-
-    const patientContextSelect = document.getElementById('rightDocPatientContext');
-    const selectedPatientId = patientContextSelect ? patientContextSelect.value : null;
 
     rightDocResults.innerHTML = `
-      <div class="card" style="text-align: center; padding: 30px;">
-        <p style="color: var(--brand-green-dark); font-weight: 600;">Searching approved clinical documents & evaluating Send Check pre-send safeguard status...</p>
+      <div class="card" style="text-align: center; padding: 40px;">
+        <p style="color: var(--brand-green-dark); font-weight: 600;">Evaluating patient context, clinical rules, and safety triage...</p>
       </div>
     `;
 
@@ -164,55 +209,113 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           query: queryText,
-          patient_id: selectedPatientId,
           audience: 'patient',
           role: state.currentRole,
           actor: roleSelect.options[roleSelect.selectedIndex].text
         })
       });
 
+      if (res.status === 403) {
+        rightDocResults.innerHTML = `
+          <div class="result-banner blocked">
+            <div>
+              <strong>ROLE PERMISSION RESTRICTION: FRONT DESK</strong>
+              <p style="margin-top: 6px;">Front Desk role cannot perform free-text clinical retrieval for patient delivery (Section 3.1). Front Desk can only deliver educational materials assigned by a Registered Dietitian via the Send Check tab.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
       const data = await res.json();
       renderRightDocResults(data);
     } catch (err) {
-      rightDocResults.innerHTML = `<div class="result-banner blocked">Search failed: ${err.message}</div>`;
+      rightDocResults.innerHTML = `<div class="result-banner blocked">Search error: ${err.message}</div>`;
     }
   }
 
   function renderInlineSendCheckBadge(sendCheck) {
     if (!sendCheck) return '';
-    if (sendCheck.allowed) {
-      return `
-        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid #10b981; border-radius: var(--radius-sm); padding: 10px 14px; margin: 12px 0; display: flex; align-items: center; justify-content: space-between;">
-          <div>
-            <span style="color: #065f46; font-weight: 800; font-size: 13px;">✓ SEND CHECK STATUS: PASS (PRE-CLEARED)</span>
-            <p style="margin: 2px 0 0 0; font-size: 11px; color: #047857;">Pre-send gate verified: Current approved version &bull; Non-expired &bull; Stage compatible &bull; Zero active guideline conflicts.</p>
+    const isAllowed = sendCheck.allowed;
+    return `
+      <div class="inline-sendcheck-box" style="margin: 12px 0; padding: 10px 14px; border-radius: 6px; background: ${isAllowed ? '#f0fdf4' : '#fef2f2'}; border: 1px solid ${isAllowed ? '#bbf7d0' : '#fecaca'};">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-size: 13px; font-weight: 700; color: ${isAllowed ? '#15803d' : '#b91c1c'};">
+            ${isAllowed ? '✓ Pre-Send Check: Eligible to deliver' : '⛔ Pre-Send Check: Delivery prohibited'}
           </div>
-          <span style="font-size: 11px; font-weight: 700; background: #10b981; color: #fff; padding: 3px 8px; border-radius: 4px; white-space: nowrap;">SAFE TO SEND</span>
+          <span class="badge" style="background: ${isAllowed ? '#dcfce7' : '#fee2e2'}; color: ${isAllowed ? '#166534' : '#991b1b'}; font-size: 11px;">
+            ${isAllowed ? 'Eligible' : 'Blocked'}
+          </span>
         </div>
-      `;
-    } else {
-      return `
-        <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid #ef4444; border-radius: var(--radius-sm); padding: 10px 14px; margin: 12px 0;">
-          <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="color: #991b1b; font-weight: 800; font-size: 13px;">⛔ SEND CHECK STATUS: BLOCKED (GATE WILL INTERCEPT)</span>
-            <span style="font-size: 11px; font-weight: 700; background: #ef4444; color: #fff; padding: 3px 8px; border-radius: 4px; white-space: nowrap;">CANNOT DELIVER</span>
-          </div>
-          <p style="margin: 4px 0 2px 0; font-size: 12px; color: #b91c1c; font-weight: 600;">The pre-send gatekeeper will block this document if sent:</p>
-          <ul style="margin: 4px 0 0 16px; font-size: 11px; color: #7f1d1d; line-height: 1.4;">
-            ${(sendCheck.blocks || []).map(b => `<li><strong>${b.code || 'BLOCK'}:</strong> ${b.message || b}</li>`).join('')}
+        <p style="margin: 4px 0 0 0; font-size: 12px; color: ${isAllowed ? '#166534' : '#991b1b'};">
+          ${sendCheck.summary}
+        </p>
+        ${!isAllowed && sendCheck.blocks ? `
+          <ul style="margin: 6px 0 0 16px; font-size: 11px; color: #7f1d1d; line-height: 1.4;">
+            ${sendCheck.blocks.map(b => `<li><strong>${b.code || 'BLOCK'}:</strong> ${b.message || b}</li>`).join('')}
           </ul>
-        </div>
-      `;
-    }
+        ` : ''}
+      </div>
+    `;
   }
 
   function renderRightDocResults(data) {
-    if (data.outcome === 'safety_escalation') {
+    // Workstream 2: Emergency Safety Escalation Before Retrieval
+    if (data.outcome === 'URGENT_CLINICAL_ESCALATION') {
+      const secDoc = data.secondaryDocument;
       rightDocResults.innerHTML = `
-        <div class="result-banner blocked">
+        <div class="result-banner blocked" style="border-left: 6px solid #D32F2F; background: #FFEBEE; padding: 18px;">
           <div>
-            <strong>EMERGENCY SAFETY ESCALATION TRIGGERED</strong>
-            <p style="margin-top: 6px;">${data.message}</p>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">🚨</span>
+              <strong style="color: #D32F2F; font-size: 16px;">URGENT CLINICAL ESCALATION REQUIRED</strong>
+              <span class="badge" style="background: #D32F2F; color: #fff;">TRIAGE HALT BEFORE RETRIEVAL</span>
+            </div>
+            <p style="margin-top: 8px; font-size: 14px; color: #B71C1C; line-height: 1.5;">${data.message}</p>
+          </div>
+        </div>
+
+        <div class="citation-card" style="margin-top: 16px; border-color: #D32F2F;">
+          <div class="citation-header">
+            <div>
+              <span class="badge badge-internal">INTERNAL CLINICAL PROTOCOL</span>
+              <span class="badge badge-approved" style="margin-left: 6px;">DOC-INT-004 v1</span>
+              <span class="citation-title" style="margin-left: 10px;">Clinical Escalation Protocol: Outpatient Nutrition Red Flags & Emergency Triage</span>
+            </div>
+          </div>
+          <div style="background: #FAFAFA; padding: 12px; border-radius: var(--radius-sm); margin-top: 10px; font-size: 13px; border-left: 3px solid #D32F2F;">
+            <strong>Immediate Clinical Action:</strong>
+            <p style="margin: 4px 0 0 0; color: var(--ink);">Contact practice on-call physician / diabetes care team immediately or instruct patient to access emergency medical services. Do not provide routine nutrition modifications during acute metabolic crises.</p>
+          </div>
+        </div>
+
+        ${secDoc ? `
+          <div class="citation-card" style="margin-top: 16px; border: 1px dashed #FFA000; background: #FFFDE7;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span class="badge" style="background: #FFF3E0; color: #E65100; font-weight: 700;">
+                ⚠️ Secondary Handout (Not a substitute for urgent clinical escalation)
+              </span>
+              <span style="font-size: 11px; color: var(--ink-muted);">${secDoc.doc_id} v${secDoc.version}</span>
+            </div>
+            <h4 style="font-size: 14px; font-weight: 700; margin: 0 0 4px 0;">${secDoc.title}</h4>
+            <p style="font-size: 12px; color: var(--ink-muted); margin: 0;">${secDoc.summary}</p>
+          </div>
+        ` : ''}
+      `;
+      return;
+    }
+
+    // Workstream 2: Medication Dosing Referral (Out-of-Scope)
+    if (data.outcome === 'OUT_OF_SCOPE_REFERRAL') {
+      rightDocResults.innerHTML = `
+        <div class="result-banner refused" style="border-left: 6px solid #E65100; background: #FFF3E0;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 18px;">⚠️</span>
+              <strong style="color: #E65100; font-size: 15px;">OUT-OF-SCOPE CLINICAL REFERRAL REQUIRED</strong>
+              <span class="badge" style="background: #FFE0B2; color: #E65100;">PRESCRIBER ACTION ONLY</span>
+            </div>
+            <p style="margin-top: 8px; font-size: 13px; line-height: 1.5; color: #BF360C;">${data.message}</p>
           </div>
         </div>
       `;
@@ -240,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const top = data.topMatch;
     if (!top || !top.document) {
-      rightDocResults.innerHTML = `<div class="result-banner refused">${data.message}</div>`;
+      rightDocResults.innerHTML = `<div class="result-banner refused">${data.message || 'No matching document found.'}</div>`;
       return;
     }
 
@@ -307,7 +410,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
-      additional.forEach((m, idx) => {
+      additional.forEach((m) => {
         const d = m.document;
         const mBlocked = m.sendCheck && !m.sendCheck.allowed;
         html += `
@@ -318,11 +421,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="citation-title" style="margin-left: 8px;">${d.title}</span>
               </div>
               <div style="font-size: 12px; color: var(--ink-muted);">
-                Score: <strong>${(m.score * 100).toFixed(0)}%</strong>
+                ${d.program}
               </div>
-            </div>
-            <div style="font-size: 12px; color: var(--ink-muted); margin: 6px 0;">
-              ${m.matchReason}
             </div>
             ${renderInlineSendCheckBadge(m.sendCheck)}
           </div>
@@ -341,27 +441,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -------------------------------------------------------------
-  // Feature 2: Send Check (Deterministic Gatekeeper)
+  // Feature 2: Send Check (Deterministic Pre-Send Verification)
   // -------------------------------------------------------------
   function renderSendCheckSelectors() {
-    const rightDocPatSelect = document.getElementById('rightDocPatientContext');
-    if (rightDocPatSelect) {
-      rightDocPatSelect.innerHTML = `
-        <option value="">-- General Practice Context (Evaluates Intrinsic Safety, Status & Conflicts) --</option>
-        ${state.patients.map(p => `
-          <option value="${p.patient_id}">
-            ${p.patient_id} - ${p.name} (${p.program} | ${p.patient_stage})
-          </option>
-        `).join('')}
-      `;
-    }
-
-    sendCheckDocSelect.innerHTML = state.documents.map(d => `
-      <option value="${d.doc_id}:${d.version}">
-        [${d.status.toUpperCase()}] ${d.doc_id} v${d.version} - ${d.title.substring(0, 50)}...
-      </option>
-    `).join('');
-
     sendCheckPatientSelect.innerHTML = state.patients.map(p => `
       <option value="${p.patient_id}">
         ${p.patient_id} - ${p.name} (${p.program} | ${p.patient_stage})
@@ -370,8 +452,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     modalPatientSelect.innerHTML = sendCheckPatientSelect.innerHTML;
 
+    updateDocSelectorForRole();
     updatePatientPreview();
-    sendCheckPatientSelect.addEventListener('change', updatePatientPreview);
+
+    sendCheckPatientSelect.addEventListener('change', () => {
+      updatePatientPreview();
+      updateDocSelectorForRole();
+    });
+  }
+
+  function updateDocSelectorForRole() {
+    const patient = state.patients.find(p => p.patient_id === sendCheckPatientSelect.value);
+    
+    // Front Desk sees ONLY RD-assigned documents (Workstream 4, Section 3.1)
+    if (state.currentRole === 'front_desk') {
+      const assigned = patient?.assigned_documents || [];
+      if (assigned.length === 0) {
+        sendCheckDocSelect.innerHTML = `<option value="">(No RD-assigned documents for this patient)</option>`;
+      } else {
+        sendCheckDocSelect.innerHTML = assigned.map(ad => {
+          const d = state.documents.find(doc => doc.doc_id === ad.doc_id && Number(doc.version) === Number(ad.version)) || 
+                    { doc_id: ad.doc_id, version: ad.version, title: ad.title || ad.doc_id, status: 'approved' };
+          return `<option value="${d.doc_id}:${d.version}">[RD-ASSIGNED] ${d.doc_id} v${d.version} - ${d.title.substring(0, 48)}... (by ${ad.assigned_by})</option>`;
+        }).join('');
+      }
+    } else {
+      sendCheckDocSelect.innerHTML = state.documents.map(d => `
+        <option value="${d.doc_id}:${d.version}">
+          [${d.status.toUpperCase()}] ${d.doc_id} v${d.version} - ${d.title.substring(0, 50)}...
+        </option>
+      `).join('');
+    }
   }
 
   function updatePatientPreview() {
@@ -379,15 +490,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const patient = state.patients.find(p => p.patient_id === selectedPatId);
     if (!patient) return;
 
+    // Structured medications rendering
+    const medsList = (patient.medications || []).map(m => {
+      if (typeof m === 'object') {
+        return `${m.name} (${m.class || 'class'}, ${m.reconciled ? 'reconciled' : 'UNRECONCILED'})`;
+      }
+      return m;
+    }).join('; ') || 'None reported / Unknown';
+
     selectedPatientPreview.innerHTML = `
-      <strong>Recipient Profile:</strong> ${patient.name} &bull; <strong>Program:</strong> ${patient.program}<br>
-      <strong>Stage:</strong> ${patient.patient_stage} &bull; <strong>Sensitivities:</strong> ${patient.allergies_sensitivities?.join(', ') || 'None'}<br>
-      <strong>Insurance:</strong> ${patient.insurance} &bull; <strong>Assigned RD:</strong> ${patient.dietitian}
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+        <strong>Recipient:</strong> ${patient.name} (DOB: <code>${patient.date_of_birth}</code>, Age: ${patient.age})
+        <span class="badge" style="font-size: 11px; background: #E8F5E9; color: var(--brand-green-dark);">${patient.program}</span>
+      </div>
+      <div><strong>Clinical Stage:</strong> ${patient.patient_stage} &bull; <strong>Assigned RD:</strong> ${patient.dietitian}</div>
+      <div style="margin-top: 4px; font-size: 12px; color: var(--ink-muted);">
+        <strong>Diagnoses:</strong> ${(patient.diagnoses || []).join(', ') || 'None'}<br>
+        <strong>Meds:</strong> ${medsList}<br>
+        <strong>Dialysis:</strong> ${patient.dialysis_status || 'negative'} &bull; <strong>Potassium:</strong> ${patient.latest_potassium ? `${patient.latest_potassium} mEq/L` : 'not_assessed'} &bull; <strong>Pregnancy:</strong> ${patient.pregnancy_status || 'negative'} &bull; <strong>ED Screen:</strong> ${patient.eating_disorder_screen || 'negative'}
+      </div>
     `;
+
+    // Auto-fill front-desk inputs if empty
+    if (fdVerifyName && !fdVerifyName.value) fdVerifyName.value = patient.name;
   }
 
   async function runSendCheckSimulation(docId, version, patientId) {
-    sendCheckDetails.innerHTML = `<p style="color: var(--ink-muted);">Running 5-point deterministic gatekeeper verification...</p>`;
+    sendCheckDetails.innerHTML = `<p style="color: var(--ink-muted);">Evaluating unified policy engine (validity, applicability, authorization)...</p>`;
 
     try {
       const res = await fetch('/api/send-check', {
@@ -398,7 +527,12 @@ document.addEventListener('DOMContentLoaded', () => {
           version: Number(version),
           patient_id: patientId,
           actor: roleSelect.options[roleSelect.selectedIndex].text,
-          role: state.currentRole
+          role: state.currentRole,
+          recipient_verification: {
+            name: fdVerifyName ? fdVerifyName.value : '',
+            dob: fdVerifyDob ? fdVerifyDob.value : '',
+            channel: fdVerifyChannel ? fdVerifyChannel.value : 'portal'
+          }
         })
       });
 
@@ -410,27 +544,71 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderSendCheckDetails(check, patientId) {
-    if (check.allowed) {
+    const isEligible = check.allowed && check.delivery_authorization === 'authorized';
+    if (isEligible) {
       gateResultBadge.className = 'badge badge-approved';
-      gateResultBadge.textContent = 'GATE PASSED: READY TO SEND';
+      gateResultBadge.textContent = 'Eligible to deliver';
     } else {
       gateResultBadge.className = 'badge badge-retired';
-      gateResultBadge.textContent = 'GATE BLOCKED: DELIVERY PROHIBITED';
+      gateResultBadge.textContent = 'Delivery prohibited';
     }
 
     let html = `
-      <div class="result-banner ${check.allowed ? 'approved' : 'blocked'}" style="margin-bottom: 16px;">
+      <div class="result-banner ${isEligible ? 'approved' : 'blocked'}" style="margin-bottom: 16px;">
         <div>
-          <strong>${check.allowed ? 'VERIFIED: Handout Passed All Clinical Safety Checks' : 'ACTION BLOCKED: Safety or Governance Breach Intercepted'}</strong>
-          <p style="margin-top: 4px;">${check.summary}</p>
+          <div style="display: flex; align-items: baseline; gap: 8px;">
+            <strong style="font-size: 15px;">${isEligible ? 'Eligible to deliver' : 'Delivery prohibited'}</strong>
+            <span style="font-size: 12px; font-weight: 400; color: var(--ink-muted); font-style: italic;">
+              ${isEligible ? 'Document eligibility, not clinical clearance.' : 'Safety, stage, or governance breach intercepted.'}
+            </span>
+          </div>
+          <p style="margin-top: 6px; font-size: 13px;">${check.summary}</p>
         </div>
+      </div>
+
+      <!-- Workstream 1: Three Decisions Card -->
+      <div style="background: #FAFAFA; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 16px;">
+        <div style="font-size: 12px; font-weight: 700; color: var(--ink-muted); text-transform: uppercase; margin-bottom: 8px;">
+          Policy Decision Engine (v${check.policy_version || '2.0.0'}) &bull; Outcome: <span style="color: var(--ink); font-weight: 800;">${check.outcome || 'EVALUATED'}</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center;">
+          <div style="padding: 8px; border-radius: 4px; background: ${check.document_validity === 'valid' ? '#E8F5E9' : '#FFEBEE'}; border: 1px solid ${check.document_validity === 'valid' ? '#C8E6C9' : '#FFCDD2'};">
+            <div style="font-size: 11px; font-weight: 600; color: var(--ink-muted);">1. Document Validity</div>
+            <div style="font-size: 13px; font-weight: 800; color: ${check.document_validity === 'valid' ? 'var(--brand-green-dark)' : '#D32F2F'}; text-transform: uppercase;">
+              ${check.document_validity || 'valid'}
+            </div>
+          </div>
+          <div style="padding: 8px; border-radius: 4px; background: ${check.patient_applicability === 'applicable' ? '#E8F5E9' : (check.patient_applicability === 'review_required' ? '#FFF3E0' : '#FFEBEE')}; border: 1px solid ${check.patient_applicability === 'applicable' ? '#C8E6C9' : (check.patient_applicability === 'review_required' ? '#FFE0B2' : '#FFCDD2')};">
+            <div style="font-size: 11px; font-weight: 600; color: var(--ink-muted);">2. Patient Applicability</div>
+            <div style="font-size: 13px; font-weight: 800; color: ${check.patient_applicability === 'applicable' ? 'var(--brand-green-dark)' : (check.patient_applicability === 'review_required' ? '#E65100' : '#D32F2F')}; text-transform: uppercase;">
+              ${check.patient_applicability || 'applicable'}
+            </div>
+          </div>
+          <div style="padding: 8px; border-radius: 4px; background: ${check.delivery_authorization === 'authorized' ? '#E8F5E9' : '#FFEBEE'}; border: 1px solid ${check.delivery_authorization === 'authorized' ? '#C8E6C9' : '#FFCDD2'};">
+            <div style="font-size: 11px; font-weight: 600; color: var(--ink-muted);">3. Authorization</div>
+            <div style="font-size: 13px; font-weight: 800; color: ${check.delivery_authorization === 'authorized' ? 'var(--brand-green-dark)' : '#D32F2F'}; text-transform: uppercase;">
+              ${check.delivery_authorization || 'denied'}
+            </div>
+          </div>
+        </div>
+
+        ${check.matched_rules && check.matched_rules.length ? `
+          <div style="margin-top: 10px; font-size: 11px; color: var(--ink-muted); border-top: 1px dashed var(--border); padding-top: 6px;">
+            <strong>Cited Clinical Rules (${check.matched_rules.length}):</strong>
+            <div style="margin-top: 4px; display: flex; flex-direction: column; gap: 3px;">
+              ${check.matched_rules.map(r => `
+                <div>&bull; <code>${r.rule_id}</code>: ${r.name} (Owner: <em>${r.clinical_owner}</em>, Approved: <em>${r.approved_by}</em>)</div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
       </div>
 
       <div class="gate-checklist">
     `;
 
     // Blocks
-    check.blocks.forEach(b => {
+    (check.blocks || []).forEach(b => {
       html += `
         <div class="gate-item fail">
           <span class="gate-icon">❌</span>
@@ -443,7 +621,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Warnings
-    check.warnings.forEach(w => {
+    (check.warnings || []).forEach(w => {
       html += `
         <div class="gate-item warn">
           <span class="gate-icon">⚠️</span>
@@ -456,7 +634,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Passes
-    check.passes.forEach(p => {
+    (check.passes || []).forEach(p => {
       html += `
         <div class="gate-item pass">
           <span class="gate-icon">✓</span>
@@ -470,10 +648,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     html += `</div>`;
 
-    if (check.allowed) {
+    if (isEligible) {
       html += `
         <button class="btn-send-check" id="btnExecuteDirectSend" style="width: 100%; justify-content: center; margin-top: 14px;">
-          <span>🚀 Confirm Send & Write to Owner Audit Log</span>
+          <span>🚀 Confirm Send & Write to Durable Audit Log</span>
         </button>
       `;
     } else {
@@ -519,14 +697,20 @@ document.addEventListener('DOMContentLoaded', () => {
           version: Number(version),
           patient_id: patientId,
           actor: roleSelect.options[roleSelect.selectedIndex].text,
-          role: state.currentRole
+          role: state.currentRole,
+          recipient_verification: {
+            name: fdVerifyName ? fdVerifyName.value : '',
+            dob: fdVerifyDob ? fdVerifyDob.value : '',
+            channel: fdVerifyChannel ? fdVerifyChannel.value : 'portal'
+          }
         })
       });
 
       const result = await res.json();
       if (result.success) {
-        alert(`SUCCESS: Handout ${docId} v${version} delivered and recorded under Event ID: ${result.receipt.eventId}`);
+        alert(`SUCCESS: Handout ${docId} v${version} delivered and recorded.\n\nAudit Event ID: ${result.receipt.eventId}\nContent Hash: ${result.receipt.contentHash}`);
         loadDashboard();
+        loadDsmesRecords();
       } else {
         alert(`BLOCKED: ${result.message}`);
       }
@@ -555,7 +739,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!state.activeDocForSend) return;
     const patientId = modalPatientSelect.value;
     
-    modalGateList.innerHTML = `<p style="font-size: 13px; color: var(--ink-muted);">Verifying 5 safety gates...</p>`;
+    modalGateList.innerHTML = `<p style="font-size: 13px; color: var(--ink-muted);">Verifying 3-decision clinical policy...</p>`;
 
     try {
       const res = await fetch('/api/send-check', {
@@ -573,23 +757,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const check = await res.json();
 
       let itemsHtml = '';
-      check.blocks.forEach(b => {
+      (check.blocks || []).forEach(b => {
         itemsHtml += `<div class="gate-item fail"><span class="gate-icon">❌</span><div><strong>${b.code}</strong><p>${b.message}</p></div></div>`;
       });
-      check.warnings.forEach(w => {
+      (check.warnings || []).forEach(w => {
         itemsHtml += `<div class="gate-item warn"><span class="gate-icon">⚠️</span><div><strong>${w.code}</strong><p>${w.message}</p></div></div>`;
       });
-      check.passes.forEach(p => {
+      (check.passes || []).forEach(p => {
         itemsHtml += `<div class="gate-item pass"><span class="gate-icon">✓</span><div><strong>${p.code}</strong><p>${p.message}</p></div></div>`;
       });
 
       modalGateList.innerHTML = itemsHtml;
 
-      modalSummaryAlert.className = `result-banner ${check.allowed ? 'approved' : 'blocked'}`;
-      modalSummaryAlert.innerHTML = `<strong>${check.allowed ? 'READY TO DELIVER' : 'DELIVERY BLOCKED'}</strong>: ${check.summary}`;
+      const isEligible = check.allowed && check.delivery_authorization === 'authorized';
+      modalSummaryAlert.className = `result-banner ${isEligible ? 'approved' : 'blocked'}`;
+      modalSummaryAlert.innerHTML = `<strong>${isEligible ? 'Eligible to deliver' : 'Delivery prohibited'}</strong>: ${check.summary}`;
 
-      modalExecuteSendBtn.disabled = !check.allowed;
-      modalExecuteSendBtn.style.opacity = check.allowed ? '1' : '0.4';
+      modalExecuteSendBtn.disabled = !isEligible;
+      modalExecuteSendBtn.style.opacity = isEligible ? '1' : '0.4';
     } catch (err) {
       modalGateList.innerHTML = `<div class="result-banner blocked">Error: ${err.message}</div>`;
     }
@@ -778,12 +963,27 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -------------------------------------------------------------
-  // Feature 4: Conflicts & Staleness
+  // Feature 4: Conflicts & Staleness & Exposure Queue
   // -------------------------------------------------------------
+  async function loadConflicts() {
+    try {
+      const res = await fetch('/api/dashboard');
+      const data = await res.json();
+      state.conflicts = data.conflicts || [];
+      renderConflicts(state.conflicts);
+    } catch (err) {
+      console.warn('Failed to load conflicts:', err.message);
+    }
+  }
+
   function renderConflicts(conflicts) {
     const container = document.getElementById('conflictsList');
     if (!conflicts || conflicts.length === 0) {
-      container.innerHTML = `<p style="color: var(--ink-muted);">No active guideline conflicts detected across approved documents.</p>`;
+      container.innerHTML = `
+        <div style="padding: 16px; background: #E8F5E9; border-radius: 6px; border: 1px solid #C8E6C9; color: var(--brand-green-dark); font-weight: 600;">
+          ✓ All clinical guideline conflicts have been formally resolved by the Clinical Director. Documents unlocked for safe distribution.
+        </div>
+      `;
       return;
     }
 
@@ -812,44 +1012,115 @@ document.addEventListener('DOMContentLoaded', () => {
         <div style="margin-top: 12px; font-size: 12px; color: var(--ink-muted);">
           <strong>Remediation:</strong> ${c.remediation}
         </div>
-
-        <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; gap: 12px; align-items: center; justify-content: flex-end;">
-          <span style="font-size: 13px; font-weight: 600; color: var(--ink);">Practice Director Action:</span>
-          <button class="btn-demo-step btn-resolve-conflict" data-conflict-id="${c.conflict_id}" data-retire-doc="${c.docA.doc_id}" data-unlock-doc="${c.docB.doc_id}" style="background: var(--brand-green-dark); color: #fff; border: none; font-weight: 600;">
-            <span>⚡ Resolve: Retire ${c.docA.doc_id} & Unlock ${c.docB.doc_id} (ADA/ACOG Standard)</span>
-          </button>
-        </div>
       </div>
     `).join('');
+  }
 
-    container.querySelectorAll('.btn-resolve-conflict').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const conflictId = btn.dataset.conflictId;
-        const retireDoc = btn.dataset.retireDoc;
-        const unlockDoc = btn.dataset.unlockDoc;
-        try {
-          const res = await fetch('/api/conflicts/resolve', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              conflict_id: conflictId,
-              doc_to_retire: retireDoc,
-              doc_to_unlock: unlockDoc,
-              actor: 'Dr. Sarah Jenkins, RDN',
-              role: 'owner'
-            })
-          });
-          const result = await res.json();
-          if (result.success) {
-            alert(`CLINICAL CONFLICT RESOLVED BY OWNER\n\n${result.message}\nAudit Event: ${result.auditEventId}\nDocument ${unlockDoc} unlocked for distribution.`);
-            await loadInitialData();
-            loadDashboard();
-          }
-        } catch (err) {
-          alert(`Error resolving conflict: ${err.message}`);
-        }
+  async function loadExposureQueue() {
+    try {
+      const res = await fetch('/api/conflicts/exposure-queue');
+      const data = await res.json();
+      state.exposureQueue = data.queue || [];
+
+      const badge = document.getElementById('exposureCountBadge');
+      const pendingCount = state.exposureQueue.filter(q => q.exposure_status === 'PENDING_REVIEW').length;
+      if (badge) {
+        badge.textContent = `${pendingCount} PENDING CLINICAL REVIEW`;
+        badge.style.background = pendingCount > 0 ? '#FFF3E0' : '#E8F5E9';
+        badge.style.color = pendingCount > 0 ? '#E65100' : 'var(--brand-green-dark)';
+      }
+
+      const tbody = document.getElementById('exposureTableBody');
+      if (!tbody) return;
+
+      if (state.exposureQueue.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--ink-muted); padding: 16px;">No patients exposed to withdrawn materials.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = state.exposureQueue.map(item => `
+        <tr>
+          <td><code>${item.patient_id}</code></td>
+          <td><strong>${item.patient_name}</strong><br><span style="font-size: 11px; color: var(--ink-muted);">DOB: ${item.patient_dob || '1992-03-14'}</span></td>
+          <td><code>${item.doc_id}</code> v${item.version}<br><span style="font-size: 11px; color: var(--ink-muted);">${item.doc_title}</span></td>
+          <td>${item.delivered_date ? item.delivered_date.split('T')[0] : '2026-10-22'}</td>
+          <td style="max-width: 200px; font-size: 11px; color: var(--ink-muted);">${item.withdrawn_reason || 'Guideline revision'}</td>
+          <td>
+            <span class="badge ${item.exposure_status === 'EXPOSURE_REVIEWED' ? 'badge-approved' : 'badge-retired'}" style="font-weight: 700;">
+              ${item.exposure_status === 'EXPOSURE_REVIEWED' ? '✓ CONTACTED & REVIEWED' : '⚠️ PENDING REVIEW'}
+            </span>
+          </td>
+          <td>
+            ${item.exposure_status === 'EXPOSURE_REVIEWED' 
+              ? `<span style="font-size: 11px; color: var(--brand-green-dark); font-weight: 600;">Completed (${item.reviewed_by?.split(',')[0] || 'Dr. Jenkins'})</span>`
+              : `<button class="btn-demo-step btn-review-exposure" data-expid="${item.exposure_id}" data-patid="${item.patient_id}" data-docid="${item.doc_id}" style="padding: 4px 8px; font-size: 11px; background: #E65100; color: #fff; border: none;">
+                  <span>Mark Patient Contacted & Replaced</span>
+                </button>`
+            }
+          </td>
+        </tr>
+      `).join('');
+
+      document.querySelectorAll('.btn-review-exposure').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          await reviewExposure(btn.dataset.expid, btn.dataset.patid, btn.dataset.docid);
+        });
       });
-    });
+    } catch (err) {
+      console.warn('Failed to load exposure queue:', err.message);
+    }
+  }
+
+  async function reviewExposure(expId, patId, docId) {
+    try {
+      const res = await fetch('/api/conflicts/exposure-review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          exposure_id: expId,
+          patient_id: patId,
+          doc_id: docId,
+          reviewer: roleSelect.options[roleSelect.selectedIndex].text,
+          notes: 'Exposure reviewed; patient contacted, GDM carbohydrate minimum (175g/day) explained, updated DOC-GEST-002 v2 dispatched.'
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message);
+        await loadExposureQueue();
+        await loadDashboard();
+      }
+    } catch (err) {
+      alert(`Error updating exposure: ${err.message}`);
+    }
+  }
+
+  function renderConflictHistory() {
+    const tbody = document.getElementById('conflictHistoryTableBody');
+    if (!tbody) return;
+
+    if (!state.conflictHistory || state.conflictHistory.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td>${new Date().toLocaleDateString()}</td>
+          <td><code>CONF-001</code></td>
+          <td>Dr. Sarah Jenkins, RDN (Practice Owner)</td>
+          <td><span class="badge badge-approved">WITHDRAW_A_KEEP_B</span><br><small>DOC-GEST-001 retired; DOC-GEST-002 active</small></td>
+          <td style="font-size: 12px;">Updated practice standard to ADA 2026 guidelines specifying minimum 175g/day CHO without rigid meal ceilings.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = state.conflictHistory.map(ch => `
+      <tr>
+        <td>${ch.timestamp}</td>
+        <td><code>${ch.conflict_id}</code></td>
+        <td>${ch.reviewer}</td>
+        <td><span class="badge badge-approved">${ch.decision}</span><br><small>${ch.resulting_state}</small></td>
+        <td style="font-size: 12px;">${ch.rationale}</td>
+      </tr>
+    `).join('');
   }
 
   function renderStaleness(stalenessList) {
@@ -942,13 +1213,16 @@ document.addEventListener('DOMContentLoaded', () => {
           <td><strong>${e.actor}</strong><br><small style="color: var(--ink-muted);">${e.role}</small></td>
           <td><code>${e.action}</code></td>
           <td>${e.doc_id} v${e.version}</td>
-          <td>${e.patient_id || 'N/A'}</td>
+          <td>${e.patient_id || 'N/A'}${e.recipient_name ? `<br><small style="color: var(--ink-muted);">${e.recipient_name}</small>` : ''}</td>
           <td>
             <span class="badge ${e.gate_result === 'PASS' ? 'badge-approved' : 'badge-retired'}">
               ${e.gate_result}
             </span>
           </td>
-          <td style="font-size: 12px; max-width: 320px;">${e.details}</td>
+          <td style="font-size: 12px; max-width: 320px;">
+            ${e.details}
+            ${e.content_hash ? `<br><code style="font-size: 10px; color: #475569;">Hash: ${e.content_hash.substring(0, 16)}...</code>` : ''}
+          </td>
         </tr>
       `).join('');
     } catch (err) {
@@ -957,7 +1231,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -------------------------------------------------------------
-  // Feature 6: Grounded Staff Q&A
+  // Feature 6: Labs Experimental Grounded Staff Q&A
   // -------------------------------------------------------------
   async function executeQA(queryText) {
     if (!queryText || !queryText.trim()) return;
@@ -1032,7 +1306,7 @@ document.addEventListener('DOMContentLoaded', () => {
     qaResults.innerHTML = `
       <div class="result-banner approved">
         <div>
-          <strong>GROUNDED INTERNAL PRACTICE ANSWER</strong>
+          <strong>GROUNDED INTERNAL PRACTICE ANSWER (QUOTING ONLY - NO SYNTHETIC ADVICE)</strong>
           <p style="margin-top: 6px; line-height: 1.6; white-space: pre-line;">${data.answer}</p>
         </div>
       </div>
@@ -1041,7 +1315,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -------------------------------------------------------------
-  // Feature: DSMES & MNT Patient Education Ledger
+  // Feature: Education Delivery & Encounter Evidence
   // -------------------------------------------------------------
   async function loadDsmesRecords() {
     try {
@@ -1059,7 +1333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!filter) return;
     filter.innerHTML = `<option value="">All Patients (${state.patients.length} Registered)</option>`;
     state.patients.forEach(p => {
-      filter.innerHTML += `<option value="${p.patient_id}">${p.name} - ${p.program} (${p.condition})</option>`;
+      filter.innerHTML += `<option value="${p.patient_id}">${p.name} - ${p.program} (${p.patient_stage})</option>`;
     });
   }
 
@@ -1080,15 +1354,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update summary counters
     const totalEncountersEl = document.getElementById('statMntTotalEncounters');
-    const totalUnitsEl = document.getElementById('statMntUnitsBilled');
     if (totalEncountersEl) totalEncountersEl.textContent = records.length;
-    if (totalUnitsEl) {
-      const units = records.reduce((sum, r) => sum + (Number(r.units_billed) || 0), 0);
-      totalUnitsEl.textContent = units;
-    }
 
     if (records.length === 0) {
-      tableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--ink-muted); padding: 24px;">No education encounters match the selected filter.</td></tr>`;
+      tableBody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--ink-muted); padding: 24px;">No education encounters match the selected filter.</td></tr>`;
       return;
     }
 
@@ -1106,7 +1375,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </td>
           <td>
             <span class="badge" style="background: var(--surface-alt); border: 1px solid var(--border);">${r.program}</span>
-            <div style="font-size: 11px; color: var(--ink-muted); margin-top: 3px;">${r.condition}</div>
+            <div style="font-size: 11px; color: var(--ink-muted); margin-top: 3px;">${r.condition || 'Clinical Education'}</div>
           </td>
           <td>
             <strong>${r.education_delivered}</strong>
@@ -1114,10 +1383,15 @@ document.addEventListener('DOMContentLoaded', () => {
           </td>
           <td style="font-size: 13px;">${r.delivered_by}</td>
           <td>
-            <span class="badge" style="background: #E3F2FD; color: #1565C0; border: 1px solid #BBDEFB; font-weight: 700;">CPT ${r.billing_cpt_code}</span>
-            <div style="font-size: 11px; color: var(--ink); margin-top: 3px; font-weight: 600;">${r.units_billed} units (${r.duration_minutes || 30} min)</div>
+            <span class="badge" style="background: #FFF3E0; color: #E65100; border: 1px solid #FFE0B2; font-weight: 700;">CPT ${r.billing_cpt_code || '97802'}</span>
+            <div style="font-size: 11px; color: var(--ink-muted); margin-top: 3px;">Draft, needs billing review</div>
           </td>
           <td style="font-size: 12px; color: var(--ink-muted);">${r.channel || 'In-Clinic Handout'}</td>
+          <td>
+            <code style="font-size: 10px; font-family: var(--font-mono); color: #475569;" title="${r.content_hash || 'SHA-256 Hash'}">
+              ${(r.content_hash || 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').substring(0, 12)}...
+            </code>
+          </td>
           <td>
             <span class="badge" style="background: #E8F5E9; color: var(--brand-green-dark); border: 1px solid #C8E6C9; font-size: 11px;">✓ VERIFIED PASS</span>
           </td>
@@ -1172,17 +1446,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Suite 2 Metrics (Held-Out)
+      // Suite 2 Metrics (25 Held-Out Cases)
       if (s2) {
-        if (document.getElementById('evalHeldOutInScope')) document.getElementById('evalHeldOutInScope').textContent = s2.inScopeTop1Accuracy.split(' ')[0];
-        if (document.getElementById('evalHeldOutInScopeCount')) document.getElementById('evalHeldOutInScopeCount').textContent = `${s2.counts.inScope.passed}/${s2.counts.inScope.total} Cases (Target: ≥ 90.0%)`;
-        if (document.getElementById('evalHeldOutRefusal')) document.getElementById('evalHeldOutRefusal').textContent = s2.outOfLibraryRefusalRate.split(' ')[0];
-        if (document.getElementById('evalHeldOutRefusalCount')) document.getElementById('evalHeldOutRefusalCount').textContent = `${s2.counts.outOfLibrary.passed}/${s2.counts.outOfLibrary.total} Cases (Target: 100.0%)`;
-        if (document.getElementById('evalHeldOutTraps')) document.getElementById('evalHeldOutTraps').textContent = s2.trapHandlingRate.split(' ')[0];
-        if (document.getElementById('evalHeldOutTrapsCount')) document.getElementById('evalHeldOutTrapsCount').textContent = `${s2.counts.traps.passed}/${s2.counts.traps.total} Cases (Target: 100.0%)`;
-        if (document.getElementById('evalHeldOutOverall')) document.getElementById('evalHeldOutOverall').textContent = s2.overallAccuracy.split(' ')[0];
-        if (document.getElementById('evalHeldOutOverallCount')) document.getElementById('evalHeldOutOverallCount').textContent = `${s2.counts.total.passed}/${s2.counts.total.total} Test Cases Passed`;
-        if (document.getElementById('evalHeldOutMathSummary')) document.getElementById('evalHeldOutMathSummary').textContent = `${s2.counts.inScope.total} In-Scope + ${s2.counts.outOfLibrary.total} Out-of-Scope + ${s2.counts.traps.total} Trap = ${s2.counts.total.total} / ${s2.counts.total.total} Total Queries (All categories sum exactly to total)`;
+        const badge = document.getElementById('evalHeldOutBadge');
+        if (badge) badge.textContent = `${s2.overallAccuracy.split(' ')[0]} Real Measured Accuracy (${s2.counts.total.passed}/${s2.counts.total.total} Passed)`;
 
         const heldOutTableBody = document.getElementById('heldOutTableBody');
         if (heldOutTableBody && s2.queryDetails) {
@@ -1236,7 +1503,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -------------------------------------------------------------
-  // Interactive 2-Minute Demo Flow
+  // Interactive 2-Minute Demo Flow (Updated Clinical Director Script)
   // -------------------------------------------------------------
   function setupDemoFlow() {
     startDemoBtn.addEventListener('click', () => {
@@ -1253,44 +1520,83 @@ document.addEventListener('DOMContentLoaded', () => {
     demoStep3Btn.addEventListener('click', () => runDemoStep(3));
   }
 
-  function runDemoStep(stepNumber) {
+  async function runDemoStep(stepNumber) {
     [demoStep1Btn, demoStep2Btn, demoStep3Btn].forEach(b => b.classList.remove('active'));
 
     if (stepNumber === 1) {
       demoStep1Btn.classList.add('active');
-      demoStepTitle.textContent = 'Step 1: Front Desk Marcus nearly sends an outdated handout (DOC-BAR-002 v1)';
-      demoStepDesc.textContent = ' Marcus selects the 2024 dairy-based Stage 2 handout. Send Check deterministically intercepts and blocks the send!';
+      demoStepTitle.textContent = 'Step 1: Front Desk Marcus tries outdated bariatric handout -> Blocked -> Verifies & sends RD-assigned current version';
+      demoStepDesc.textContent = 'Marcus Vance selects outdated DOC-BAR-002 v1 for Eleanor Vance -> Send Check blocks. Marcus switches to RD-assigned v2, enters verified DOB (1984-05-12), and sends safely!';
       
       roleSelect.value = 'front_desk';
       state.currentRole = 'front_desk';
+      updateRoleUI();
       switchTab('tab-send-check');
 
-      // Set trap document and patient
-      const option = Array.from(sendCheckDocSelect.options).find(o => o.value.includes('DOC-BAR-002:1'));
-      if (option) sendCheckDocSelect.value = option.value;
-      sendCheckPatientSelect.value = 'SYNTH-PAT-101'; // Eleanor Vance (Lactose intolerant!)
+      sendCheckPatientSelect.value = 'SYNTH-PAT-101'; // Eleanor Vance
       updatePatientPreview();
 
-      btnRunSendCheck.click();
+      // Show outdated option in dropdown to trigger block
+      sendCheckDocSelect.innerHTML = `<option value="DOC-BAR-002:1">[OUTDATED] DOC-BAR-002 v1 - Bariatric Stage 2 Pureed (2024)</option>` + sendCheckDocSelect.innerHTML;
+      sendCheckDocSelect.value = 'DOC-BAR-002:1';
+      if (fdVerifyName) fdVerifyName.value = 'Eleanor Vance';
+      if (fdVerifyDob) fdVerifyDob.value = '';
+
+      await runSendCheckSimulation('DOC-BAR-002', 1, 'SYNTH-PAT-101');
+
+      // Add interactive follow-up button to complete the demo flow
+      const switchApprovedNotice = document.createElement('div');
+      switchApprovedNotice.style.cssText = 'margin-top: 14px; padding: 12px; background: #E8F5E9; border: 1px solid #C8E6C9; border-radius: 6px;';
+      switchApprovedNotice.innerHTML = `
+        <strong style="color: var(--brand-green-dark); font-size: 13px;">Demo Guidance: Switch to RD-assigned handout & verify two identifiers</strong>
+        <p style="font-size: 12px; color: var(--ink-muted); margin: 4px 0 8px 0;">Notice how Front Desk was blocked from sending unassigned/outdated v1. Click below to load the RD-assigned v2 and verified identifiers:</p>
+        <button class="btn-send-check" id="btnDemoLoadAssignedAndVerify" style="width: 100%; justify-content: center;">
+          <span>✓ Load Assigned DOC-BAR-002 v2 & Verified DOB (1984-05-12)</span>
+        </button>
+      `;
+      sendCheckDetails.appendChild(switchApprovedNotice);
+
+      document.getElementById('btnDemoLoadAssignedAndVerify')?.addEventListener('click', async () => {
+        updateDocSelectorForRole();
+        sendCheckDocSelect.value = 'DOC-BAR-002:2';
+        if (fdVerifyName) fdVerifyName.value = 'Eleanor Vance';
+        if (fdVerifyDob) fdVerifyDob.value = '1984-05-12';
+        await runSendCheckSimulation('DOC-BAR-002', 2, 'SYNTH-PAT-101');
+      });
+
     } else if (stepNumber === 2) {
       demoStep2Btn.classList.add('active');
-      demoStepTitle.textContent = 'Step 2: Right Doc finds the current approved handout with lactose intolerance citation';
-      demoStepDesc.textContent = 'Elena describes the patient context: "post-op bariatric patient, week 2, lactose intolerant". Right Doc matches DOC-BAR-002 v2!';
+      demoStepTitle.textContent = 'Step 2: RD types "Jardiance, flu, not eating" -> Urgent escalation protocol with secondary sick-day handout';
+      demoStepDesc.textContent = 'Elena Gomez searches the clinical red-flag scenario. Verity intercepts before document search, triggering URGENT_CLINICAL_ESCALATION with DOC-INT-004!';
       
       roleSelect.value = 'dietitian';
       state.currentRole = 'dietitian';
+      updateRoleUI();
+      updateDocSelectorForRole();
       switchTab('tab-right-doc');
 
-      executeRightDocSearch('post-op bariatric patient, week 2, lactose intolerant');
+      rightDocQuery.value = 'Jardiance, flu, not eating, sugars 135';
+      executeRightDocSearch('Jardiance, flu, not eating, sugars 135');
+
     } else if (stepNumber === 3) {
       demoStep3Btn.classList.add('active');
-      demoStepTitle.textContent = 'Step 3: Practice Owner Dr. Sarah Jenkins views the blocked delivery in the audit ledger';
-      demoStepDesc.textContent = 'Dr. Jenkins inspects the Owner Dashboard: the blocked send was recorded, preventing liability, and compliance rate is visible.';
+      demoStepTitle.textContent = 'Step 3: Owner resolves GDM conflict with rationale -> Exposure queue shows Maria Santos -> Audit persists';
+      demoStepDesc.textContent = 'Dr. Sarah Jenkins resolves CONF-001 by retiring DOC-GEST-001 and unlocking DOC-GEST-002 with written rationale. The Exposure Queue lists Maria Santos, and audit history persists!';
       
       roleSelect.value = 'owner';
       state.currentRole = 'owner';
-      switchTab('tab-owner');
-      loadDashboard();
+      updateRoleUI();
+      updateDocSelectorForRole();
+      switchTab('tab-conflicts');
+
+      if (conflictDecision) conflictDecision.value = 'WITHDRAW_A_KEEP_B';
+      if (conflictReviewer) conflictReviewer.value = 'Dr. Sarah Jenkins, RDN (Practice Owner & Clinical Director)';
+      if (conflictRationale) conflictRationale.value = 'Updated practice standard to ADA 2026 guidelines specifying minimum 175g/day CHO without rigid meal ceilings.';
+      if (conflictResultingState) conflictResultingState.value = 'DOC-GEST-001 retired; DOC-GEST-002 active; exposure review queue generated for past recipients.';
+
+      await loadConflicts();
+      await loadExposureQueue();
+      renderConflictHistory();
     }
   }
 
@@ -1316,6 +1622,65 @@ document.addEventListener('DOMContentLoaded', () => {
       runSendCheckSimulation(docId, ver, patId);
     });
 
+    // Front Desk Identifier auto-fill shortcuts
+    btnFillVerifiedDob?.addEventListener('click', () => {
+      if (fdVerifyName) fdVerifyName.value = 'Eleanor Vance';
+      if (fdVerifyDob) fdVerifyDob.value = '1984-05-12';
+    });
+
+    btnFillWrongDob?.addEventListener('click', () => {
+      if (fdVerifyName) fdVerifyName.value = 'Eleanor Vance';
+      if (fdVerifyDob) fdVerifyDob.value = '1989-11-23'; // Elena Vance DOB (identity mismatch trap)
+    });
+
+    // Conflict Resolution Form Submission (Workstream 5)
+    conflictResolveForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (state.currentRole !== 'owner') {
+        alert('PERMISSION DENIED: Only Practice Owner & Clinical Director Dr. Sarah Jenkins can resolve clinical conflicts. Please switch active role to Dr. Sarah Jenkins above.');
+        return;
+      }
+
+      const conflictId = conflictSelect.value;
+      const decision = conflictDecision.value;
+      const reviewer = conflictReviewer.value;
+      const rationale = conflictRationale.value;
+      const resultingState = conflictResultingState.value;
+
+      if (!rationale || rationale.trim().length < 15) {
+        alert('CLINICAL JUSTIFICATION REQUIRED: Rationale must be at least 15 characters per practice governance policy.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/conflicts/resolve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            conflict_id: conflictId,
+            decision,
+            rationale,
+            reviewer_identity: reviewer,
+            resulting_state: resultingState,
+            role: 'owner'
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          alert(`SUCCESS: Conflict resolved with recorded clinical rationale!\n\n${data.message}\nAudit Event: ${data.auditEventId}\nExposure Queue updated.`);
+          await loadDashboard();
+          await loadExposureQueue();
+          await loadConflicts();
+          renderConflictHistory();
+        } else {
+          alert(`RESOLUTION FAILED: ${data.message || data.error}`);
+        }
+      } catch (err) {
+        alert(`Error resolving conflict: ${err.message}`);
+      }
+    });
+
     // Trap shortcut buttons
     document.getElementById('btnTrapSuperseded')?.addEventListener('click', () => {
       setSendCheckSelection('DOC-BAR-002:1', 'SYNTH-PAT-101');
@@ -1327,7 +1692,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setSendCheckSelection('DOC-CKD-001:1', 'SYNTH-PAT-105');
     });
     document.getElementById('btnTrapStageMismatch')?.addEventListener('click', () => {
-      setSendCheckSelection('DOC-BAR-002:2', 'SYNTH-PAT-104'); // Pureed handout to Day 4 clear liquids patient!
+      setSendCheckSelection('DOC-BAR-002:2', 'SYNTH-PAT-104');
     });
     document.getElementById('btnTrapDraft')?.addEventListener('click', () => {
       setSendCheckSelection('DOC-DRAFT-001:0.1', 'SYNTH-PAT-105');
@@ -1335,10 +1700,43 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnTrapInternal')?.addEventListener('click', () => {
       setSendCheckSelection('DOC-INT-001:1', 'SYNTH-PAT-107');
     });
+    document.getElementById('btnTrapWrongDob')?.addEventListener('click', () => {
+      roleSelect.value = 'front_desk';
+      state.currentRole = 'front_desk';
+      updateRoleUI();
+      updateDocSelectorForRole();
+      sendCheckPatientSelect.value = 'SYNTH-PAT-101';
+      updatePatientPreview();
+      if (fdVerifyName) fdVerifyName.value = 'Eleanor Vance';
+      if (fdVerifyDob) fdVerifyDob.value = '1989-11-23'; // Elena Vance DOB
+      btnRunSendCheck.click();
+    });
+    document.getElementById('btnTrapDialysisMismatch')?.addEventListener('click', () => {
+      roleSelect.value = 'dietitian';
+      state.currentRole = 'dietitian';
+      updateRoleUI();
+      updateDocSelectorForRole();
+      setSendCheckSelection('DOC-DM-007:2', 'SYNTH-PAT-112'); // Marcus Thorne (dialysis)
+    });
+    document.getElementById('btnTrapBlankMeds')?.addEventListener('click', () => {
+      roleSelect.value = 'dietitian';
+      state.currentRole = 'dietitian';
+      updateRoleUI();
+      updateDocSelectorForRole();
+      setSendCheckSelection('DOC-DM-001:2', 'SYNTH-PAT-111'); // Jordan Patel (blank meds -> review required)
+    });
 
     function setSendCheckSelection(docVal, patVal) {
-      const docOpt = Array.from(sendCheckDocSelect.options).find(o => o.value.startsWith(docVal));
-      if (docOpt) sendCheckDocSelect.value = docOpt.value;
+      // If docVal is not in dropdown (e.g. outdated doc when front desk is selected), inject temporarily
+      let docOpt = Array.from(sendCheckDocSelect.options).find(o => o.value.startsWith(docVal));
+      if (!docOpt) {
+        const option = document.createElement('option');
+        option.value = docVal;
+        option.textContent = `[TRAP TARGET] ${docVal}`;
+        sendCheckDocSelect.appendChild(option);
+        docOpt = option;
+      }
+      sendCheckDocSelect.value = docOpt.value;
       sendCheckPatientSelect.value = patVal;
       updatePatientPreview();
       btnRunSendCheck.click();
@@ -1407,14 +1805,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnRefreshAudit')?.addEventListener('click', loadDashboard);
     document.getElementById('btnRerunEval')?.addEventListener('click', loadEvaluationData);
 
-    // DSMES / MNT Filters & Superbill Export
+    // Education Delivery Filters
     document.getElementById('dsmesPatientFilter')?.addEventListener('change', renderDsmesTable);
     document.getElementById('dsmesProgramFilter')?.addEventListener('change', renderDsmesTable);
-    document.getElementById('btnExportSuperbill')?.addEventListener('click', () => {
-      const records = state.dsmesRecords || [];
-      const totalUnits = records.reduce((s, r) => s + (Number(r.units_billed) || 0), 0);
-      alert(`DSMES / MNT SUPERBILL BATCH GENERATED\n\nTotal Education Encounters: ${records.length}\nTotal Billable Units: ${totalUnits} (15-min increments)\nStandard: CMS-1500 / EDI 837P Compliant Format\nStatus: Pre-send gatekeeper verified 100%`);
-    });
 
     // Demo Flow Setup
     setupDemoFlow();

@@ -365,7 +365,7 @@
     "status": "approved",
     "review_by": "2026-11-30",
     "effective_date": "2024-11-30",
-    "summary": "ACOG and ADA consensus clinical guidelines for Gestational Diabetes. Mandates a minimum of 175g total carbohydrates daily (at least 45g at lunch and dinner) to protect fetal neurological development and prevent starvation ketonuria.",
+    "summary": "ACOG and ADA consensus clinical guidelines for Gestational Diabetes. Mandates an individualized carbohydrate distribution across 3 meals and 2-3 snacks with an absolute minimum floor of 175g total carbohydrates daily (RDA in pregnancy) to protect fetal neurological development and prevent maternal starvation ketonuria without imposing rigid per-meal ceilings.",
     "tags": [
       "gestational diabetes",
       "pregnancy",
@@ -373,6 +373,8 @@
       "ada",
       "gdm",
       "carb targets",
+      "175g rda",
+      "individualized carbs",
       "ketones",
       "conflicting"
     ],
@@ -380,20 +382,20 @@
       "gestational diabetes standard protocol",
       "pregnancy carb target acog",
       "gdm meal guide",
-      "gestational diabetes carbs 45g"
+      "gestational diabetes 175g rda minimum"
     ],
     "sections": [
       {
-        "heading": "Fetal Brain Development & Minimum Daily Carbohydrates (175g Daily)",
-        "content": "The developing fetal brain requires continuous glucose oxidation. Pregnant patients must consume a minimum of 175 grams of carbohydrate daily. Carbohydrate restriction below 175g induces maternal starvation ketosis, which is linked to impaired fetal cognitive outcomes."
+        "heading": "Fetal Brain Development & Minimum Daily Carbohydrates (175g Daily RDA)",
+        "content": "The developing fetal brain requires continuous maternal glucose oxidation. Pregnant individuals require a minimum of 175 grams of carbohydrate daily (RDA in pregnancy). Carbohydrate restriction below 175g induces maternal starvation ketosis and ketonuria, which are associated with compromised fetal neurodevelopmental outcomes. Strict carbohydrate restriction is clinically contraindicated."
       },
       {
-        "heading": "Lunch and Dinner Carbohydrate Targets (Minimum 45g Carbs)",
-        "content": "Consume 45g to 60g of unrefined high-fiber complex carbohydrates at both lunch and dinner (e.g., brown rice, quinoa, sprouted grain bread, black beans). Do NOT restrict lunch or dinner carbohydrates to 30g or below, as this risks maternal hypoglycemia and ketonuria."
+        "heading": "Individualized Carbohydrate Distribution Across Meals & Snacks",
+        "content": "Rather than rigid per-meal gram mandates, carbohydrates should be distributed individually across meals and snacks based on personal blood glucose tolerance, postprandial patterns, physical activity, and medication timing. Focus on low-glycemic, fiber-rich complex carbohydrates (whole grains, legumes, vegetables) paired with quality protein and unsaturated fats."
       },
       {
         "heading": "Bedtime Snack Protocol to Prevent Overnight Ketonuria",
-        "content": "Always consume a bedtime snack containing 15g to 30g of complex carbohydrates paired with 10g of protein (e.g., apple slices with natural peanut butter, or Greek yogurt with chia seeds) to stabilize fasting glucose and prevent nocturnal starvation ketosis."
+        "content": "Always consume an individualized bedtime snack containing complex carbohydrates paired with protein (e.g., apple slices with peanut butter or Greek yogurt with seeds) to maintain stable nocturnal euglycemia and prevent morning starvation ketonuria."
       }
     ],
     "language": "en"
@@ -1363,5 +1365,71 @@
         "content": "The kidneys clear 30-40% of circulating insulin. As eGFR drops, insulin clearance decreases and circulating half-life lengthens, sharply increasing the risk of prolonged, severe hypoglycemia. Frequent glucose monitoring is essential."
       }
     ]
+  },
+  {
+    "doc_id": "DOC-INT-004",
+    "version": 1,
+    "title": "Clinical Escalation Protocol: Outpatient Nutrition Red Flags & Emergency Triage",
+    "program": "Clinical Governance & Triage",
+    "condition": "Urgent Clinical Red Flags & Emergency Escalation",
+    "patient_stage": "All Outpatient Stages (Emergency / Urgent Care)",
+    "audience": "internal",
+    "owner": "Dr. Sarah Jenkins, RDN",
+    "approved_by": "Dr. Sarah Jenkins, RDN",
+    "status": "approved",
+    "review_by": "2027-10-27",
+    "effective_date": "2026-10-27",
+    "summary": "INTERNAL PRACTICE SOP. Mandatory emergency triage and urgent clinical escalation guidelines for outpatient dietitians. Covers SGLT2 inhibitor euglycemic DKA, intractable vomiting, severe hypoglycemia, T1D ketosis, eating disorder purging/restriction, and hyperkalemia.",
+    "tags": [
+      "escalation",
+      "red flags",
+      "emergency triage",
+      "sglt2 dka",
+      "intractable vomiting",
+      "severe hypoglycemia",
+      "t1d ketones",
+      "eating disorder",
+      "hyperkalemia",
+      "scope of practice",
+      "internal only"
+    ],
+    "synonyms": [
+      "urgent clinical escalation protocol",
+      "emergency triage sop",
+      "red flag safety guidelines",
+      "dka hold sglt2 protocol",
+      "critical safety escalation"
+    ],
+    "sections": [
+      {
+        "heading": "SGLT2 Inhibitor Euglycemic DKA Red Flag Protocol",
+        "content": "Patients taking SGLT2 inhibitors (Jardiance/empagliflozin, Farxiga/dapagliflozin, Invokana/canagliflozin, Steglatro/ertugliflozin) who experience acute illness, infection, vomiting, anorexia, or carbohydrate restriction are at life-threatening risk for Euglycemic Diabetic Ketoacidosis (euDKA) with normal or mildly elevated blood glucose (< 200 mg/dL). MANDATORY ACTIONS: 1) Instruct patient/caregiver to HOLD the SGLT2 inhibitor immediately. 2) Check blood or urine ketones immediately. 3) If ketones are positive, persistent vomiting occurs, or patient cannot maintain hydration, direct immediately to the Emergency Department or Urgent Care. Routine sick-day meal guides are secondary and NEVER a substitute for medical escalation."
+      },
+      {
+        "heading": "Intractable Vomiting & Dehydration Red Flag",
+        "content": "Bariatric surgery patients (any post-op stage) or patients on GLP-1/GIP receptor agonists experiencing persistent vomiting (> 24-48 hours) or inability to keep water/fluids down are at acute risk of Wernicke's encephalopathy, anastomotic stricture, severe electrolyte depletion, and acute kidney injury. MANDATORY ACTIONS: Escalate immediately to bariatric surgeon or emergency department. Do NOT advise oral fluid rehydration without emergency clearance."
+      },
+      {
+        "heading": "Severe Hypoglycemia Emergency Protocol",
+        "content": "Severe hypoglycemia characterized by unconsciousness, seizure, combative behavior, or inability to safely swallow cannot be treated with oral 15-15 carbohydrates. MANDATORY ACTIONS: Administer prescribed emergency glucagon (nasal Baqsimi or injectable Gvoke/Glucagen) immediately. Call 911. Do not place food or fluids in the mouth."
+      },
+      {
+        "heading": "Type 1 Diabetes Sick-Day & Ketone Escalation",
+        "content": "T1D patients with elevated blood sugar (> 240 mg/dL) and moderate-to-large ketones require immediate physician/endocrinologist contact for supplemental rapid-acting correction per their management plan. NEVER advise skipping or holding basal insulin during illness."
+      },
+      {
+        "heading": "Eating Disorder Safety & Purging Red Flag",
+        "content": "Patients exhibiting active purging (vomiting, laxative/diuretic misuse), extreme caloric restriction, or meal skipping alongside a weight-loss request must NOT receive weight-loss, fasting, or hypocaloric meal plans. Dietitians must place a safety hold and initiate multidisciplinary referral (mental health + primary care physician)."
+      },
+      {
+        "heading": "CKD Hyperkalemia Emergency Protocol",
+        "content": "Serum potassium > 5.0 mEq/L (critical >= 6.0 mEq/L) carries severe cardiac arrhythmia risk. Immediately review lab collection date, instruct patient to hold high-potassium supplements/substitutes, and urgently notify the nephrologist or PCP."
+      },
+      {
+        "heading": "Prescriber Medication Scope Boundary",
+        "content": "Outpatient dietitians do NOT prescribe or alter medication doses, insulin pump basal rates, or drug regimens. Requests to change medication doses (e.g., cutting metformin for GI upset, adjusting basal insulin) must be referred directly to the prescribing provider."
+      }
+    ],
+    "language": "en"
   }
 ]

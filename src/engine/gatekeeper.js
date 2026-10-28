@@ -2,6 +2,8 @@
 // Feature: Send Check (Deterministic Pre-Send Verification)
 
 import { checkDocumentEligibility } from './eligibility.js';
+import { evaluatePolicy } from './policy.js';
+
 
 export function validateSendCheck({
   document,
@@ -149,11 +151,16 @@ export function validateSendCheck({
   // Medication-Triggered & Stage-Agnostic Emergency Safety Handouts:
   // Safety handouts (DOC-DM-002 Hypoglycemia, DOC-DM-005 Sick-day rules) are stage-agnostic.
   // DOC-DM-002 must PASS for a T2D patient on insulin or a sulfonylurea at any stage.
-  const patientMeds = patient?.medications || [];
+  const rawMeds = patient?.medications || [];
+  const patientMeds = rawMeds.map(m => {
+    if (typeof m === 'string') return m;
+    return `${m.name || ''} ${m.class || ''}`;
+  });
   const isOnInsulinOrSulfonylurea = patientMeds.some(m => /insulin|sulfonylurea|glipizide|glimepiride|glyburide/i.test(m));
   const hasDiabetes = (patientProgram && /diabetes/i.test(patientProgram)) || 
                       (patientCondition && /diabetes|t1d|t2d/i.test(patientCondition)) ||
                       (patient?.condition && /diabetes|t1d|t2d/i.test(patient.condition));
+
 
   const isHypoglycemiaSafetyHandout = document.doc_id === 'DOC-DM-002' && (isOnInsulinOrSulfonylurea || hasDiabetes);
   const isSickDaySafetyHandout = document.doc_id === 'DOC-DM-005' && hasDiabetes;
@@ -239,7 +246,11 @@ export function validateSendCheck({
   }
 
   // 9. Allergy & Intolerance Contraindication Gate
-  const patientAllergies = patient?.allergies_sensitivities || [];
+  const patientAllergies = [
+    ...(patient?.allergies_sensitivities || []),
+    ...(patient?.allergies_and_intolerances || [])
+  ];
+
   if (patientAllergies.length > 0) {
     const hasLactoseIntolerance = patientAllergies.some(a => /lactose/i.test(a));
     const recommendsDairy = (document.doc_id === 'DOC-BAR-002' && Number(document.version) === 1) ||
@@ -331,6 +342,15 @@ export function validateSendCheck({
 
   const allowed = blocks.length === 0;
 
+  const policyRes = evaluatePolicy({
+    document,
+    patient,
+    user: { role, name: actor },
+    allDocuments,
+    asOfDate,
+    isPreSend: true
+  });
+
   return {
     allowed,
     gateResult: allowed ? 'PASS' : 'FAIL',
@@ -341,6 +361,13 @@ export function validateSendCheck({
     blocks,
     warnings,
     passes,
+    // Three Decisions Architecture (Workstream 1)
+    document_validity: policyRes.document_validity,
+    patient_applicability: policyRes.patient_applicability,
+    delivery_authorization: policyRes.delivery_authorization,
+    outcome: policyRes.outcome,
+    policy_version: policyRes.policy_version,
+    policy_decision: policyRes,
     summary: allowed
       ? (warnings.length > 0 
           ? `Send Check passed with ${warnings.length} advisory notice(s). Document may be given to patient.`
@@ -348,6 +375,7 @@ export function validateSendCheck({
       : `Send Check BLOCKED delivery: ${blocks.map(b => b.message).join(' | ')}`
   };
 }
+
 
 function checkStageCompatibility(docStage, patStages) {
   const d = docStage.toLowerCase();

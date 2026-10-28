@@ -23,6 +23,9 @@ export class AuditLedger {
     doc_title,
     patient_id = null,
     patient_context = null,
+    recipient_name = null,
+    content_hash = null,
+    verified_identifiers = null,
     status, // 'APPROVED' | 'BLOCKED' | 'WARNED'
     gate_result, // 'PASS' | 'FAIL'
     details = ''
@@ -35,13 +38,18 @@ export class AuditLedger {
       action,
       doc_id,
       version,
+      content_hash,
       doc_title,
       patient_id,
+      recipient_id: patient_id,
+      recipient_name,
       patient_context,
+      verified_identifiers,
       status,
       gate_result,
       details
     };
+
 
     this.entries.unshift(entry);
 

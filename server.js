@@ -24,11 +24,13 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static frontend assets
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'src/ui')));
 
 // In-Memory Data Store (Initialized from seeded data files)
 function loadJSON(relPath) {
-  return JSON.parse(fs.readFileSync(path.join(__dirname, relPath), 'utf8'));
+  const fullPath = path.resolve(__dirname, relPath);
+  return JSON.parse(fs.readFileSync(fullPath, 'utf8'));
 }
 
 let documents = loadJSON('data/documents.json');
@@ -253,11 +255,15 @@ app.get('/api/eval', (req, res) => {
   res.json(report);
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`\n======================================================`);
-  console.log(`  VERITY PRACTICE SERVER RUNNING ON http://localhost:${PORT}`);
-  console.log(`  Thesis: "One approved truth, in every channel."`);
-  console.log(`  Features: Right Doc & Send Check`);
-  console.log(`======================================================\n`);
-});
+// Start Server (only when not running inside Vercel serverless environment)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`\n======================================================`);
+    console.log(`  VERITY PRACTICE SERVER RUNNING ON http://localhost:${PORT}`);
+    console.log(`  Thesis: "One approved truth, in every channel."`);
+    console.log(`  Features: Right Doc & Send Check`);
+    console.log(`======================================================\n`);
+  });
+}
+
+export default app;

@@ -13,8 +13,18 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '../../');
 
 function loadJSON(relPath) {
-  const fullPath = path.join(ROOT_DIR, relPath);
-  return JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+  const candidates = [
+    path.resolve(process.cwd(), relPath),
+    path.resolve(__dirname, '../../', relPath),
+    path.resolve(__dirname, '..', relPath),
+    path.resolve(__dirname, relPath)
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      return JSON.parse(fs.readFileSync(p, 'utf8'));
+    }
+  }
+  return [];
 }
 
 export function runEvaluation() {
@@ -219,7 +229,11 @@ export function runEvaluation() {
     trapDetails: trapResults
   };
 
-  fs.writeFileSync(path.join(ROOT_DIR, 'eval_report.json'), JSON.stringify(report, null, 2));
+  try {
+    fs.writeFileSync(path.join(process.cwd(), 'eval_report.json'), JSON.stringify(report, null, 2));
+  } catch (err) {
+    // Read-only filesystem in serverless environments
+  }
 
   // Console Summary Table
   console.log('| Metric | Target | Actual Result | Status |');

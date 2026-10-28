@@ -29,8 +29,19 @@ app.use(express.static(path.join(__dirname, 'src/ui')));
 
 // In-Memory Data Store (Initialized from seeded data files)
 function loadJSON(relPath) {
-  const fullPath = path.resolve(__dirname, relPath);
-  return JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+  const candidates = [
+    path.resolve(process.cwd(), relPath),
+    path.resolve(__dirname, relPath),
+    path.resolve(__dirname, '..', relPath),
+    path.resolve(__dirname, '../..', relPath)
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      return JSON.parse(fs.readFileSync(p, 'utf8'));
+    }
+  }
+  console.warn(`[WARN] loadJSON: Could not find ${relPath}`);
+  return [];
 }
 
 let documents = loadJSON('data/documents.json');

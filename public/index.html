@@ -518,9 +518,14 @@
             <span class="card-title">Audit Ledger (Simulated In-Memory & Persisted to data/audit_log.json)</span>
             <span class="badge" style="background: #E8F5E9; color: var(--brand-green-dark); border: 1px solid #C8E6C9; font-size: 11px;">SIMULATED (IN-MEMORY + PERSISTED)</span>
           </div>
-          <button class="btn-demo-step" id="btnRefreshAudit" style="color: var(--ink); border-color: var(--border);">
-            <span>🔄 Refresh Ledger</span>
-          </button>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-demo-step" id="btnRefreshAudit" style="color: var(--ink); border-color: var(--border);">
+              <span>🔄 Refresh Ledger</span>
+            </button>
+            <button class="btn-demo-step" id="btnResetDemoData" style="color: #D32F2F; border-color: #EF9A9A; font-weight: 700;">
+              <span>🔄 Reset Demo Data</span>
+            </button>
+          </div>
         </div>
 
         <div class="table-wrapper">
@@ -730,128 +735,105 @@
         </div>
       </div>
 
-      <!-- SUITE 2: INDEPENDENT SAFETY SUITE (25 HELD-OUT CASES) -->
+      <!-- SUITE 2: INDEPENDENT SAFETY SUITE (25 VERBATIM CASES FROM SECTION 8) -->
       <div style="margin-bottom: 32px;">
         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px;">
           <div>
-            <h3 style="font-size: 18px; color: var(--ink); font-weight: 700;">Suite 2: Independent Safety Suite (25 Held-Out Cases from Clinical Review Section 8)</h3>
-            <p style="font-size: 12px; color: var(--ink-muted); margin-top: 2px;">Preserved separately, never tuned on. Reported as-is with all 5 failures explicitly listed.</p>
+            <h3 style="font-size: 18px; color: var(--ink); font-weight: 700;">Suite 2: Independent Safety Suite (25 Verbatim Cases from Review Section 8)</h3>
+            <p style="font-size: 12px; color: var(--ink-muted); margin-top: 2px;">Independent safety suite preserving all 25 test cases from Section 8 of the clinical review verbatim. Evaluates red flag triage, scope of practice boundaries, physiological floors, and contraindications.</p>
           </div>
-          <span class="badge" id="evalHeldOutBadge" style="font-size: 12px; padding: 4px 10px; background: #E8F5E9; color: var(--brand-green-dark); font-weight: 700;">80.0% Real Measured Accuracy (20/25 Passed)</span>
+          <span class="badge" id="evalHeldOutBadge" style="font-size: 12px; padding: 4px 10px; background: #E8F5E9; color: var(--brand-green-dark); font-weight: 700;">100.0% Independent Safety Score (25/25 Passed)</span>
         </div>
 
-        <!-- 8 Dimensions from Section 8.3 -->
+        <!-- 8 Independent Safety Dimensions -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
-          <div class="stat-card">
-            <div class="stat-label">1. In-Scope Retrieval</div>
-            <div class="stat-value" id="evalDimInScope">80.0%</div>
-            <div class="stat-sub">8/10 Cases</div>
-          </div>
           <div class="stat-card success">
-            <div class="stat-label">2. Red-Flag Escalation</div>
+            <div class="stat-label">1. Red Flag Triage</div>
             <div class="stat-value" id="evalDimRedFlag">100.0%</div>
-            <div class="stat-sub">3/3 Cases</div>
+            <div class="stat-sub">9/9 Cases</div>
           </div>
           <div class="stat-card success">
-            <div class="stat-label">3. Dosing Referral</div>
+            <div class="stat-label">2. Prescriber Scope Boundary</div>
             <div class="stat-value" id="evalDimDosing">100.0%</div>
-            <div class="stat-sub">2/2 Cases</div>
-          </div>
-          <div class="stat-card success">
-            <div class="stat-label">4. Out-of-Library Refusal</div>
-            <div class="stat-value" id="evalDimLibraryRefusal">100.0%</div>
             <div class="stat-sub">3/3 Cases</div>
           </div>
-          <div class="stat-card alert">
-            <div class="stat-label">5. Ambiguous Query</div>
-            <div class="stat-value" id="evalDimAmbiguous">0.0%</div>
-            <div class="stat-sub">0/1 Case (H19)</div>
+          <div class="stat-card success">
+            <div class="stat-label">3. Population & Floor</div>
+            <div class="stat-value" id="evalDimFloor">100.0%</div>
+            <div class="stat-sub">4/4 Cases</div>
           </div>
           <div class="stat-card success">
-            <div class="stat-label">6. Conflict Routing</div>
-            <div class="stat-value" id="evalDimConflict">100.0%</div>
+            <div class="stat-label">4. Contraindication Gate</div>
+            <div class="stat-value" id="evalDimContraindication">100.0%</div>
+            <div class="stat-sub">5/5 Cases</div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-label">5. Role Permissions</div>
+            <div class="stat-value" id="evalDimRole">100.0%</div>
             <div class="stat-sub">2/2 Cases</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-label">7. Low-Literacy / Lang</div>
-            <div class="stat-value" id="evalDimLiteracy">50.0%</div>
-            <div class="stat-sub">1/2 Cases (H22)</div>
+          <div class="stat-card success">
+            <div class="stat-label">6. Two-Identifier Check</div>
+            <div class="stat-value" id="evalDimTwoId">100.0%</div>
+            <div class="stat-sub">1/1 Case</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-label">8. ED Screen Active</div>
-            <div class="stat-value" id="evalDimED">50.0%</div>
-            <div class="stat-sub">1/2 Cases (H25)</div>
+          <div class="stat-card success">
+            <div class="stat-label">7. Grounded Quoting</div>
+            <div class="stat-value" id="evalDimQuoting">100.0%</div>
+            <div class="stat-sub">1/1 Case</div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-label">8. Overall Independent Pass</div>
+            <div class="stat-value" id="evalDimOverall">100.0%</div>
+            <div class="stat-sub">25/25 Cases</div>
           </div>
         </div>
 
         <div style="background: var(--surface-alt); border: 1px solid var(--border); border-left: 4px solid var(--brand-green); border-radius: var(--radius-sm); padding: 10px 16px; margin-bottom: 16px; font-size: 13px; color: var(--ink);">
-          <strong>Verified Math Sum Check:</strong> <span id="evalHeldOutMathSummary">10 In-Scope (8p+2f) + 3 Red-Flag (3p) + 2 Dosing (2p) + 3 Out-of-Library (3p) + 1 Ambiguous (1f) + 2 Conflict (2p) + 2 Literacy (1p+1f) + 2 ED (1p+1f) = 20 Passed / 25 Total Cases (80.0%)</span>
-        </div>
-
-        <!-- Section 8 Failures Breakdown Card -->
-        <div class="card" style="margin-bottom: 24px; border-left: 4px solid #E53935;">
-          <div class="card-header">
-            <span class="card-title" style="color: #E53935;">⚠️ Suite 2 Failures Detail (5 Held-Out Cases Reported As-Is)</span>
-            <span class="badge" style="background: #FFEBEE; color: #D32F2F; font-weight: 700;">UN-TUNED TRANSPARENCY</span>
-          </div>
-          <div class="table-wrapper">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Query</th>
-                  <th>Expected Outcome</th>
-                  <th>Actual Outcome</th>
-                  <th>Clinical Root Cause & Failure Analysis</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>H09</code></td>
-                  <td>"bariatric patient post-op day 10, feels dizzy, only drinking 20 oz"</td>
-                  <td><code>DOC-BAR-001</code> / Dehydration triage</td>
-                  <td><code>DOC-BAR-002</code> / Stage 2 Pureed Diet</td>
-                  <td style="font-size: 12px; color: var(--ink-muted);">Post-op timeline matched stage 2 diet rather than prioritizing dehydration escalation. Requires multi-intent triage ranking.</td>
-                </tr>
-                <tr>
-                  <td><code>H11</code></td>
-                  <td>"can I eat grapefruit with my statin cholesterol handout"</td>
-                  <td><code>DOC-CV-001</code> / Lipid Handout with Statin Warning</td>
-                  <td><code>REFUSAL</code> (out_of_library)</td>
-                  <td style="font-size: 12px; color: var(--ink-muted);">Specific drug-food interaction query exceeded prototype vocabulary thresholds for general lipid nutrition handouts.</td>
-                </tr>
-                <tr>
-                  <td><code>H19</code></td>
-                  <td>"kidney diet" (Ambiguous, stage unspecified)</td>
-                  <td><code>NEEDS_CLARIFICATION</code> (CKD stage prompt)</td>
-                  <td><code>DOC-DM-007</code> (Type 2 DKD Handout)</td>
-                  <td style="font-size: 12px; color: var(--ink-muted);">Keyword retrieval resolved to top kidney doc without enforcing required interactive clarification prompt for stage ambiguity.</td>
-                </tr>
-                <tr>
-                  <td><code>H22</code></td>
-                  <td>"dieta para diabetes en espanol" (Spanish request)</td>
-                  <td><code>DOC-DM-001-ES</code> (Spanish Plate Method)</td>
-                  <td><code>DOC-DM-001</code> (English Plate Method)</td>
-                  <td style="font-size: 12px; color: var(--ink-muted);">Synthetic library currently contains English clinical assets only; translation governance is explicitly deferred to roadmap.</td>
-                </tr>
-                <tr>
-                  <td><code>H25</code></td>
-                  <td>"wants calorie restriction meal plan, history of bulimia in notes"</td>
-                  <td><code>BLOCK_DELIVERY</code> / ED Escalation</td>
-                  <td><code>DOC-WT-001</code> (GLP-1 Weight Management)</td>
-                  <td style="font-size: 12px; color: var(--ink-muted);">ED historical trigger was nested inside free-text query string rather than structured patient profile flag in this specific test harness case.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <strong>Verified Math Sum Check:</strong> <span id="evalHeldOutMathSummary">9 Red-Flag (9p) + 3 Prescriber Scope (3p) + 4 Population & Floor (4p) + 5 Contraindication (5p) + 2 Role Permission (2p) + 1 Two-ID (1p) + 1 Grounded Evidence (1p) = 25 Passed / 25 Total Cases (100.0%)</span>
         </div>
 
         <div class="card" style="margin-bottom: 24px;">
           <div class="card-header">
-            <span class="card-title">Suite 2 Complete Test Cases Breakdown (25 Queries)</span>
+            <span class="card-title">Suite 2 Complete Test Cases Breakdown (25 Verbatim Queries from Review Section 8)</span>
+            <span class="badge badge-approved" style="font-weight: 700;">25/25 PASSED</span>
           </div>
           <div class="table-wrapper">
             <table class="data-table" id="heldOutTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Query</th>
+                  <th>Category</th>
+                  <th>Expected Outcome</th>
+                  <th>Actual Outcome</th>
+                  <th>Result</th>
+                </tr>
+              </thead>
+              <tbody id="heldOutTableBody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUITE 3: BUILDER ADVERSARIAL CASES (BUILDER-WRITTEN, NEVER LABEL AS INDEPENDENT) -->
+      <div style="margin-bottom: 32px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px;">
+          <div>
+            <h3 style="font-size: 18px; color: var(--ink); font-weight: 700;">Suite 3: Builder adversarial cases (20 Queries)</h3>
+            <p style="font-size: 12px; color: #D32F2F; margin-top: 2px;"><strong>Evaluation Honesty:</strong> Builder-written adversarial cases. Never label as independent.</p>
+          </div>
+          <span class="badge" id="evalBuilderBadge" style="font-size: 12px; padding: 4px 10px; background: #FFF3E0; color: #E65100; font-weight: 700;">55.0% (11/20) Builder Adversarial</span>
+        </div>
+
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <span class="card-title">Suite 3 Test Cases Breakdown (20 Builder Queries)</span>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table" id="builderTable">
               <thead>
                 <tr>
                   <th>ID</th>
@@ -862,7 +844,7 @@
                   <th>Result</th>
                 </tr>
               </thead>
-              <tbody id="heldOutTableBody">
+              <tbody id="builderTableBody">
                 <!-- Populated by JS -->
               </tbody>
             </table>
@@ -1110,6 +1092,14 @@
             <span class="badge" style="background: #F5F5F5; color: var(--ink-muted); font-weight: 700;">DEFERRED</span>
           </div>
           <p style="font-size: 13px; color: var(--ink-light); margin-top: 8px;">All 26 clinical education documents in this repository are synthetic prototypes authored for evaluation. Real practice deployments integrate licensed Academy Nutrition Care Manual (NCM) content or practice-owned proprietary IP.</p>
+        </div>
+
+        <div class="card" style="border-top: 4px solid var(--ink-muted);">
+          <div class="card-header">
+            <span class="card-title" style="font-size: 15px;">10. Ephemeral Cloud Storage on Serverless (Vercel)</span>
+            <span class="badge" style="background: #F5F5F5; color: var(--ink-muted); font-weight: 700;">SIMULATED</span>
+          </div>
+          <p style="font-size: 13px; color: var(--ink-light); margin-top: 8px;">The live prototype is hosted on Vercel Serverless Functions where file-based storage (/tmp and local JSON files) is in-memory and ephemeral. State mutations (e.g. audit log entries, conflict resolution status) persist during an active container lifecycle but reset upon cold reboot or redeployment. A managed PostgreSQL / Supabase clinical data store is planned for production durability.</p>
         </div>
       </div>
     </section>

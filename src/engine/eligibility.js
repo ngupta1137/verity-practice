@@ -58,14 +58,14 @@ export function checkDocumentEligibility(doc, allDocuments = [], options = {}) {
   }
 
   // 4. Clinical Conflict Lock Check:
-  // Deliberate trap: DOC-GEST-001 vs DOC-GEST-002 clash until Clinical Director resolution
+  // While CONF-001 is open, both DOC-GEST-001 and DOC-GEST-002 are locked from patient distribution and staff citation
   const isConflictLocked = doc.conflict_locked === true || 
-    (doc.doc_id === 'DOC-GEST-001' && doc.status === 'approved' && !doc.conflict_resolved);
+    ((doc.doc_id === 'DOC-GEST-001' || doc.doc_id === 'DOC-GEST-002') && doc.status === 'approved' && !doc.conflict_resolved);
 
   if (isConflictLocked) {
     blocks.push({
       code: 'ACTIVE_CLINICAL_CONFLICT_BLOCK',
-      message: `BLOCKED: Active Clinical Guideline Conflict. Document "${doc.doc_id}" is locked from patient distribution and staff citation due to an unresolved guideline conflict (30g carb ceiling vs 45g minimum floor). Clinical Director must harmonize and resolve guidelines before distribution or quotation.`
+      message: `BLOCKED: Active Clinical Guideline Conflict (CONF-001). Document "${doc.doc_id}" is locked from patient distribution and staff citation due to an unresolved guideline conflict (fixed 30g carb ceiling vs individualized >=175g/day pregnancy floor). Practice Owner must record a formal resolution before distribution or citation.`
     });
   }
 
@@ -82,4 +82,67 @@ export function isDocumentEligible(doc, allDocuments = [], options = {}) {
 
 export function getEligibleDocuments(allDocuments = [], options = {}) {
   return (allDocuments || []).filter(doc => isDocumentEligible(doc, allDocuments, options));
+}
+
+export function checkStageCompatibility(docStage, patStages) {
+  if (!docStage) return { compatible: true };
+  const d = docStage.toLowerCase();
+  const stagesArray = Array.isArray(patStages) ? patStages : [patStages];
+  
+  if (d.includes('all stages') || d.includes('all post-op') || d.includes('general lifestyle') || d.includes('clinical internal')) {
+    return { compatible: true };
+  }
+
+  for (const s of stagesArray) {
+    if (!s) continue;
+    const p = s.toLowerCase();
+    
+    if (p === d || p.includes(d) || d.includes(p)) {
+      return { compatible: true };
+    }
+
+    const stageMatches = ['stage 1', 'stage 2', 'stage 3', 'stage 4'].some(num => d.includes(num) && p.includes(num));
+    if (stageMatches) {
+      return { compatible: true };
+    }
+
+    if ((d.includes('renal') || d.includes('ckd') || d.includes('kidney')) && 
+        (p.includes('renal') || p.includes('ckd') || p.includes('kidney'))) {
+      return { compatible: true };
+    }
+
+    if (p.includes('week 1') || p.includes('stage 1') || p.includes('clear liquids')) {
+      if (d.includes('stage 2') || d.includes('pureed') || d.includes('stage 3') || d.includes('stage 4') || d.includes('solid')) {
+        return {
+          compatible: false,
+          severity: 'BLOCK',
+          reason: 'Severe medical safety hazard: Giving pureed or solid foods to a Week 1 clear-liquid patient risks pouch leak or acute anastomotic rupture.'
+        };
+      }
+    }
+
+    if (p.includes('week 2') || p.includes('stage 2') || p.includes('pureed')) {
+      if (d.includes('stage 4') || d.includes('solid foods')) {
+        return {
+          compatible: false,
+          severity: 'BLOCK',
+          reason: 'Stage mismatch: Solid foods cannot be ingested during pureed recovery stage.'
+        };
+      }
+      if (d.includes('stage 1: clear liquids')) {
+        return {
+          compatible: false,
+          severity: 'WARN',
+          reason: 'Patient is already on purees; Stage 1 clear liquids handout is from earlier recovery week.'
+        };
+      }
+    }
+  }
+
+  const isBariatric = d.includes('stage 1') || d.includes('stage 2') || d.includes('stage 3') || d.includes('stage 4') || d.includes('post-op') || d.includes('pureed') || d.includes('clear liquid') || d.includes('soft food');
+  return {
+    compatible: false,
+    severity: isBariatric ? 'BLOCK' : 'WARN',
+    reason: `Handout stage "${docStage}" is not in the patient's active stage list.`
+  };
 }

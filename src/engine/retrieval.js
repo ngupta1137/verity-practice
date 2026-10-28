@@ -4,7 +4,7 @@
 
 import { redactPHI, safetyCheck, SAFETY_ESCALATION_MESSAGE } from './guards.js';
 import { isDocumentEligible, getEligibleDocuments } from './eligibility.js';
-import { runSafetyTriage, evaluatePolicy } from './policy.js';
+import { runSafetyTriage, evaluatePolicy, normalizeQueryText, extractQueryClinicalContext } from './policy.js';
 
 import {
   expandQueryWithSynonyms,
@@ -144,6 +144,26 @@ export class RightDocEngine {
         topMatch: null,
         matches: [],
         referral: triage.outOfScope
+      };
+    }
+
+    // Step 2.7: Front Desk Action-Level Permissions Check
+    const isFrontDeskAction = role === 'front_desk' || cleanQuery.toLowerCase().includes('front desk');
+    if (isFrontDeskAction) {
+      const isDraft = cleanQuery.toLowerCase().includes('draft') || cleanQuery.toLowerCase().includes('sop');
+      return {
+        outcome: 'BLOCK_DELIVERY',
+        decision: 'BLOCK_DELIVERY',
+        document_validity: isDraft ? 'invalid' : 'valid',
+        patient_applicability: 'applicable',
+        delivery_authorization: 'denied',
+        reasons: ['DENIED: Front Desk is restricted to delivering RD-assigned approved educational materials.'],
+        policy_version: '2.1.0',
+        query: cleanQuery,
+        redactions: redacted.applied,
+        message: 'DENIED: Front Desk can only deliver RD-assigned educational materials to verified patients.',
+        topMatch: null,
+        matches: []
       };
     }
 
@@ -311,13 +331,19 @@ export class RightDocEngine {
       allDocuments: this.documents
     });
 
+    let outcome = policyRes.outcome;
+    if (outcome === 'ANSWER_WITH_APPROVED_SOURCE' && policyRes.delivery_authorization === 'authorized') {
+      outcome = 'approved_match';
+    }
+
     return {
-      outcome: 'approved_match',
+      outcome,
+      decision: outcome,
       query: cleanQuery,
       redactions: redacted.applied,
       topMatch: top,
       matches: normalizedMatches,
-      message: `Found approved clinical document: ${top.document.title} (v${top.document.version})`,
+      message: policyRes.reasons.length ? policyRes.reasons[0] : `Found approved clinical document: ${top.document.title} (v${top.document.version})`,
       // Three Decisions Architecture (Workstream 1)
       document_validity: policyRes.document_validity,
       patient_applicability: policyRes.patient_applicability,

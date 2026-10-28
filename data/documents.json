@@ -350,7 +350,11 @@
         "content": "Test urine ketones every morning with Ketostix. Mild trace ketones are considered acceptable under this tight control regimen."
       }
     ],
-    "language": "en"
+    "language": "en",
+    "retired_reason": "Withdrawn by Clinical Director (Dr. Sarah Jenkins, RDN (Practice Owner & Clinical Director)): Updated practice standard to ADA 2026 guidelines specifying minimum 175g/day CHO without rigid meal ceilings.",
+    "retired_date": "2026-10-28",
+    "conflict_resolved": false,
+    "conflict_locked": true
   },
   {
     "doc_id": "DOC-GEST-002",
@@ -398,7 +402,9 @@
         "content": "Always consume an individualized bedtime snack containing complex carbohydrates paired with protein (e.g., apple slices with peanut butter or Greek yogurt with seeds) to maintain stable nocturnal euglycemia and prevent morning starvation ketonuria."
       }
     ],
-    "language": "en"
+    "language": "en",
+    "conflict_resolved": false,
+    "conflict_locked": true
   },
   {
     "doc_id": "DOC-CKD-001",
@@ -1397,13 +1403,13 @@
       "urgent clinical escalation protocol",
       "emergency triage sop",
       "red flag safety guidelines",
-      "dka hold sglt2 protocol",
+      "dka sick day sglt2 protocol",
       "critical safety escalation"
     ],
     "sections": [
       {
         "heading": "SGLT2 Inhibitor Euglycemic DKA Red Flag Protocol",
-        "content": "Patients taking SGLT2 inhibitors (Jardiance/empagliflozin, Farxiga/dapagliflozin, Invokana/canagliflozin, Steglatro/ertugliflozin) who experience acute illness, infection, vomiting, anorexia, or carbohydrate restriction are at life-threatening risk for Euglycemic Diabetic Ketoacidosis (euDKA) with normal or mildly elevated blood glucose (< 200 mg/dL). MANDATORY ACTIONS: 1) Instruct patient/caregiver to HOLD the SGLT2 inhibitor immediately. 2) Check blood or urine ketones immediately. 3) If ketones are positive, persistent vomiting occurs, or patient cannot maintain hydration, direct immediately to the Emergency Department or Urgent Care. Routine sick-day meal guides are secondary and NEVER a substitute for medical escalation."
+        "content": "Patients taking SGLT2 inhibitors (Jardiance/empagliflozin, Farxiga/dapagliflozin, Invokana/canagliflozin, Steglatro/ertugliflozin) who experience acute illness, infection, vomiting, anorexia, or carbohydrate restriction are at life-threatening risk for Euglycemic Diabetic Ketoacidosis (euDKA) with normal or mildly elevated blood glucose (< 200 mg/dL). MANDATORY ACTIONS: 1) Contact the prescriber or on-call clinician per the patient's sick-day plan; check ketones if available; seek emergency care for vomiting, abdominal pain or trouble breathing. 2) Routine sick-day meal guides are secondary and NEVER a substitute for medical escalation. No staff may tell patients to start, stop or change a medication without prescriber order."
       },
       {
         "heading": "Intractable Vomiting & Dehydration Red Flag",
@@ -1419,7 +1425,7 @@
       },
       {
         "heading": "Eating Disorder Safety & Purging Red Flag",
-        "content": "Patients exhibiting active purging (vomiting, laxative/diuretic misuse), extreme caloric restriction, or meal skipping alongside a weight-loss request must NOT receive weight-loss, fasting, or hypocaloric meal plans. Dietitians must place a safety hold and initiate multidisciplinary referral (mental health + primary care physician)."
+        "content": "Patients exhibiting active purging (vomiting, laxative/diuretic misuse), extreme caloric restriction, or meal skipping alongside a weight-loss request must NOT receive weight-loss, fasting, or hypocaloric meal plans. Dietitians must place a safety hold and route immediately to medical evaluation and ED-specialized care team; no restrictive handouts."
       },
       {
         "heading": "CKD Hyperkalemia Emergency Protocol",

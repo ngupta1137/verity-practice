@@ -114,10 +114,10 @@ function findSectionGuidelineConflict(docA, docB) {
     const sec2 = docB.sections.find(s => s.heading.includes('Carbohydrate Targets') || s.heading.includes('Ceilings')) || docB.sections[1];
 
     return {
-      topic: 'Gestational Diabetes Lunch & Dinner Carbohydrate Thresholds',
+      topic: 'Gestational Diabetes Carbohydrate Guidance (Ceilings vs Individualized Floor)',
       sectionA: sec1,
       sectionB: sec2,
-      explanation: 'DOC-GEST-001 enforces a STRICT CEILING of max 30g carbohydrates at lunch/dinner, whereas DOC-GEST-002 enforces a MINIMUM FLOOR of 45g-60g carbohydrates to prevent maternal starvation ketonuria and protect fetal brain development. Both documents are currently approved for patient distribution.'
+      explanation: 'DOC-GEST-001 enforces a rigid ceiling of max 30g carbohydrates per meal (failing the 175g/day pregnancy RDA), whereas DOC-GEST-002 specifies individualized carbohydrate distribution with a minimum daily floor of >= 175g/day (ADA 2026 / IOM standard) without fixed per-meal ceilings. While CONF-001 is open, both documents are locked from patient distribution until Clinical Director resolution.'
     };
   }
 

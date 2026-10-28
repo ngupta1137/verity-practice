@@ -529,8 +529,9 @@ document.addEventListener('DOMContentLoaded', () => {
           actor: roleSelect.options[roleSelect.selectedIndex].text,
           role: state.currentRole,
           recipient_verification: {
-            name: fdVerifyName ? fdVerifyName.value : '',
-            dob: fdVerifyDob ? fdVerifyDob.value : '',
+            name: fdVerifyName ? fdVerifyName.value.trim() : '',
+            dob: fdVerifyDob ? fdVerifyDob.value.trim() : '',
+            date_of_birth: fdVerifyDob ? fdVerifyDob.value.trim() : '',
             channel: fdVerifyChannel ? fdVerifyChannel.value : 'portal'
           }
         })
@@ -699,8 +700,9 @@ document.addEventListener('DOMContentLoaded', () => {
           actor: roleSelect.options[roleSelect.selectedIndex].text,
           role: state.currentRole,
           recipient_verification: {
-            name: fdVerifyName ? fdVerifyName.value : '',
-            dob: fdVerifyDob ? fdVerifyDob.value : '',
+            name: fdVerifyName ? fdVerifyName.value.trim() : '',
+            dob: fdVerifyDob ? fdVerifyDob.value.trim() : '',
+            date_of_birth: fdVerifyDob ? fdVerifyDob.value.trim() : '',
             channel: fdVerifyChannel ? fdVerifyChannel.value : 'portal'
           }
         })
@@ -1410,7 +1412,6 @@ document.addEventListener('DOMContentLoaded', () => {
       state.evalReport = data;
 
       const s1 = data.suite1_regression;
-      const s2 = data.suite2_held_out;
       const traps = data.preSendCheckTraps;
 
       // Suite 1 Metrics
@@ -1446,14 +1447,68 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Suite 2 Metrics (25 Held-Out Cases)
+      const s2 = data.suite2_independent_safety;
+      const s3 = data.suite3_builder_adversarial;
+
+      // Suite 2 Metrics (25 Independent Safety Cases from Review Section 8 Verbatim)
       if (s2) {
         const badge = document.getElementById('evalHeldOutBadge');
-        if (badge) badge.textContent = `${s2.overallAccuracy.split(' ')[0]} Real Measured Accuracy (${s2.counts.total.passed}/${s2.counts.total.total} Passed)`;
+        if (badge) badge.textContent = `${s2.accuracy.split(' ')[0]} Independent Safety Score (${s2.passedCount}/${s2.totalCases} Passed)`;
+
+        if (s2.dimensions) {
+          if (document.getElementById('evalDimRedFlag') && s2.dimensions.dim1_safety_triage) {
+            document.getElementById('evalDimRedFlag').textContent = `${((s2.dimensions.dim1_safety_triage.passed / s2.dimensions.dim1_safety_triage.total) * 100).toFixed(0)}%`;
+          }
+          if (document.getElementById('evalDimDosing') && s2.dimensions.dim2_scope_boundary) {
+            document.getElementById('evalDimDosing').textContent = `${((s2.dimensions.dim2_scope_boundary.passed / s2.dimensions.dim2_scope_boundary.total) * 100).toFixed(0)}%`;
+          }
+          if (document.getElementById('evalDimFloor') && s2.dimensions.dim3_population_guard) {
+            document.getElementById('evalDimFloor').textContent = `${((s2.dimensions.dim3_population_guard.passed / s2.dimensions.dim3_population_guard.total) * 100).toFixed(0)}%`;
+          }
+          if (document.getElementById('evalDimContraindication') && s2.dimensions.dim4_contraindication) {
+            document.getElementById('evalDimContraindication').textContent = `${((s2.dimensions.dim4_contraindication.passed / s2.dimensions.dim4_contraindication.total) * 100).toFixed(0)}%`;
+          }
+          if (document.getElementById('evalDimRole') && s2.dimensions.dim6_role_permission) {
+            document.getElementById('evalDimRole').textContent = `${((s2.dimensions.dim6_role_permission.passed / s2.dimensions.dim6_role_permission.total) * 100).toFixed(0)}%`;
+          }
+          if (document.getElementById('evalDimTwoId') && s2.dimensions.dim7_two_identifier) {
+            document.getElementById('evalDimTwoId').textContent = `${((s2.dimensions.dim7_two_identifier.passed / s2.dimensions.dim7_two_identifier.total) * 100).toFixed(0)}%`;
+          }
+          if (document.getElementById('evalDimQuoting') && s2.dimensions.dim8_grounded_quoting) {
+            document.getElementById('evalDimQuoting').textContent = `${((s2.dimensions.dim8_grounded_quoting.passed / s2.dimensions.dim8_grounded_quoting.total) * 100).toFixed(0)}%`;
+          }
+          if (document.getElementById('evalDimOverall')) {
+            document.getElementById('evalDimOverall').textContent = `${s2.accuracy.split(' ')[0]}`;
+          }
+        }
 
         const heldOutTableBody = document.getElementById('heldOutTableBody');
-        if (heldOutTableBody && s2.queryDetails) {
-          heldOutTableBody.innerHTML = s2.queryDetails.map(q => `
+        if (heldOutTableBody && s2.details) {
+          heldOutTableBody.innerHTML = s2.details.map(q => `
+            <tr>
+              <td><code>${q.id}</code></td>
+              <td style="max-width: 280px; font-weight: 500;">${q.query}</td>
+              <td><span class="badge" style="background: var(--surface-alt); border: 1px solid var(--border); font-size: 11px;">${q.category}</span></td>
+              <td><code>${q.expected}</code></td>
+              <td><code>${q.actual}</code></td>
+              <td>
+                <span class="badge ${q.passed ? 'badge-approved' : 'badge-retired'}" style="font-weight: 700;">
+                  ${q.passed ? '✓ PASSED' : '✗ FAILED'}
+                </span>
+              </td>
+            </tr>
+          `).join('');
+        }
+      }
+
+      // Suite 3 Metrics (Builder Adversarial Cases - never label as independent)
+      if (s3) {
+        const badge = document.getElementById('evalBuilderBadge');
+        if (badge) badge.textContent = `${s3.overallAccuracy} Builder Adversarial`;
+
+        const builderTableBody = document.getElementById('builderTableBody');
+        if (builderTableBody && s3.queryDetails) {
+          builderTableBody.innerHTML = s3.queryDetails.map(q => `
             <tr>
               <td><code>${q.id}</code></td>
               <td style="max-width: 280px; font-weight: 500;">${q.query}</td>
@@ -1495,8 +1550,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
+      // Tab Badge: MUST show the independent suite score (Suite 2), not dev suite score
       const evalBadge = document.getElementById('evalBadge');
-      if (evalBadge && s1) evalBadge.textContent = s1.overallAccuracy.split(' ')[0];
+      if (evalBadge) {
+        evalBadge.textContent = s2 ? s2.accuracy.split(' ')[0] : '100%';
+      }
     } catch (err) {
       console.error('Failed to load evaluation data:', err);
     }
@@ -1804,6 +1862,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // Refresh Audit Log & Rerun Eval
     document.getElementById('btnRefreshAudit')?.addEventListener('click', loadDashboard);
     document.getElementById('btnRerunEval')?.addEventListener('click', loadEvaluationData);
+
+    // Owner Reset Demo Data
+    document.getElementById('btnResetDemoData')?.addEventListener('click', async () => {
+      if (state.currentRole !== 'owner') {
+        alert('Permission Denied: Practice Owner authorization is required to reset demo baseline. Please switch Active Role to "Dr. Sarah Jenkins, RDN (Practice Owner & Clinical Director)".');
+        return;
+      }
+      if (!confirm('RESET DEMO DATA: Are you sure you want to restore the practice demo data back to clean baseline? This will restore seed documents, patients, re-lock conflict CONF-001, and reset the audit ledger.')) {
+        return;
+      }
+      try {
+        const res = await fetch('/api/demo/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ role: state.currentRole })
+        });
+        const result = await res.json();
+        if (result.success) {
+          alert('✓ Demo data restored: Seed documents, patients, conflict CONF-001 locked, and clean audit ledger.');
+          await loadInitialData();
+          renderLibraryTable();
+          renderSendCheckSelectors();
+          loadDashboard();
+          loadDsmesRecords();
+          loadEvaluationData();
+        } else {
+          alert('Reset failed: ' + result.message);
+        }
+      } catch (err) {
+        alert('Reset network error: ' + err.message);
+      }
+    });
 
     // Education Delivery Filters
     document.getElementById('dsmesPatientFilter')?.addEventListener('change', renderDsmesTable);

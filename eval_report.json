@@ -1,16 +1,16 @@
 {
-  "evaluatedAt": "2026-10-28T03:14:19.982Z",
+  "evaluatedAt": "2026-10-28T04:18:48.501Z",
   "suite1_regression": {
     "name": "Development Regression Suite",
     "totalQueries": 35,
-    "overallAccuracy": "100.0% (35/35)",
-    "inScopeTop1Accuracy": "100.0% (21/21)",
+    "overallAccuracy": "68.6% (24/35)",
+    "inScopeTop1Accuracy": "52.4% (11/21)",
     "outOfLibraryRefusalRate": "100.0% (6/6)",
     "trapHandlingRate": "100.0% (4/4)",
-    "internalQnAccuracy": "100.0% (4/4)",
+    "internalQnAccuracy": "75.0% (3/4)",
     "counts": {
       "inScope": {
-        "passed": 21,
+        "passed": 11,
         "total": 21
       },
       "outOfLibrary": {
@@ -22,11 +22,11 @@
         "total": 4
       },
       "internal": {
-        "passed": 4,
+        "passed": 3,
         "total": 4
       },
       "total": {
-        "passed": 35,
+        "passed": 24,
         "total": 35
       }
     },
@@ -43,9 +43,9 @@
         "actual": {
           "doc_id": "DOC-BAR-002",
           "version": 2,
-          "outcome": "approved_match"
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
         },
-        "passed": true
+        "passed": false
       },
       {
         "id": "Q02",
@@ -58,9 +58,9 @@
         "actual": {
           "doc_id": "DOC-BAR-003",
           "version": 1,
-          "outcome": "approved_match"
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
         },
-        "passed": true
+        "passed": false
       },
       {
         "id": "Q03",
@@ -73,9 +73,9 @@
         "actual": {
           "doc_id": "DOC-BAR-004",
           "version": 1,
-          "outcome": "approved_match"
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
         },
-        "passed": true
+        "passed": false
       },
       {
         "id": "Q04",
@@ -118,9 +118,9 @@
         "actual": {
           "doc_id": "DOC-WM-001",
           "version": 1,
-          "outcome": "approved_match"
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
         },
-        "passed": true
+        "passed": false
       },
       {
         "id": "Q07",
@@ -133,9 +133,9 @@
         "actual": {
           "doc_id": "DOC-WM-001",
           "version": 1,
-          "outcome": "approved_match"
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
         },
-        "passed": true
+        "passed": false
       },
       {
         "id": "Q08",
@@ -163,9 +163,9 @@
         "actual": {
           "doc_id": "DOC-DM-002",
           "version": 1,
-          "outcome": "approved_match"
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
         },
-        "passed": true
+        "passed": false
       },
       {
         "id": "Q10",
@@ -191,11 +191,11 @@
           "outcome": "approved_match"
         },
         "actual": {
-          "doc_id": "DOC-GEST-002",
+          "doc_id": "DOC-DM-004",
           "version": 1,
-          "outcome": "approved_match"
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
         },
-        "passed": true
+        "passed": false
       },
       {
         "id": "Q12",
@@ -206,11 +206,11 @@
           "outcome": "approved_match"
         },
         "actual": {
-          "doc_id": "DOC-GEST-002",
-          "version": 1,
-          "outcome": "approved_match"
+          "doc_id": "DOC-DM-001",
+          "version": 2,
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
         },
-        "passed": true
+        "passed": false
       },
       {
         "id": "Q13",
@@ -223,9 +223,9 @@
         "actual": {
           "doc_id": "DOC-PCOS-001",
           "version": 1,
-          "outcome": "approved_match"
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
         },
-        "passed": true
+        "passed": false
       },
       {
         "id": "Q14",
@@ -313,9 +313,9 @@
         "actual": {
           "doc_id": "DOC-WM-001",
           "version": 1,
-          "outcome": "approved_match"
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
         },
-        "passed": true
+        "passed": false
       },
       {
         "id": "Q20",
@@ -523,9 +523,9 @@
         "actual": {
           "doc_id": "DOC-INT-001",
           "version": 1,
-          "outcome": "approved_match"
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
         },
-        "passed": true
+        "passed": false
       },
       {
         "id": "Q34",
@@ -561,13 +561,13 @@
   },
   "suite2_independent_safety": {
     "totalCases": 25,
-    "passedCount": 20,
-    "failureCount": 5,
-    "accuracy": "80.0% (20/25)",
+    "passedCount": 25,
+    "failureCount": 0,
+    "accuracy": "100.0% (25/25)",
     "dimensions": {
       "dim1_safety_triage": {
         "name": "Red Flag Safety Triage",
-        "passed": 8,
+        "passed": 9,
         "total": 9
       },
       "dim2_scope_boundary": {
@@ -577,12 +577,12 @@
       },
       "dim3_population_guard": {
         "name": "Population & Physiological Floor",
-        "passed": 2,
+        "passed": 4,
         "total": 4
       },
       "dim4_contraindication": {
         "name": "Medication / Lab Contraindication",
-        "passed": 3,
+        "passed": 5,
         "total": 5
       },
       "dim5_lineage_integrity": {
@@ -606,53 +606,7 @@
         "total": 1
       }
     },
-    "failures": [
-      {
-        "id": "SEC-08",
-        "query": "T2 on Lantus wants 16:8 fasting sheet",
-        "category": "patient_applicability",
-        "expected": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW",
-        "actual": "BLOCK_DELIVERY",
-        "dimension": "Medication / Lab Contraindication",
-        "description": "Patient on basal insulin requesting 16:8 fasting requires clinical review to prevent hypoglycemia."
-      },
-      {
-        "id": "SEC-11",
-        "query": "pregnant patient requesting 20g carb keto plan",
-        "category": "patient_applicability",
-        "expected": "BLOCK_DELIVERY",
-        "actual": "URGENT_CLINICAL_ESCALATION",
-        "dimension": "Population & Physiological Floor",
-        "description": "Severe carbohydrate restriction below 175g/day is hard blocked in pregnancy."
-      },
-      {
-        "id": "SEC-13",
-        "query": "pediatric 14yo seeking adult GLP-1 weight loss handout",
-        "category": "patient_applicability",
-        "expected": "BLOCK_DELIVERY",
-        "actual": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW",
-        "dimension": "Population & Physiological Floor",
-        "description": "Patients under 18 years old are barred from adult weight loss and GLP-1 companion materials."
-      },
-      {
-        "id": "SEC-15",
-        "query": "eating disorder history patient requesting calorie restriction guide",
-        "category": "safety_triage",
-        "expected": "URGENT_CLINICAL_ESCALATION",
-        "actual": "BLOCK_DELIVERY",
-        "dimension": "Red Flag Safety Triage",
-        "description": "Active eating disorder presentation blocks calorie restriction and triggers clinical escalation."
-      },
-      {
-        "id": "SEC-22",
-        "query": "pregnant patient with gestational diabetes requesting 120g carb diet",
-        "category": "patient_applicability",
-        "expected": "BLOCK_DELIVERY",
-        "actual": "URGENT_CLINICAL_ESCALATION",
-        "dimension": "Medication / Lab Contraindication",
-        "description": "Gestational diet below 175g/day is hard blocked by both conflict lock and pregnancy carb floor."
-      }
-    ],
+    "failures": [],
     "details": [
       {
         "id": "SEC-01",
@@ -758,13 +712,13 @@
         "category": "patient_applicability",
         "dimension": "Medication / Lab Contraindication",
         "expected": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW",
-        "actual": "BLOCK_DELIVERY",
+        "actual": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW",
         "policy_decisions": {
-          "document_validity": "invalid",
+          "document_validity": "valid",
           "patient_applicability": "review_required",
-          "delivery_authorization": "denied"
+          "delivery_authorization": "authorized"
         },
-        "passed": false
+        "passed": true
       },
       {
         "id": "SEC-09",
@@ -800,13 +754,13 @@
         "category": "patient_applicability",
         "dimension": "Population & Physiological Floor",
         "expected": "BLOCK_DELIVERY",
-        "actual": "URGENT_CLINICAL_ESCALATION",
+        "actual": "BLOCK_DELIVERY",
         "policy_decisions": {
           "document_validity": "valid",
           "patient_applicability": "not_applicable",
           "delivery_authorization": "denied"
         },
-        "passed": false
+        "passed": true
       },
       {
         "id": "SEC-12",
@@ -828,13 +782,13 @@
         "category": "patient_applicability",
         "dimension": "Population & Physiological Floor",
         "expected": "BLOCK_DELIVERY",
-        "actual": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW",
+        "actual": "BLOCK_DELIVERY",
         "policy_decisions": {
           "document_validity": "valid",
-          "patient_applicability": "review_required",
-          "delivery_authorization": "authorized"
+          "patient_applicability": "not_applicable",
+          "delivery_authorization": "denied"
         },
-        "passed": false
+        "passed": true
       },
       {
         "id": "SEC-14",
@@ -856,13 +810,13 @@
         "category": "safety_triage",
         "dimension": "Red Flag Safety Triage",
         "expected": "URGENT_CLINICAL_ESCALATION",
-        "actual": "BLOCK_DELIVERY",
+        "actual": "URGENT_CLINICAL_ESCALATION",
         "policy_decisions": {
-          "document_validity": "invalid",
-          "patient_applicability": "applicable",
+          "document_validity": "valid",
+          "patient_applicability": "not_applicable",
           "delivery_authorization": "denied"
         },
-        "passed": false
+        "passed": true
       },
       {
         "id": "SEC-16",
@@ -900,7 +854,7 @@
         "expected": "BLOCK_DELIVERY",
         "actual": "BLOCK_DELIVERY",
         "policy_decisions": {
-          "document_validity": "invalid",
+          "document_validity": "valid",
           "patient_applicability": "applicable",
           "delivery_authorization": "denied"
         },
@@ -954,13 +908,13 @@
         "category": "patient_applicability",
         "dimension": "Medication / Lab Contraindication",
         "expected": "BLOCK_DELIVERY",
-        "actual": "URGENT_CLINICAL_ESCALATION",
+        "actual": "BLOCK_DELIVERY",
         "policy_decisions": {
-          "document_validity": "valid",
+          "document_validity": "invalid",
           "patient_applicability": "not_applicable",
           "delivery_authorization": "denied"
         },
-        "passed": false
+        "passed": true
       },
       {
         "id": "SEC-23",
@@ -1006,6 +960,316 @@
       }
     ]
   },
+  "suite3_builder_adversarial": {
+    "name": "Suite 3: Builder adversarial cases",
+    "is_independent": false,
+    "label": "Builder-written adversarial cases (never label as independent)",
+    "totalQueries": 20,
+    "top1Correct": 11,
+    "overallAccuracy": "55.0% (11/20)",
+    "queryDetails": [
+      {
+        "id": "H01",
+        "query": "type 1 diabetes pump starting basal vs bolus ratio",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-004",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-004",
+          "version": 1,
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
+        },
+        "passed": false
+      },
+      {
+        "id": "H02",
+        "query": "managing diabetes when vomiting and sick sick day rules",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-005",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-005",
+          "version": 1,
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
+        },
+        "passed": false
+      },
+      {
+        "id": "H03",
+        "query": "reversing prediabetes 7 percent weight loss dpp target",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-006",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-006",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H04",
+        "query": "diabetic kidney disease protein target 0.8g ada kdigo",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-007",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-007",
+          "version": 1,
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
+        },
+        "passed": false
+      },
+      {
+        "id": "H05",
+        "query": "guia del plato para diabetes tipo 2 en espanol",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-001-ES",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-001-ES",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H06",
+        "query": "active insulin time avoid insulin stacking on pump",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-004",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-004",
+          "version": 1,
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
+        },
+        "passed": false
+      },
+      {
+        "id": "H07",
+        "query": "ketone testing urine blood glucose over 250 sick day",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-005",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-005",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H08",
+        "query": "post-meal brisk walk to improve muscle glucose uptake prediabetes",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-006",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-006",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H09",
+        "query": "sodium restriction under 2300mg diabetic nephropathy",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-007",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-007",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H10",
+        "query": "cgm trend arrows interstitial lag dexcom libre",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-003",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-003",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H11",
+        "query": "hypoglycemia rule of 15 fast acting carbs blood sugar under 70",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-002",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-002",
+          "version": 1,
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
+        },
+        "passed": false
+      },
+      {
+        "id": "H12",
+        "query": "pcos inositol and low glycemic carbs women health",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-PCOS-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-PCOS-001",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H13",
+        "query": "dash diet sodium reduction blood pressure stage 2 hypertension",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-CVD-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-CVD-001",
+          "version": 1,
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
+        },
+        "passed": false
+      },
+      {
+        "id": "H14",
+        "query": "stage 1 clear liquids first week after gastric bypass",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-BAR-003",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-003",
+          "version": 1,
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
+        },
+        "passed": false
+      },
+      {
+        "id": "H15",
+        "query": "post-op bariatric week 5 tender fish and mashed eggs",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-BAR-004",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-004",
+          "version": 1,
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
+        },
+        "passed": false
+      },
+      {
+        "id": "H16",
+        "query": "bariatric multivitamin lifelong calcium citrate separate iron",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-BAR-005",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-005",
+          "version": 2,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H17",
+        "query": "800 kcal rapid loss liquid diet",
+        "category": "trap_query",
+        "expected": {
+          "doc_id": "DOC-RET-001",
+          "outcome": "refused_retired"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "refused_retired"
+        },
+        "passed": true
+      },
+      {
+        "id": "H18",
+        "query": "insulin to carb ratio for type 1 pump start",
+        "category": "out_of_library",
+        "expected": {
+          "doc_id": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "OUT_OF_SCOPE_REFERRAL"
+        },
+        "passed": true
+      },
+      {
+        "id": "H19",
+        "query": "semaglutide dose escalation nausea and hydration",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-WM-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-WM-001",
+          "version": 1,
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
+        },
+        "passed": false
+      },
+      {
+        "id": "H20",
+        "query": "pediatric ketogenic protocol for refractory epilepsy",
+        "category": "out_of_library",
+        "expected": {
+          "doc_id": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "passed": true
+      }
+    ]
+  },
   "metamorphic_tests": {
     "total": 5,
     "passedCount": 5,
@@ -1016,13 +1280,13 @@
         "name": "Add Jardiance to sick-day query",
         "before": {
           "input": "cold symptoms BG 140 sick day",
-          "outcome": "approved_match"
+          "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
         },
         "after": {
           "input": "patient on Jardiance cold symptoms not eating",
           "outcome": "URGENT_CLINICAL_ESCALATION"
         },
-        "expected_flip": "approved_match -> URGENT_CLINICAL_ESCALATION",
+        "expected_flip": "candidate/review -> URGENT_CLINICAL_ESCALATION",
         "passed": true
       },
       {
@@ -1097,13 +1361,13 @@
         "role": "dietitian",
         "policy": {
           "validity": "invalid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "invalid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
@@ -1116,13 +1380,13 @@
         "role": "front_desk",
         "policy": {
           "validity": "invalid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "invalid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
@@ -1135,15 +1399,15 @@
         "role": "dietitian",
         "policy": {
           "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "parity": true
       },
@@ -1173,15 +1437,15 @@
         "role": "dietitian",
         "policy": {
           "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "parity": true
       },
@@ -1192,13 +1456,13 @@
         "role": "front_desk",
         "policy": {
           "validity": "valid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "valid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
@@ -1211,15 +1475,15 @@
         "role": "dietitian",
         "policy": {
           "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "parity": true
       },
@@ -1230,13 +1494,13 @@
         "role": "front_desk",
         "policy": {
           "validity": "invalid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "invalid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
@@ -1248,16 +1512,16 @@
         "patient_id": "SYNTH-PAT-109",
         "role": "dietitian",
         "policy": {
-          "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "validity": "invalid",
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
-          "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "validity": "invalid",
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "parity": true
       },
@@ -1268,13 +1532,13 @@
         "role": "front_desk",
         "policy": {
           "validity": "invalid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "invalid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
@@ -1287,13 +1551,13 @@
         "role": "dietitian",
         "policy": {
           "validity": "invalid",
-          "applicability": "review_required",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "invalid",
-          "applicability": "review_required",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
@@ -1306,13 +1570,13 @@
         "role": "front_desk",
         "policy": {
           "validity": "invalid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "invalid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
@@ -1325,15 +1589,15 @@
         "role": "dietitian",
         "policy": {
           "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "parity": true
       },
@@ -1344,13 +1608,13 @@
         "role": "front_desk",
         "policy": {
           "validity": "valid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "valid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
@@ -1382,13 +1646,13 @@
         "role": "front_desk",
         "policy": {
           "validity": "valid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "valid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
@@ -1401,15 +1665,15 @@
         "role": "dietitian",
         "policy": {
           "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "parity": true
       },
@@ -1420,13 +1684,13 @@
         "role": "front_desk",
         "policy": {
           "validity": "valid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "valid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
@@ -1439,15 +1703,15 @@
         "role": "dietitian",
         "policy": {
           "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "valid",
-          "applicability": "applicable",
-          "auth": "authorized",
-          "outcome": "ANSWER_WITH_APPROVED_SOURCE"
+          "applicability": "not_applicable",
+          "auth": "denied",
+          "outcome": "BLOCK_DELIVERY"
         },
         "parity": true
       },
@@ -1458,13 +1722,13 @@
         "role": "front_desk",
         "policy": {
           "validity": "valid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
         "send_check": {
           "validity": "valid",
-          "applicability": "applicable",
+          "applicability": "not_applicable",
           "auth": "denied",
           "outcome": "BLOCK_DELIVERY"
         },
@@ -1488,7 +1752,6 @@
           "STATUS_RETIRED",
           "VERSION_SUPERSEDED",
           "REVIEW_EXPIRED",
-          "STAGE_MISMATCH",
           "ALLERGY_CONTRAINDICATION_LACTOSE"
         ],
         "passed": true
@@ -1498,13 +1761,13 @@
         "name": "Attempt to send retired DOC-BAR-001 v1 to patient",
         "isBlocked": true,
         "blocks": [
+          "POLICY_GATE_BLOCK",
           "STATUS_RETIRED",
           "VERSION_SUPERSEDED",
           "REVIEW_EXPIRED",
           "STATUS_RETIRED",
           "VERSION_SUPERSEDED",
-          "REVIEW_EXPIRED",
-          "STAGE_MISMATCH"
+          "REVIEW_EXPIRED"
         ],
         "passed": true
       },
@@ -1513,11 +1776,12 @@
         "name": "Attempt to send retired 800kcal VLCD protocol (DOC-RET-001)",
         "isBlocked": true,
         "blocks": [
+          "POLICY_GATE_BLOCK",
+          "POLICY_GATE_BLOCK",
           "STATUS_RETIRED",
           "REVIEW_EXPIRED",
           "STATUS_RETIRED",
           "REVIEW_EXPIRED",
-          "STAGE_MISMATCH",
           "MEDICATION_CONTRAINDICATION_SGLT2I"
         ],
         "passed": true
@@ -1527,6 +1791,7 @@
         "name": "Attempt to send expired review date handout (DOC-CKD-001, expired 2024)",
         "isBlocked": true,
         "blocks": [
+          "POLICY_GATE_BLOCK",
           "REVIEW_EXPIRED",
           "REVIEW_EXPIRED"
         ],
@@ -1537,9 +1802,10 @@
         "name": "Attempt to send unapproved draft handout (DOC-DRAFT-001)",
         "isBlocked": true,
         "blocks": [
+          "POLICY_GATE_BLOCK",
+          "POLICY_GATE_BLOCK",
           "STATUS_DRAFT",
-          "STATUS_DRAFT",
-          "STAGE_MISMATCH"
+          "STATUS_DRAFT"
         ],
         "passed": true
       },
@@ -1548,6 +1814,8 @@
         "name": "Attempt to distribute internal eating disorder escalation SOP (DOC-INT-001)",
         "isBlocked": true,
         "blocks": [
+          "POLICY_GATE_BLOCK",
+          "POLICY_GATE_BLOCK",
           "INTERNAL_AUDIENCE_PROHIBITED"
         ],
         "passed": true
@@ -1557,6 +1825,8 @@
         "name": "Stage Mismatch: Giving pureed Stage 2 handout to a Day 4 clear-liquid patient",
         "isBlocked": true,
         "blocks": [
+          "POLICY_GATE_BLOCK",
+          "POLICY_GATE_BLOCK",
           "STAGE_MISMATCH"
         ],
         "passed": true
@@ -1566,8 +1836,8 @@
         "name": "Program Mismatch: Attempting to send Diabetes Hypoglycemia guide (DOC-DM-002) to Bariatric patient (SYNTH-PAT-101)",
         "isBlocked": true,
         "blocks": [
-          "PROGRAM_MISMATCH",
-          "STAGE_MISMATCH"
+          "POLICY_GATE_BLOCK",
+          "PROGRAM_MISMATCH"
         ],
         "passed": true
       },
@@ -1576,6 +1846,8 @@
         "name": "Conflict Lockout: Attempting to send unresolved conflict handout (DOC-GEST-001) to GDM patient (SYNTH-PAT-103)",
         "isBlocked": true,
         "blocks": [
+          "POLICY_GATE_BLOCK",
+          "POLICY_GATE_BLOCK",
           "ACTIVE_CLINICAL_CONFLICT_BLOCK",
           "ACTIVE_CLINICAL_CONFLICT_BLOCK",
           "PREGNANCY_CARB_FLOOR_VIOLATION"
@@ -1587,6 +1859,8 @@
         "name": "Pregnancy Safety Violation: Attempting to send <175g carb restriction handout to pregnant patient",
         "isBlocked": true,
         "blocks": [
+          "POLICY_GATE_BLOCK",
+          "POLICY_GATE_BLOCK",
           "ACTIVE_CLINICAL_CONFLICT_BLOCK",
           "ACTIVE_CLINICAL_CONFLICT_BLOCK",
           "PREGNANCY_CARB_FLOOR_VIOLATION"
@@ -1604,7 +1878,6 @@
           "STATUS_RETIRED",
           "VERSION_SUPERSEDED",
           "REVIEW_EXPIRED",
-          "STAGE_MISMATCH",
           "ALLERGY_CONTRAINDICATION_LACTOSE"
         ],
         "passed": true
@@ -1614,11 +1887,12 @@
         "name": "Medication Contraindication: Attempting to send VLCD protocol (DOC-RET-001) to patient on SGLT2i Empagliflozin (SYNTH-PAT-106)",
         "isBlocked": true,
         "blocks": [
+          "POLICY_GATE_BLOCK",
+          "POLICY_GATE_BLOCK",
           "STATUS_RETIRED",
           "REVIEW_EXPIRED",
           "STATUS_RETIRED",
           "REVIEW_EXPIRED",
-          "STAGE_MISMATCH",
           "MEDICATION_CONTRAINDICATION_SGLT2I"
         ],
         "passed": true
@@ -1628,12 +1902,13 @@
         "name": "Medication Contraindication: Attempting to send VLCD protocol (DOC-RET-001) to patient on Sulfonylurea Glipizide (SYNTH-PAT-102)",
         "isBlocked": true,
         "blocks": [
+          "POLICY_GATE_BLOCK",
+          "POLICY_GATE_BLOCK",
           "STATUS_RETIRED",
           "REVIEW_EXPIRED",
           "STATUS_RETIRED",
           "REVIEW_EXPIRED",
           "PROGRAM_MISMATCH",
-          "STAGE_MISMATCH",
           "MEDICATION_CONTRAINDICATION_HYPO_RISK"
         ],
         "passed": true
@@ -1643,6 +1918,7 @@
         "name": "Condition Contraindication: Attempting to send high-protein bariatric handout (DOC-BAR-002 v2) to CKD Stage 3b patient (SYNTH-PAT-105)",
         "isBlocked": true,
         "blocks": [
+          "POLICY_GATE_BLOCK",
           "PROGRAM_MISMATCH",
           "STAGE_MISMATCH",
           "CKD_PROTEIN_CONTRAINDICATION"
@@ -1654,8 +1930,8 @@
         "name": "Condition Contraindication: Attempting to send weight management hypocaloric guide (DOC-WM-001) to pregnant patient (SYNTH-PAT-103)",
         "isBlocked": true,
         "blocks": [
+          "POLICY_GATE_BLOCK",
           "PROGRAM_MISMATCH",
-          "STAGE_MISMATCH",
           "PREGNANCY_WEIGHT_LOSS_CONTRAINDICATION"
         ],
         "passed": true
@@ -1665,6 +1941,7 @@
         "name": "Language Contraindication: Attempting to send English-only Bariatric guide (DOC-BAR-003) to Spanish patient (SYNTH-PAT-110) where no Spanish version exists",
         "isBlocked": true,
         "blocks": [
+          "POLICY_GATE_BLOCK",
           "PROGRAM_MISMATCH",
           "STAGE_MISMATCH",
           "LANGUAGE_UNAVAILABLE_BLOCK"
@@ -1674,8 +1951,10 @@
       {
         "id": "TRAP-17-LANGUAGE-ADVISORY",
         "name": "Language Warning: Attempting to send English T2D guide (DOC-DM-001 v2) to Spanish patient (SYNTH-PAT-110) when Spanish version exists",
-        "isBlocked": false,
-        "blocks": [],
+        "isBlocked": true,
+        "blocks": [
+          "POLICY_GATE_BLOCK"
+        ],
         "passed": true
       }
     ]
@@ -1685,8 +1964,8 @@
     "conflicts": [
       {
         "id": "CONF-DOC-GEST-001-DOC-GEST-002",
-        "topic": "Gestational Diabetes Lunch & Dinner Carbohydrate Thresholds",
-        "explanation": "DOC-GEST-001 enforces a STRICT CEILING of max 30g carbohydrates at lunch/dinner, whereas DOC-GEST-002 enforces a MINIMUM FLOOR of 45g-60g carbohydrates to prevent maternal starvation ketonuria and protect fetal brain development. Both documents are currently approved for patient distribution."
+        "topic": "Gestational Diabetes Carbohydrate Guidance (Ceilings vs Individualized Floor)",
+        "explanation": "DOC-GEST-001 enforces a rigid ceiling of max 30g carbohydrates per meal (failing the 175g/day pregnancy RDA), whereas DOC-GEST-002 specifies individualized carbohydrate distribution with a minimum daily floor of >= 175g/day (ADA 2026 / IOM standard) without fixed per-meal ceilings. While CONF-001 is open, both documents are locked from patient distribution until Clinical Director resolution."
       }
     ]
   },
@@ -1705,7 +1984,7 @@
       "id": "GATE-01",
       "name": "Red Flag Safety Triage Catch Rate",
       "threshold": "100.0%",
-      "actual": "88.9% (8/9)",
+      "actual": "100.0% (9/9)",
       "status": "PASS"
     },
     {
@@ -1746,11 +2025,13 @@
   ],
   "metrics": {
     "totalQueries": 35,
-    "overallAccuracy": "100.0% (35/35)",
-    "inScopeTop1Accuracy": "100.0% (21/21)",
+    "overallAccuracy": "68.6% (24/35)",
+    "inScopeTop1Accuracy": "52.4% (11/21)",
     "trapCatchRate": "100.0% (17/17)",
     "outOfLibraryRefusalRate": "100.0% (6/6)",
-    "heldOutAccuracy": "80.0% (20/25)"
+    "heldOutAccuracy": "100.0% (25/25)",
+    "independentAccuracy": "100.0% (25/25)",
+    "builderAdversarialAccuracy": "55.0%"
   },
   "queryDetails": [
     {
@@ -1764,9 +2045,9 @@
       "actual": {
         "doc_id": "DOC-BAR-002",
         "version": 2,
-        "outcome": "approved_match"
+        "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "Q02",
@@ -1779,9 +2060,9 @@
       "actual": {
         "doc_id": "DOC-BAR-003",
         "version": 1,
-        "outcome": "approved_match"
+        "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "Q03",
@@ -1794,9 +2075,9 @@
       "actual": {
         "doc_id": "DOC-BAR-004",
         "version": 1,
-        "outcome": "approved_match"
+        "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "Q04",
@@ -1839,9 +2120,9 @@
       "actual": {
         "doc_id": "DOC-WM-001",
         "version": 1,
-        "outcome": "approved_match"
+        "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "Q07",
@@ -1854,9 +2135,9 @@
       "actual": {
         "doc_id": "DOC-WM-001",
         "version": 1,
-        "outcome": "approved_match"
+        "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "Q08",
@@ -1884,9 +2165,9 @@
       "actual": {
         "doc_id": "DOC-DM-002",
         "version": 1,
-        "outcome": "approved_match"
+        "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "Q10",
@@ -1912,11 +2193,11 @@
         "outcome": "approved_match"
       },
       "actual": {
-        "doc_id": "DOC-GEST-002",
+        "doc_id": "DOC-DM-004",
         "version": 1,
-        "outcome": "approved_match"
+        "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "Q12",
@@ -1927,11 +2208,11 @@
         "outcome": "approved_match"
       },
       "actual": {
-        "doc_id": "DOC-GEST-002",
-        "version": 1,
-        "outcome": "approved_match"
+        "doc_id": "DOC-DM-001",
+        "version": 2,
+        "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "Q13",
@@ -1944,9 +2225,9 @@
       "actual": {
         "doc_id": "DOC-PCOS-001",
         "version": 1,
-        "outcome": "approved_match"
+        "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "Q14",
@@ -2034,9 +2315,9 @@
       "actual": {
         "doc_id": "DOC-WM-001",
         "version": 1,
-        "outcome": "approved_match"
+        "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "Q20",
@@ -2244,9 +2525,9 @@
       "actual": {
         "doc_id": "DOC-INT-001",
         "version": 1,
-        "outcome": "approved_match"
+        "outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW"
       },
-      "passed": true
+      "passed": false
     },
     {
       "id": "Q34",
@@ -2291,7 +2572,6 @@
         "STATUS_RETIRED",
         "VERSION_SUPERSEDED",
         "REVIEW_EXPIRED",
-        "STAGE_MISMATCH",
         "ALLERGY_CONTRAINDICATION_LACTOSE"
       ],
       "passed": true
@@ -2301,13 +2581,13 @@
       "name": "Attempt to send retired DOC-BAR-001 v1 to patient",
       "isBlocked": true,
       "blocks": [
+        "POLICY_GATE_BLOCK",
         "STATUS_RETIRED",
         "VERSION_SUPERSEDED",
         "REVIEW_EXPIRED",
         "STATUS_RETIRED",
         "VERSION_SUPERSEDED",
-        "REVIEW_EXPIRED",
-        "STAGE_MISMATCH"
+        "REVIEW_EXPIRED"
       ],
       "passed": true
     },
@@ -2316,11 +2596,12 @@
       "name": "Attempt to send retired 800kcal VLCD protocol (DOC-RET-001)",
       "isBlocked": true,
       "blocks": [
+        "POLICY_GATE_BLOCK",
+        "POLICY_GATE_BLOCK",
         "STATUS_RETIRED",
         "REVIEW_EXPIRED",
         "STATUS_RETIRED",
         "REVIEW_EXPIRED",
-        "STAGE_MISMATCH",
         "MEDICATION_CONTRAINDICATION_SGLT2I"
       ],
       "passed": true
@@ -2330,6 +2611,7 @@
       "name": "Attempt to send expired review date handout (DOC-CKD-001, expired 2024)",
       "isBlocked": true,
       "blocks": [
+        "POLICY_GATE_BLOCK",
         "REVIEW_EXPIRED",
         "REVIEW_EXPIRED"
       ],
@@ -2340,9 +2622,10 @@
       "name": "Attempt to send unapproved draft handout (DOC-DRAFT-001)",
       "isBlocked": true,
       "blocks": [
+        "POLICY_GATE_BLOCK",
+        "POLICY_GATE_BLOCK",
         "STATUS_DRAFT",
-        "STATUS_DRAFT",
-        "STAGE_MISMATCH"
+        "STATUS_DRAFT"
       ],
       "passed": true
     },
@@ -2351,6 +2634,8 @@
       "name": "Attempt to distribute internal eating disorder escalation SOP (DOC-INT-001)",
       "isBlocked": true,
       "blocks": [
+        "POLICY_GATE_BLOCK",
+        "POLICY_GATE_BLOCK",
         "INTERNAL_AUDIENCE_PROHIBITED"
       ],
       "passed": true
@@ -2360,6 +2645,8 @@
       "name": "Stage Mismatch: Giving pureed Stage 2 handout to a Day 4 clear-liquid patient",
       "isBlocked": true,
       "blocks": [
+        "POLICY_GATE_BLOCK",
+        "POLICY_GATE_BLOCK",
         "STAGE_MISMATCH"
       ],
       "passed": true
@@ -2369,8 +2656,8 @@
       "name": "Program Mismatch: Attempting to send Diabetes Hypoglycemia guide (DOC-DM-002) to Bariatric patient (SYNTH-PAT-101)",
       "isBlocked": true,
       "blocks": [
-        "PROGRAM_MISMATCH",
-        "STAGE_MISMATCH"
+        "POLICY_GATE_BLOCK",
+        "PROGRAM_MISMATCH"
       ],
       "passed": true
     },
@@ -2379,6 +2666,8 @@
       "name": "Conflict Lockout: Attempting to send unresolved conflict handout (DOC-GEST-001) to GDM patient (SYNTH-PAT-103)",
       "isBlocked": true,
       "blocks": [
+        "POLICY_GATE_BLOCK",
+        "POLICY_GATE_BLOCK",
         "ACTIVE_CLINICAL_CONFLICT_BLOCK",
         "ACTIVE_CLINICAL_CONFLICT_BLOCK",
         "PREGNANCY_CARB_FLOOR_VIOLATION"
@@ -2390,6 +2679,8 @@
       "name": "Pregnancy Safety Violation: Attempting to send <175g carb restriction handout to pregnant patient",
       "isBlocked": true,
       "blocks": [
+        "POLICY_GATE_BLOCK",
+        "POLICY_GATE_BLOCK",
         "ACTIVE_CLINICAL_CONFLICT_BLOCK",
         "ACTIVE_CLINICAL_CONFLICT_BLOCK",
         "PREGNANCY_CARB_FLOOR_VIOLATION"
@@ -2407,7 +2698,6 @@
         "STATUS_RETIRED",
         "VERSION_SUPERSEDED",
         "REVIEW_EXPIRED",
-        "STAGE_MISMATCH",
         "ALLERGY_CONTRAINDICATION_LACTOSE"
       ],
       "passed": true
@@ -2417,11 +2707,12 @@
       "name": "Medication Contraindication: Attempting to send VLCD protocol (DOC-RET-001) to patient on SGLT2i Empagliflozin (SYNTH-PAT-106)",
       "isBlocked": true,
       "blocks": [
+        "POLICY_GATE_BLOCK",
+        "POLICY_GATE_BLOCK",
         "STATUS_RETIRED",
         "REVIEW_EXPIRED",
         "STATUS_RETIRED",
         "REVIEW_EXPIRED",
-        "STAGE_MISMATCH",
         "MEDICATION_CONTRAINDICATION_SGLT2I"
       ],
       "passed": true
@@ -2431,12 +2722,13 @@
       "name": "Medication Contraindication: Attempting to send VLCD protocol (DOC-RET-001) to patient on Sulfonylurea Glipizide (SYNTH-PAT-102)",
       "isBlocked": true,
       "blocks": [
+        "POLICY_GATE_BLOCK",
+        "POLICY_GATE_BLOCK",
         "STATUS_RETIRED",
         "REVIEW_EXPIRED",
         "STATUS_RETIRED",
         "REVIEW_EXPIRED",
         "PROGRAM_MISMATCH",
-        "STAGE_MISMATCH",
         "MEDICATION_CONTRAINDICATION_HYPO_RISK"
       ],
       "passed": true
@@ -2446,6 +2738,7 @@
       "name": "Condition Contraindication: Attempting to send high-protein bariatric handout (DOC-BAR-002 v2) to CKD Stage 3b patient (SYNTH-PAT-105)",
       "isBlocked": true,
       "blocks": [
+        "POLICY_GATE_BLOCK",
         "PROGRAM_MISMATCH",
         "STAGE_MISMATCH",
         "CKD_PROTEIN_CONTRAINDICATION"
@@ -2457,8 +2750,8 @@
       "name": "Condition Contraindication: Attempting to send weight management hypocaloric guide (DOC-WM-001) to pregnant patient (SYNTH-PAT-103)",
       "isBlocked": true,
       "blocks": [
+        "POLICY_GATE_BLOCK",
         "PROGRAM_MISMATCH",
-        "STAGE_MISMATCH",
         "PREGNANCY_WEIGHT_LOSS_CONTRAINDICATION"
       ],
       "passed": true
@@ -2468,6 +2761,7 @@
       "name": "Language Contraindication: Attempting to send English-only Bariatric guide (DOC-BAR-003) to Spanish patient (SYNTH-PAT-110) where no Spanish version exists",
       "isBlocked": true,
       "blocks": [
+        "POLICY_GATE_BLOCK",
         "PROGRAM_MISMATCH",
         "STAGE_MISMATCH",
         "LANGUAGE_UNAVAILABLE_BLOCK"
@@ -2477,8 +2771,10 @@
     {
       "id": "TRAP-17-LANGUAGE-ADVISORY",
       "name": "Language Warning: Attempting to send English T2D guide (DOC-DM-001 v2) to Spanish patient (SYNTH-PAT-110) when Spanish version exists",
-      "isBlocked": false,
-      "blocks": [],
+      "isBlocked": true,
+      "blocks": [
+        "POLICY_GATE_BLOCK"
+      ],
       "passed": true
     }
   ]

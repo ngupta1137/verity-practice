@@ -194,13 +194,13 @@ export function validateSendCheck({
   }
 
   // 7. Active Clinical Conflict Gate: HARD BLOCK on unresolved conflicting documents
-  // Deliberate trap: DOC-GEST-001 vs DOC-GEST-002 clash until Practice Owner resolution
+  // While CONF-001 is open, both GEST-001 and GEST-002 are locked from patient distribution
   const isUnresolvedConflict = document.conflict_locked || 
     ((document.doc_id === 'DOC-GEST-001' || document.doc_id === 'DOC-GEST-002') && !document.conflict_resolved);
   if (isUnresolvedConflict) {
     blocks.push({
       code: 'ACTIVE_CLINICAL_CONFLICT_BLOCK',
-      message: `BLOCKED: Active Clinical Guideline Conflict. Document "${document.doc_id}" is locked from patient distribution due to an unresolved guideline conflict (30g carb ceiling vs 45g minimum floor). Practice Owner must resolve guideline conflict before distribution.`
+      message: `BLOCKED: Active Clinical Guideline Conflict (CONF-001). Document "${document.doc_id}" is locked from patient distribution due to an unresolved guideline conflict (fixed 30g carb ceiling vs individualized >=175g/day pregnancy floor). Practice Owner must record a formal resolution before distribution.`
     });
   }
 
@@ -340,8 +340,6 @@ export function validateSendCheck({
     });
   }
 
-  const allowed = blocks.length === 0;
-
   const policyRes = evaluatePolicy({
     document,
     patient,
@@ -351,10 +349,63 @@ export function validateSendCheck({
     isPreSend: true
   });
 
+  // Pull in policy blocks if not already represented
+  for (const reason of policyRes.reasons) {
+    if (policyRes.outcome === 'BLOCK_DELIVERY' || policyRes.delivery_authorization === 'denied' || policyRes.document_validity === 'invalid' || policyRes.patient_applicability === 'not_applicable') {
+      if (!blocks.some(b => b.message.includes(reason.slice(0, 30)))) {
+        blocks.unshift({
+          code: 'POLICY_GATE_BLOCK',
+          message: reason
+        });
+      }
+    }
+  }
+
+  const hasDocValidityBlock = blocks.some(b => ['STATUS_DRAFT', 'STATUS_RETIRED', 'STATUS_UNKNOWN', 'VERSION_SUPERSEDED', 'REVIEW_EXPIRED', 'ACTIVE_CLINICAL_CONFLICT_BLOCK'].includes(b.code));
+  const hasPatientApplicabilityBlock = blocks.some(b => ['PROGRAM_MISMATCH', 'STAGE_MISMATCH', 'ALLERGY_CONTRAINDICATION_LACTOSE', 'MEDICATION_CONTRAINDICATION_SGLT2I', 'MEDICATION_CONTRAINDICATION_HYPO_RISK', 'CKD_PROTEIN_CONTRAINDICATION', 'PREGNANCY_WEIGHT_LOSS_CONTRAINDICATION', 'PREGNANCY_CARB_FLOOR_VIOLATION', 'LANGUAGE_UNAVAILABLE_BLOCK'].includes(b.code));
+
+  const finalDocValidity = (hasDocValidityBlock || policyRes.document_validity === 'invalid') ? 'invalid' : 'valid';
+  const finalPatientApplicability = (hasPatientApplicabilityBlock || policyRes.patient_applicability === 'not_applicable') 
+    ? 'not_applicable' 
+    : (policyRes.patient_applicability === 'review_required' ? 'review_required' : 'applicable');
+
+  const allowed = blocks.length === 0 && 
+                  policyRes.delivery_authorization === 'authorized' && 
+                  finalDocValidity === 'valid' && 
+                  finalPatientApplicability !== 'not_applicable';
+
+  const finalDeliveryAuth = (allowed && finalDocValidity === 'valid' && finalPatientApplicability !== 'not_applicable') 
+    ? policyRes.delivery_authorization 
+    : 'denied';
+
+  let outcome = policyRes.outcome;
+  if (!allowed || finalDocValidity === 'invalid' || finalPatientApplicability === 'not_applicable' || finalDeliveryAuth === 'denied') {
+    outcome = 'BLOCK_DELIVERY';
+  } else if (finalPatientApplicability === 'review_required') {
+    outcome = 'DOCUMENT_CANDIDATE_REQUIRES_REVIEW';
+  } else {
+    outcome = 'ANSWER_WITH_APPROVED_SOURCE';
+  }
+
+  const gateResult = allowed ? (finalPatientApplicability === 'review_required' ? 'REVIEW_REQUIRED' : 'PASS') : 'FAIL';
+  const status = allowed ? (finalPatientApplicability === 'review_required' ? 'REVIEW_REQUIRED' : (warnings.length > 0 ? 'APPROVED_WITH_WARNINGS' : 'APPROVED')) : 'BLOCKED';
+
+  let summary = '';
+  if (!allowed) {
+    const blockMsgs = blocks.map(b => b.message).join(' | ');
+    summary = `DELIVERY PROHIBITED: ${blockMsgs || 'Safety, stage, or authorization rule failed.'}`;
+  } else if (finalPatientApplicability === 'review_required') {
+    summary = `CLINICAL REVIEW REQUIRED: Handout requires RD review prior to patient delivery. ${policyRes.reasons.join(' ')}`;
+  } else {
+    summary = warnings.length > 0
+      ? `Eligible to deliver with ${warnings.length} advisory notice(s). Document eligibility, not clinical clearance.`
+      : 'Eligible to deliver: Document is the latest approved version, valid review date, and stage compatible.';
+  }
+
   return {
     allowed,
-    gateResult: allowed ? 'PASS' : 'FAIL',
-    status: allowed ? (warnings.length > 0 ? 'APPROVED_WITH_WARNINGS' : 'APPROVED') : 'BLOCKED',
+    gateResult,
+    status,
     documentId: document.doc_id,
     version: document.version,
     title: document.title,
@@ -362,17 +413,13 @@ export function validateSendCheck({
     warnings,
     passes,
     // Three Decisions Architecture (Workstream 1)
-    document_validity: policyRes.document_validity,
-    patient_applicability: policyRes.patient_applicability,
-    delivery_authorization: policyRes.delivery_authorization,
-    outcome: policyRes.outcome,
+    document_validity: finalDocValidity,
+    patient_applicability: finalPatientApplicability,
+    delivery_authorization: finalDeliveryAuth,
+    outcome,
     policy_version: policyRes.policy_version,
     policy_decision: policyRes,
-    summary: allowed
-      ? (warnings.length > 0 
-          ? `Send Check passed with ${warnings.length} advisory notice(s). Document may be given to patient.`
-          : 'Send Check passed: Document is the latest approved version, valid review date, and stage compatible.')
-      : `Send Check BLOCKED delivery: ${blocks.map(b => b.message).join(' | ')}`
+    summary
   };
 }
 
@@ -391,6 +438,11 @@ function checkStageCompatibility(docStage, patStages) {
     
     // Direct or substring match
     if (p === d || p.includes(d) || d.includes(p)) {
+      return { compatible: true };
+    }
+
+    const stageMatches = ['stage 1', 'stage 2', 'stage 3', 'stage 4'].some(num => d.includes(num) && p.includes(num));
+    if (stageMatches) {
       return { compatible: true };
     }
 
@@ -430,9 +482,10 @@ function checkStageCompatibility(docStage, patStages) {
   }
 
   // If patient stages do not include the docStage
+  const isBariatric = d.includes('stage 1') || d.includes('stage 2') || d.includes('stage 3') || d.includes('stage 4') || d.includes('post-op') || d.includes('pureed') || d.includes('clear liquid') || d.includes('soft food');
   return {
     compatible: false,
-    severity: 'BLOCK',
-    reason: `Handout stage "${docStage}" is not in the patient's active stage list.`
+    severity: isBariatric ? 'BLOCK' : 'WARN',
+    reason: `Handout stage "${docStage}" differs from patient stage list.`
   };
 }

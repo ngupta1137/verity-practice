@@ -248,16 +248,22 @@ app.post('/api/send-check', (req, res) => {
     }
 
     if (recipient_verification && patient) {
-      const providedDob = (recipient_verification.date_of_birth || '').trim();
+      const providedDob = (recipient_verification.date_of_birth || recipient_verification.dob || req.body.recipient_dob || '').trim();
       const expectedDob = (patient.date_of_birth || '').trim();
-      if (!providedDob || providedDob !== expectedDob) {
+      const providedName = (recipient_verification.name || req.body.recipient_name || '').trim();
+      const expectedName = (patient.name || '').trim();
+
+      const isNameMatch = !providedName || providedName.toLowerCase() === expectedName.toLowerCase();
+      const isDobMatch = providedDob === expectedDob;
+
+      if (!providedDob || !isDobMatch || !isNameMatch) {
         check.allowed = false;
         check.gateResult = 'FAIL';
         check.delivery_authorization = 'denied';
         check.status = 'BLOCKED';
         check.blocks.unshift({
-          code: 'FRONT_DESK_DOB_MISMATCH_BLOCK',
-          message: `DENIED: Front Desk patient verification failed. Provided Date of Birth ("${providedDob}") does not match patient record ("${expectedDob}"). Delivery halted for wrong-patient protection.`
+          code: 'FRONT_DESK_IDENTIFIER_MISMATCH',
+          message: 'DENIED: Front Desk patient verification failed. Identifiers do not match.'
         });
       }
     }
@@ -292,11 +298,16 @@ app.post('/api/send', (req, res) => {
 
   // Front Desk Action-Level Permissions Check (Workstream 4)
   if (role === 'front_desk') {
-    const inputDob = (recipient_verification?.date_of_birth || req.body.recipient_dob || '').trim();
+    const inputDob = (recipient_verification?.date_of_birth || recipient_verification?.dob || req.body.recipient_dob || '').trim();
+    const inputName = (recipient_verification?.name || req.body.recipient_name || '').trim();
     const patDob = (patient?.date_of_birth || '').trim();
+    const patName = (patient?.name || '').trim();
 
-    if (!inputDob || inputDob !== patDob) {
-      const failMsg = `DENIED: Front Desk patient verification failed. Provided Date of Birth ("${inputDob}") does not match patient record ("${patDob}"). Delivery halted for wrong-patient protection.`;
+    const isNameMatch = !inputName || inputName.toLowerCase() === patName.toLowerCase();
+    const isDobMatch = inputDob === patDob;
+
+    if (!inputDob || !isDobMatch || !isNameMatch) {
+      const failMsg = 'DENIED: Front Desk patient verification failed. Identifiers do not match.';
       auditLedger.logEvent({
         actor,
         role,
@@ -306,7 +317,7 @@ app.post('/api/send', (req, res) => {
         doc_title: doc.title,
         patient_id,
         recipient_name: patient?.name,
-        patient_context: patient ? `${patient.name} (DOB ${patient.date_of_birth})` : 'Unspecified',
+        patient_context: patient ? `${patient.name} (Verification Failed)` : 'Unspecified',
         status: 'BLOCKED',
         gate_result: 'FAIL',
         details: failMsg
@@ -315,7 +326,7 @@ app.post('/api/send', (req, res) => {
       return res.status(403).json({
         success: false,
         blocked: true,
-        message: failMsg
+        message: 'Identifiers do not match.'
       });
     }
 
@@ -536,7 +547,7 @@ app.post('/api/conflicts/resolve', (req, res) => {
     });
   }
 
-  const rationale = written_rationale || resolution_note;
+  const rationale = written_rationale || resolution_note || req.body.rationale;
   if (!rationale || rationale.trim().length < 15) {
     return res.status(400).json({
       error: 'Conflict resolution requires a written clinical rationale explaining the decision and evidence base (minimum 15 characters).'
@@ -656,6 +667,76 @@ app.post('/api/conflicts/exposure-review', (req, res) => {
     success: true,
     message: `Patient ${item.patient_name} exposure review marked completed.`,
     item
+  });
+});
+
+// 11. Owner Demo Data Reset API (Item 7: Demo Reset)
+app.post('/api/demo/reset', (req, res) => {
+  const { role, actor } = req.body || {};
+  if (role !== 'owner' && role !== 'clinical_director') {
+    return res.status(403).json({ success: false, message: 'Permission Denied: Only the Practice Owner or Clinical Director can reset demo data.' });
+  }
+
+  // Restore seed documents
+  documents = loadJSON('data/documents.json');
+  const g1 = documents.find(d => d.doc_id === 'DOC-GEST-001');
+  if (g1) {
+    g1.status = 'approved';
+    g1.conflict_locked = true;
+    g1.conflict_resolved = false;
+  }
+  const g2 = documents.find(d => d.doc_id === 'DOC-GEST-002');
+  if (g2) {
+    g2.status = 'approved';
+    g2.conflict_locked = true;
+    g2.conflict_resolved = false;
+  }
+  try {
+    const docPath = path.resolve(process.cwd(), 'data/documents.json');
+    if (fs.existsSync(docPath)) {
+      fs.writeFileSync(docPath, JSON.stringify(documents, null, 2), 'utf8');
+    }
+  } catch (err) {}
+
+  // Restore seed synthetic patients
+  patients = loadJSON('data/synthetic_patients.json');
+
+  // Reset audit log to empty
+  auditLedger.events = [];
+  try {
+    const auditPath = path.resolve(process.cwd(), 'data/audit_log.json');
+    if (fs.existsSync(auditPath)) {
+      fs.writeFileSync(auditPath, JSON.stringify([], null, 2), 'utf8');
+    }
+  } catch (err) {}
+
+  // Reset exposure queue to empty
+  exposureQueue = [];
+
+  // Reset DSMES records to clean seed
+  dsmesRecords = loadJSON('data/dsmes_records.json');
+
+  // Re-index retrieval engine
+  rightDocEngine.updateDocuments(documents);
+
+  // Log the reset event in fresh audit log
+  auditLedger.logEvent({
+    actor: 'Dr. Sarah Jenkins, RDN',
+    role: 'owner',
+    action: 'DEMO_DATA_RESET',
+    doc_id: 'SYSTEM',
+    version: 1,
+    doc_title: 'System Seed Reset',
+    status: 'RESET',
+    gate_result: 'PASS',
+    details: 'Practice Owner reset demo data: seed documents, patients, conflict CONF-001 locked, and empty audit log restored.'
+  });
+
+  res.json({
+    success: true,
+    message: 'Demo data successfully reset: seed documents, patients, conflict CONF-001 re-locked, and empty audit log restored.',
+    activeConflicts: detectConflicts(documents).length,
+    eventsCount: auditLedger.getEntries().length
   });
 });
 

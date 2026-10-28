@@ -12,7 +12,7 @@
       "approved_by": "Dr. Sarah Jenkins, RDN",
       "effective_date": "2026-10-27",
       "title": "SGLT2 Inhibitor Euglycemic DKA Red Flag Triage",
-      "description": "Patients taking SGLT2 inhibitors (Jardiance, Farxiga, Invokana, Steglatro) experiencing illness, vomiting, not eating, ketogenic diet, or fasting are at high risk of euglycemic DKA even with near-normal glucose. Requires immediate clinical escalation. Hold SGLT2i immediately. Routine sick-day guidance may only be provided secondarily.",
+      "description": "Patients taking SGLT2 inhibitors (Jardiance, Farxiga, Invokana, Steglatro) experiencing illness, vomiting, not eating, ketogenic diet, or fasting are at high risk of euglycemic DKA even with near-normal glucose. Requires immediate clinical escalation to prescriber per sick-day plan; check ketones; seek emergency care. Routine sick-day guidance may only be provided secondarily.",
       "action": "URGENT_CLINICAL_ESCALATION",
       "primary_document": "DOC-INT-004",
       "secondary_document_allowed": true

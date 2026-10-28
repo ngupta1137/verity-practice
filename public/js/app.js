@@ -263,6 +263,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Workstream 2: Emergency Safety Escalation Before Retrieval
     if (data.outcome === 'URGENT_CLINICAL_ESCALATION') {
       const secDoc = data.secondaryDocument;
+
+      let immediateAction = 'Contact practice on-call clinician per escalation protocol. Seek emergency care for severe or unstable symptoms.';
+      const combinedText = (data.message || '') + ' ' + (data.query || '');
+      if (/eating disorder|purging|anorexia|bulimia|skipping meals/i.test(combinedText)) {
+        immediateAction = 'Immediate medical evaluation and referral to ED-specialized care team; no restrictive handouts. Do not distribute calorie restriction, weight loss, or fasting materials.';
+      } else if (/sglt2|dka|ketones|jardiance|farxiga|invokana|steglatro/i.test(combinedText)) {
+        immediateAction = "Contact the prescriber or on-call clinician per the patient's sick-day plan; check ketones if available; seek emergency care for vomiting, abdominal pain or trouble breathing.";
+      } else if (/potassium|hyperkalemia|cardiac/i.test(combinedText)) {
+        immediateAction = 'Urgently contact treating nephrologist / on-call physician for stat verification and acute management; seek emergency care for palpitations, weakness or chest pain.';
+      } else if (/vomit|intractable|fluid|dehydration/i.test(combinedText)) {
+        immediateAction = 'Immediate escalation to surgical care team, prescribing clinician, or Emergency Department. Do not advise oral fluid rehydration alone.';
+      } else if (/hypo|unconscious|seizure/i.test(combinedText)) {
+        immediateAction = 'Administer emergency Glucagon (nasal Baqsimi or injectable) immediately and call 911. Do not place anything in mouth.';
+      }
+
       rightDocResults.innerHTML = `
         <div class="result-banner blocked" style="border-left: 6px solid #D32F2F; background: #FFEBEE; padding: 18px;">
           <div>
@@ -285,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div style="background: #FAFAFA; padding: 12px; border-radius: var(--radius-sm); margin-top: 10px; font-size: 13px; border-left: 3px solid #D32F2F;">
             <strong>Immediate Clinical Action:</strong>
-            <p style="margin: 4px 0 0 0; color: var(--ink);">Contact practice on-call physician / diabetes care team immediately or instruct patient to access emergency medical services. Do not provide routine nutrition modifications during acute metabolic crises.</p>
+            <p style="margin: 4px 0 0 0; color: var(--ink);">${immediateAction}</p>
           </div>
         </div>
 
@@ -334,11 +349,50 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Blocked Right Doc outcome
+    if (data.outcome === 'BLOCK_DELIVERY') {
+      const topBlocked = data.topMatch;
+      const blockedDoc = topBlocked?.document;
+      rightDocResults.innerHTML = `
+        <div class="result-banner blocked" style="border-left: 6px solid #D32F2F; background: #FFEBEE; padding: 18px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 18px;">⛔</span>
+              <strong style="color: #D32F2F; font-size: 16px;">DELIVERY PROHIBITED</strong>
+              <span class="badge" style="background: #D32F2F; color: #fff;">BLOCKED</span>
+            </div>
+            <p style="margin-top: 8px; font-size: 14px; color: #B71C1C; line-height: 1.5;">${data.message || (data.reasons && data.reasons[0]) || 'Delivery is prohibited for this clinical request.'}</p>
+          </div>
+        </div>
+        ${blockedDoc ? `
+          <div class="citation-card" style="margin-top: 16px; border-color: #ef4444; opacity: 0.9;">
+            <div class="citation-header">
+              <div>
+                <span class="badge badge-retired">BLOCKED CANDIDATE</span>
+                <span class="badge badge-expired" style="margin-left: 6px;">${blockedDoc.doc_id} v${blockedDoc.version}</span>
+                <span class="citation-title" style="margin-left: 10px;">${blockedDoc.title}</span>
+              </div>
+            </div>
+            <div style="margin-top: 8px; font-size: 12px; color: #B71C1C;">
+              <strong>Blocking Reason:</strong> ${data.message || (data.reasons && data.reasons[0])}
+            </div>
+          </div>
+        ` : ''}
+      `;
+      return;
+    }
+
     let bannerClass = 'approved';
     let bannerTitle = 'APPROVED CLINICAL DOCUMENT MATCH';
     if (data.outcome === 'superseded_redirect') {
       bannerClass = 'superseded';
       bannerTitle = 'SUPERSEDED NOTICE: ROUTED TO CURRENT VERSION';
+    } else if (data.outcome === 'DOCUMENT_CANDIDATE_REQUIRES_REVIEW') {
+      bannerClass = 'review';
+      bannerTitle = 'CLINICAL REVIEW REQUIRED: CANDIDATE HANDOUT';
+    } else if (data.outcome === 'BLOCK_DELIVERY' || data.delivery_authorization === 'denied' || (data.topMatch?.sendCheck && !data.topMatch.sendCheck.allowed)) {
+      bannerClass = 'blocked';
+      bannerTitle = 'DELIVERY PROHIBITED';
     }
 
     const top = data.topMatch;
@@ -554,23 +608,28 @@ document.addEventListener('DOMContentLoaded', () => {
       gateResultBadge.textContent = 'Delivery prohibited';
     }
 
+    const outcomeCode = isEligible ? (check.outcome || 'ANSWER_WITH_APPROVED_SOURCE') : 'BLOCK_DELIVERY';
+    const reasonText = (check.summary || '').replace(/^DELIVERY PROHIBITED:\s*/i, '');
+
     let html = `
       <div class="result-banner ${isEligible ? 'approved' : 'blocked'}" style="margin-bottom: 16px;">
         <div>
           <div style="display: flex; align-items: baseline; gap: 8px;">
             <strong style="font-size: 15px;">${isEligible ? 'Eligible to deliver' : 'Delivery prohibited'}</strong>
-            <span style="font-size: 12px; font-weight: 400; color: var(--ink-muted); font-style: italic;">
-              ${isEligible ? 'Document eligibility, not clinical clearance.' : 'Safety, stage, or governance breach intercepted.'}
-            </span>
+            ${isEligible ? `
+              <span style="font-size: 12px; font-weight: 400; color: var(--ink-muted); font-style: italic;">
+                Document eligibility, not clinical clearance.
+              </span>
+            ` : ''}
           </div>
-          <p style="margin-top: 6px; font-size: 13px;">${check.summary}</p>
+          <p style="margin-top: 6px; font-size: 13px;">${isEligible ? check.summary : reasonText}</p>
         </div>
       </div>
 
       <!-- Workstream 1: Three Decisions Card -->
       <div style="background: #FAFAFA; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 16px;">
         <div style="font-size: 12px; font-weight: 700; color: var(--ink-muted); text-transform: uppercase; margin-bottom: 8px;">
-          Policy Decision Engine (v${check.policy_version || '2.0.0'}) &bull; Outcome: <span style="color: var(--ink); font-weight: 800;">${check.outcome || 'EVALUATED'}</span>
+          Policy Decision Engine (v${check.policy_version || '2.0.0'}) &bull; Outcome: <span style="color: var(--ink); font-weight: 800;">${outcomeCode}</span>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center;">
           <div style="padding: 8px; border-radius: 4px; background: ${check.document_validity === 'valid' ? '#E8F5E9' : '#FFEBEE'}; border: 1px solid ${check.document_validity === 'valid' ? '#C8E6C9' : '#FFCDD2'};">
@@ -1447,13 +1506,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      const s2 = data.suite2_independent_safety;
+      const s2 = data.suite2_builder_safety;
       const s3 = data.suite3_builder_adversarial;
 
-      // Suite 2 Metrics (25 Independent Safety Cases from Review Section 8 Verbatim)
+      const suite1Badge = document.getElementById('evalSuite1Badge');
+      if (suite1Badge && s1) {
+        suite1Badge.textContent = `${s1.overallAccuracy.split(' ')[0]} Accuracy (${s1.counts.total.passed}/${s1.counts.total.total})`;
+      }
+
+      // Suite 2 Metrics (25 Safety Cases)
       if (s2) {
         const badge = document.getElementById('evalHeldOutBadge');
-        if (badge) badge.textContent = `${s2.accuracy.split(' ')[0]} Independent Safety Score (${s2.passedCount}/${s2.totalCases} Passed)`;
+        if (badge) badge.textContent = `${s2.accuracy.split(' ')[0]} Safety Score (${s2.passedCount}/${s2.totalCases} Passed)`;
 
         if (s2.dimensions) {
           if (document.getElementById('evalDimRedFlag') && s2.dimensions.dim1_safety_triage) {
@@ -1501,10 +1565,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Suite 3 Metrics (Builder Adversarial Cases - never label as independent)
+      // Suite 3 Metrics (Builder Adversarial Cases)
       if (s3) {
         const badge = document.getElementById('evalBuilderBadge');
-        if (badge) badge.textContent = `${s3.overallAccuracy} Builder Adversarial`;
+        if (badge) badge.textContent = `${s3.overallAccuracy.split(' ')[0]} (${s3.top1Correct}/${s3.totalQueries}) Builder Adversarial`;
 
         const builderTableBody = document.getElementById('builderTableBody');
         if (builderTableBody && s3.queryDetails) {
@@ -1550,10 +1614,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Tab Badge: MUST show the independent suite score (Suite 2), not dev suite score
+      // Tab Badge: score removed per Item 5
       const evalBadge = document.getElementById('evalBadge');
       if (evalBadge) {
-        evalBadge.textContent = s2 ? s2.accuracy.split(' ')[0] : '100%';
+        evalBadge.textContent = '';
+        evalBadge.style.display = 'none';
       }
     } catch (err) {
       console.error('Failed to load evaluation data:', err);

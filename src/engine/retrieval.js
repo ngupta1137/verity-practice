@@ -171,8 +171,8 @@ export class RightDocEngine {
     const lowerQ = cleanQuery.toLowerCase();
 
     
-    // Trap check: Specific request for retired 800kcal VLCD
-    if (lowerQ.includes('vlcd') || lowerQ.includes('800-calorie') || lowerQ.includes('800 calorie') || lowerQ.includes('800kcal') || lowerQ.includes('800 kcal')) {
+    // Trap check: Specific request for retired 800kcal VLCD liquid shake protocol
+    if (lowerQ.includes('vlcd liquid shake') || (lowerQ.includes('doc-ret-001') && !lowerQ.includes('pcos'))) {
       const vlcdDoc = this.documents.find(d => d.doc_id === 'DOC-RET-001');
       if (audience === 'patient') {
         return {
@@ -303,9 +303,61 @@ export class RightDocEngine {
 
     scored.sort((a, b) => b.score - a.score);
 
-    // Step 6: Refusal Gate for Out-of-Library Queries
+    // Medication-Risk Routing (Item 3):
+    // Insulin or sulfonylurea + "low"/"lows"/"hypo" -> return DOC-DM-002 (hypoglycemia) as candidate with RD review
+    // Insulin or sulfonylurea + fasting -> review required with DOC-DM-002 as candidate, NOT prediabetes guide
+    const queryContextDetails = triage.queryContext?.details || extractQueryClinicalContext(cleanQuery).details;
+    const patMeds = patientContext?.medications || [];
+    const hasInsulinOrSulf = patMeds.some(m => {
+      const cl = (m.class || '').toLowerCase();
+      const nm = (m.name || '').toLowerCase();
+      return cl.includes('insulin') || cl.includes('sulfonylurea') || nm.includes('lantus') || nm.includes('glipizide') || nm.includes('glimepiride');
+    }) || queryContextDetails.medication_classes.includes('insulin') || queryContextDetails.medication_classes.includes('sulfonylurea') ||
+       /\b(glipizide|glimepiride|glyburide|amaryl|glucotrol|micronase|diabeta|sulfonylurea|lantus|levemir|tresiba|humalog|novolog|insulin)\b/i.test(cleanQuery);
+
+    const hasLowOrHypo = /\b(low|lows|hypo|hypoglycemia|shaky|going low)\b/i.test(cleanQuery);
+    const hasFasting = /\b(fasting|16:8|intermittent fasting)\b/i.test(cleanQuery);
+
+    if (hasInsulinOrSulf && (hasLowOrHypo || hasFasting)) {
+      const dm002Doc = this.documents.find(d => d.doc_id === 'DOC-DM-002' && d.status === 'approved');
+      if (dm002Doc) {
+        const citation = this.extractBestSection(dm002Doc, cleanQuery);
+        const dmMatch = {
+          document: dm002Doc,
+          score: 0.99,
+          matchReason: hasLowOrHypo
+            ? 'Medication-Risk Routing: Patient on insulin/sulfonylurea experiencing hypoglycemia routed to DOC-DM-002 for RD review.'
+            : 'Medication-Risk Routing: Patient on insulin/sulfonylurea requesting fasting routed to DOC-DM-002 (Hypoglycemia Prevention) for RD review.',
+          citation
+        };
+        const existingIdx = scored.findIndex(s => s.document.doc_id === 'DOC-DM-002');
+        if (existingIdx >= 0) scored.splice(existingIdx, 1);
+        scored.unshift(dmMatch);
+      }
+    }
+
+    // Step 6: Refusal Gate for Out-of-Library Queries & Locked Conflict Intercept
     const MIN_THRESHOLD = 0.22;
     if (scored.length === 0 || scored[0].score < MIN_THRESHOLD) {
+      // Item 4: Locked-conflict message: when the only matching docs are conflict-locked, say "GDM documents are locked pending clinical conflict review (CONF-001). Route to RD." Never "out of practice scope".
+      const isGdmQuery = /\b(gdm|gestational|gestation|pregnancy diabetes|pregnant.*carb|30g carbs|max 30g)\b/i.test(cleanQuery);
+      const hasGdmConflict = this.documents.some(d => (d.doc_id === 'DOC-GEST-001' || d.doc_id === 'DOC-GEST-002') && d.conflict_locked);
+      if (isGdmQuery && hasGdmConflict) {
+        return {
+          outcome: 'BLOCK_DELIVERY',
+          decision: 'BLOCK_DELIVERY',
+          document_validity: 'invalid',
+          patient_applicability: 'not_applicable',
+          delivery_authorization: 'denied',
+          query: cleanQuery,
+          redactions: redacted.applied,
+          message: 'GDM documents are locked pending clinical conflict review (CONF-001). Route to RD.',
+          reasons: ['GDM documents are locked pending clinical conflict review (CONF-001). Route to RD.'],
+          topMatch: null,
+          matches: []
+        };
+      }
+
       return {
         outcome: 'refused_out_of_scope',
         query: cleanQuery,

@@ -71,7 +71,7 @@
       </button>
       <button class="nav-tab" data-tab="tab-eval">
         <span>🎯 Evaluation & Safety Gates</span>
-        <span class="tab-badge" id="evalBadge">100%</span>
+        <span class="tab-badge" id="evalBadge" style="display: none;"></span>
       </button>
       <button class="nav-tab" data-tab="tab-roadmap">
         <span>🗺️ Roadmap & Limitations</span>
@@ -676,14 +676,14 @@
       <div style="margin-bottom: 32px;">
         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px;">
           <h3 style="font-size: 18px; color: var(--ink); font-weight: 700;">Suite 1: Development Regression Suite (35 Queries)</h3>
-          <span class="badge badge-success" style="font-size: 12px; padding: 4px 10px;">100.0% Accuracy (35/35)</span>
+          <span class="badge" id="evalSuite1Badge" style="font-size: 12px; padding: 4px 10px; background: #FFF3E0; color: #E65100; font-weight: 700;">68.6% Accuracy (24/35)</span>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
-          <div class="stat-card success">
+          <div class="stat-card" style="border-left: 4px solid #E65100;">
             <div class="stat-label">In-Scope Top-1 Retrieval</div>
-            <div class="stat-value" id="evalInScopeAcc">100.0%</div>
-            <div class="stat-sub" id="evalInScopeCount">21/21 Cases (Target: &ge; 90.0%)</div>
+            <div class="stat-value" id="evalInScopeAcc">52.4%</div>
+            <div class="stat-sub" id="evalInScopeCount">11/21 Cases (Target: &ge; 90.0%)</div>
           </div>
           <div class="stat-card success">
             <div class="stat-label">Trap Redirect / Refusal</div>
@@ -700,10 +700,10 @@
             <div class="stat-value" id="evalInternalAcc">100.0%</div>
             <div class="stat-sub" id="evalInternalCount">4/4 Cases (Target: &ge; 90.0%)</div>
           </div>
-          <div class="stat-card success" style="border-left: 4px solid var(--brand-green);">
+          <div class="stat-card" style="border-left: 4px solid #E65100;">
             <div class="stat-label">Regression Suite Total</div>
-            <div class="stat-value" id="evalOverallAcc">100.0%</div>
-            <div class="stat-sub" id="evalOverallCount">35/35 Test Cases Passed</div>
+            <div class="stat-value" id="evalOverallAcc">68.6%</div>
+            <div class="stat-sub" id="evalOverallCount">24/35 Test Cases Passed</div>
           </div>
         </div>
 
@@ -735,17 +735,17 @@
         </div>
       </div>
 
-      <!-- SUITE 2: INDEPENDENT SAFETY SUITE (25 VERBATIM CASES FROM SECTION 8) -->
+      <!-- SUITE 2: BUILDER SAFETY SUITE (25 CASES) -->
       <div style="margin-bottom: 32px;">
         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px;">
           <div>
-            <h3 style="font-size: 18px; color: var(--ink); font-weight: 700;">Suite 2: Independent Safety Suite (25 Verbatim Cases from Review Section 8)</h3>
-            <p style="font-size: 12px; color: var(--ink-muted); margin-top: 2px;">Independent safety suite preserving all 25 test cases from Section 8 of the clinical review verbatim. Evaluates red flag triage, scope of practice boundaries, physiological floors, and contraindications.</p>
+            <h3 style="font-size: 18px; color: var(--ink); font-weight: 700;">Suite 2: Builder safety suite (25 Cases)</h3>
+            <p style="font-size: 12px; color: var(--ink-muted); margin-top: 2px;">Safety suite evaluating red flag triage, scope of practice boundaries, physiological floors, and contraindications.</p>
           </div>
-          <span class="badge" id="evalHeldOutBadge" style="font-size: 12px; padding: 4px 10px; background: #E8F5E9; color: var(--brand-green-dark); font-weight: 700;">100.0% Independent Safety Score (25/25 Passed)</span>
+          <span class="badge" id="evalHeldOutBadge" style="font-size: 12px; padding: 4px 10px; background: #E8F5E9; color: var(--brand-green-dark); font-weight: 700;">100.0% Safety Score (25/25 Passed)</span>
         </div>
 
-        <!-- 8 Independent Safety Dimensions -->
+        <!-- 8 Safety Dimensions -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
           <div class="stat-card success">
             <div class="stat-label">1. Red Flag Triage</div>
@@ -783,7 +783,7 @@
             <div class="stat-sub">1/1 Case</div>
           </div>
           <div class="stat-card success">
-            <div class="stat-label">8. Overall Independent Pass</div>
+            <div class="stat-label">8. Overall Safety Pass</div>
             <div class="stat-value" id="evalDimOverall">100.0%</div>
             <div class="stat-sub">25/25 Cases</div>
           </div>
@@ -795,7 +795,7 @@
 
         <div class="card" style="margin-bottom: 24px;">
           <div class="card-header">
-            <span class="card-title">Suite 2 Complete Test Cases Breakdown (25 Verbatim Queries from Review Section 8)</span>
+            <span class="card-title">Suite 2 Complete Test Cases Breakdown (25 Cases)</span>
             <span class="badge badge-approved" style="font-weight: 700;">25/25 PASSED</span>
           </div>
           <div class="table-wrapper">
@@ -818,14 +818,14 @@
         </div>
       </div>
 
-      <!-- SUITE 3: BUILDER ADVERSARIAL CASES (BUILDER-WRITTEN, NEVER LABEL AS INDEPENDENT) -->
+      <!-- SUITE 3: BUILDER ADVERSARIAL CASES (20 QUERIES) -->
       <div style="margin-bottom: 32px;">
         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px;">
           <div>
             <h3 style="font-size: 18px; color: var(--ink); font-weight: 700;">Suite 3: Builder adversarial cases (20 Queries)</h3>
-            <p style="font-size: 12px; color: #D32F2F; margin-top: 2px;"><strong>Evaluation Honesty:</strong> Builder-written adversarial cases. Never label as independent.</p>
+            <p style="font-size: 12px; color: #D32F2F; margin-top: 2px;"><strong>Evaluation Honesty:</strong> Builder-written adversarial cases.</p>
           </div>
-          <span class="badge" id="evalBuilderBadge" style="font-size: 12px; padding: 4px 10px; background: #FFF3E0; color: #E65100; font-weight: 700;">55.0% (11/20) Builder Adversarial</span>
+          <span class="badge" id="evalBuilderBadge" style="font-size: 12px; padding: 4px 10px; background: #FFF3E0; color: #E65100; font-weight: 700;">50.0% (10/20) Builder Adversarial</span>
         </div>
 
         <div class="card" style="margin-bottom: 24px;">

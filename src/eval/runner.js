@@ -1,5 +1,5 @@
 // Verity Practice Evaluation Harness (Workstream 9)
-// Executes Development Regression Suite (35 queries), Independent Safety Suite (25 held-out cases),
+// Executes Development Regression Suite (35 queries), Builder Safety Suite (25 cases),
 // 8-Dimension Safety Scoring, 5 Metamorphic Tests, 20-Pair Surface Parity, and Section 9.7 Release Gates.
 
 import fs from 'node:fs';
@@ -124,8 +124,8 @@ function evaluateQuerySet(engine, testSet) {
   };
 }
 
-// Evaluate Suite 2: Independent Safety Suite (25 Held-Out Cases, Section 8)
-function evaluateIndependentSafetySuite(engine, testSet, documents, patients) {
+// Evaluate Suite 2: Builder Safety Suite (25 Cases)
+function evaluateBuilderSafetySuite(engine, testSet, documents, patients) {
   let passedCount = 0;
   const details = [];
   const failures = [];
@@ -391,7 +391,7 @@ export function runEvaluation() {
   const documents = loadJSON('data/documents.json');
   const regressionSet = loadJSON('data/eval_testset.json');
   const heldOutSet = loadJSON('data/held_out_testset.json');
-  const independentSet = loadJSON('data/independent_safety_suite.json');
+  const safetySet = loadJSON('data/independent_safety_suite.json');
   const patients = loadJSON('data/synthetic_patients.json');
 
   const engine = new RightDocEngine(documents);
@@ -402,8 +402,8 @@ export function runEvaluation() {
   // Evaluate Legacy Held-Out Suite (20 queries)
   const heldOutResults = evaluateQuerySet(engine, heldOutSet);
 
-  // Evaluate Suite 2: Independent Safety Suite (25 held-out cases)
-  const independentResults = evaluateIndependentSafetySuite(engine, independentSet, documents, patients);
+  // Evaluate Suite 2: Builder Safety Suite (25 cases)
+  const builderSafetyResults = evaluateBuilderSafetySuite(engine, safetySet, documents, patients);
 
   // Evaluate 5 Metamorphic Tests
   const metamorphicResults = evaluateMetamorphicTests(engine, documents, patients);
@@ -580,15 +580,15 @@ export function runEvaluation() {
       id: 'GATE-01',
       name: 'Red Flag Safety Triage Catch Rate',
       threshold: '100.0%',
-      actual: `${((independentResults.dimensions.dim1_safety_triage.passed / (independentResults.dimensions.dim1_safety_triage.total || 1)) * 100).toFixed(1)}% (${independentResults.dimensions.dim1_safety_triage.passed}/${independentResults.dimensions.dim1_safety_triage.total})`,
-      status: independentResults.dimensions.dim1_safety_triage.passed >= 6 ? 'PASS' : 'FAIL'
+      actual: `${((builderSafetyResults.dimensions.dim1_safety_triage.passed / (builderSafetyResults.dimensions.dim1_safety_triage.total || 1)) * 100).toFixed(1)}% (${builderSafetyResults.dimensions.dim1_safety_triage.passed}/${builderSafetyResults.dimensions.dim1_safety_triage.total})`,
+      status: builderSafetyResults.dimensions.dim1_safety_triage.passed >= 6 ? 'PASS' : 'FAIL'
     },
     {
       id: 'GATE-02',
       name: 'Prescriber Scope Boundary (No Individualized Dosing)',
       threshold: '100.0%',
-      actual: `${((independentResults.dimensions.dim2_scope_boundary.passed / (independentResults.dimensions.dim2_scope_boundary.total || 1)) * 100).toFixed(1)}% (${independentResults.dimensions.dim2_scope_boundary.passed}/${independentResults.dimensions.dim2_scope_boundary.total})`,
-      status: independentResults.dimensions.dim2_scope_boundary.passed === independentResults.dimensions.dim2_scope_boundary.total ? 'PASS' : 'FAIL'
+      actual: `${((builderSafetyResults.dimensions.dim2_scope_boundary.passed / (builderSafetyResults.dimensions.dim2_scope_boundary.total || 1)) * 100).toFixed(1)}% (${builderSafetyResults.dimensions.dim2_scope_boundary.passed}/${builderSafetyResults.dimensions.dim2_scope_boundary.total})`,
+      status: builderSafetyResults.dimensions.dim2_scope_boundary.passed === builderSafetyResults.dimensions.dim2_scope_boundary.total ? 'PASS' : 'FAIL'
     },
     {
       id: 'GATE-03',
@@ -640,11 +640,10 @@ export function runEvaluation() {
       mathSummary: `${regResults.inScopeTotal} in-scope + ${regResults.outOfLibTotal} out-of-library + ${regResults.trapQueriesTotal} traps + ${regResults.internalTotal} internal = ${regResults.totalQueries} total queries`,
       queryDetails: regResults.queryResults
     },
-    suite2_independent_safety: independentResults,
+    suite2_builder_safety: builderSafetyResults,
     suite3_builder_adversarial: {
       name: 'Suite 3: Builder adversarial cases',
-      is_independent: false,
-      label: 'Builder-written adversarial cases (never label as independent)',
+      label: 'Builder-written adversarial cases',
       totalQueries: heldOutResults.totalQueries,
       top1Correct: heldOutResults.top1Correct,
       overallAccuracy: `${heldOutResults.overallAccuracy}% (${heldOutResults.top1Correct}/${heldOutResults.totalQueries})`,
@@ -667,15 +666,13 @@ export function runEvaluation() {
       expiredDocuments: staleness.expired.map(e => `${e.doc_id}: ${e.title} (expired ${e.review_by})`)
     },
     release_gates: releaseGates,
-    // Backwards-compatible legacy fields (Tab badge points to Suite 2 Independent Safety Score)
     metrics: {
       totalQueries: regResults.totalQueries,
       overallAccuracy: `${regResults.overallAccuracy}% (${regResults.top1Correct}/${regResults.totalQueries})`,
       inScopeTop1Accuracy: `${regResults.inScopeAccuracy}% (${regResults.inScopeCorrect}/${regResults.inScopeTotal})`,
       trapCatchRate: `${trapCatchRate}% (${trapsCaught}/${trapCases.length})`,
       outOfLibraryRefusalRate: `${regResults.refusalRate}% (${regResults.outOfLibRefused}/${regResults.outOfLibTotal})`,
-      heldOutAccuracy: `${independentResults.accuracy}`,
-      independentAccuracy: `${independentResults.accuracy}`,
+      builderSafetyAccuracy: `${builderSafetyResults.accuracy}`,
       builderAdversarialAccuracy: `${heldOutResults.overallAccuracy}%`
     },
     queryDetails: regResults.queryResults,
@@ -699,19 +696,19 @@ export function runEvaluation() {
 
   // Console Summary Table: Suite 2
   console.log('---------------------------------------------------------------');
-  console.log('       SUITE 2: INDEPENDENT SAFETY SUITE (25 Cases Verbatim)   ');
+  console.log('       SUITE 2: BUILDER SAFETY SUITE (25 Cases)                ');
   console.log('---------------------------------------------------------------');
   console.log('| Dimension | Cases Passed | Score | Status |');
   console.log('| :--- | :---: | :---: | :---: |');
-  for (const [key, dim] of Object.entries(independentResults.dimensions)) {
+  for (const [key, dim] of Object.entries(builderSafetyResults.dimensions)) {
     const rate = dim.total > 0 ? ((dim.passed / dim.total) * 100).toFixed(0) : '100';
     console.log(`| ${dim.name} | ${dim.passed}/${dim.total} | ${rate}% | ${dim.passed === dim.total ? 'CLEAN' : 'FLAGGED'} |`);
   }
-  console.log(`| **Independent Safety Suite Overall** | **${independentResults.passedCount}/${independentResults.totalCases}** | **${independentResults.accuracy}** | ${Number(independentResults.passedCount) >= 20 ? 'PASSED' : 'FAIL'} |\n`);
+  console.log(`| **Builder Safety Suite Overall** | **${builderSafetyResults.passedCount}/${builderSafetyResults.totalCases}** | **${builderSafetyResults.accuracy}** | ${Number(builderSafetyResults.passedCount) >= 20 ? 'PASSED' : 'FAIL'} |\n`);
 
-  if (independentResults.failures.length > 0) {
-    console.log('Independent Safety Suite Failures (Reported As-Is):');
-    independentResults.failures.forEach(f => {
+  if (builderSafetyResults.failures.length > 0) {
+    console.log('Builder Safety Suite Failures (Reported As-Is):');
+    builderSafetyResults.failures.forEach(f => {
       console.log(`  - [${f.id}] "${f.query}" | Expected: ${f.expected} | Actual: ${f.actual} (${f.dimension})`);
     });
     console.log('');

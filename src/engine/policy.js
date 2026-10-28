@@ -184,16 +184,24 @@ export function extractQueryClinicalContext(query = '') {
     attributes.push('eating_disorder');
   }
 
-  // 8. Calorie Targets (< 1000/day)
-  if (/< ?1000|under 1000|800 ?kcal|800 ?calorie|500 ?calorie|vlcd\b/.test(norm)) {
-    details.calorie_target = 'sub_1000_kcal';
-    attributes.push('calorie_target_sub_1000');
+  // 8. Calorie Targets (< 1200/day)
+  if (/< ?1200|under 1200|below 1200|\b([1-9]\d{2}|1[01]\d{2})\s*(?:cal|kcal|calorie|calories)\b|vlcd\b/.test(norm)) {
+    details.calorie_target = 'sub_1200_kcal';
+    attributes.push('calorie_target_sub_1200');
   }
 
   // 9. Protein Targets
-  if (/\b(high[- ]protein|0\.8\s*g|low[- ]protein|protein target)\b/.test(norm)) {
-    details.protein_target = norm.includes('high') ? 'high' : (norm.includes('0.8') ? '0.8g' : 'low');
+  const protMatch = norm.match(/\b(\d{2,3})\s*g\s*protein\b/);
+  if (protMatch) {
+    const grams = parseInt(protMatch[1], 10);
+    details.protein_target = grams >= 80 ? 'high' : (grams <= 50 ? 'low' : 'moderate');
     attributes.push(`protein_${details.protein_target}`);
+  } else if (/\b(high[- ]protein|high protein|protein for muscle)\b/.test(norm)) {
+    details.protein_target = 'high';
+    attributes.push('protein_high');
+  } else if (/\b(low[- ]protein|0\.8\s*g)\b/.test(norm)) {
+    details.protein_target = 'low';
+    attributes.push('protein_low');
   }
 
   // 10. Symptoms
@@ -631,14 +639,19 @@ export function evaluatePolicy({
       }
     }
 
-    // 3e. Calorie Target < 1000/day Block
-    const isSub1000Calorie = queryContext.details.calorie_target === 'sub_1000_kcal' || 
+    // 3e. Calorie Target < 1200/day Block (All programs, including PCOS)
+    const isSub1200Calorie = queryContext.details.calorie_target === 'sub_1200_kcal' || 
                              document.doc_id === 'DOC-RET-001' || 
-                             (document.tags || []).includes('vlcd');
-    if (isSub1000Calorie) {
+                             (document.tags || []).includes('vlcd') ||
+                             normQ.includes('800 cal') ||
+                             normQ.includes('800 kcal') ||
+                             normQ.includes('800 calorie') ||
+                             normQ.includes('vlcd') ||
+                             /< ?1200|under 1200|below 1200/.test(normQ);
+    if (isSub1200Calorie) {
       patientApplicability = 'not_applicable';
       matchedRules.push('RULE-POP-VLCD-CALORIE-FLOOR');
-      reasons.push('BLOCKED: Dietary targets below 1000 kcal/day require comprehensive RD clinical assessment and medical supervision due to electrolyte, cholelithiasis, and metabolic risks. Unsupervised distribution is prohibited.');
+      reasons.push('BLOCKED: Dietary targets below 1200 kcal/day require comprehensive RD clinical assessment and medical supervision due to metabolic and gallstone risks. Unsupervised distribution is prohibited for all programs, including PCOS.');
     }
 
     // 3f. Explicit Unknowns Handling (Only if not already not_applicable)
@@ -663,7 +676,8 @@ export function evaluatePolicy({
       const cl = (m.class || '').toLowerCase();
       const nm = (m.name || '').toLowerCase();
       return cl.includes('insulin') || cl.includes('sulfonylurea') || nm.includes('lantus') || nm.includes('glipizide') || nm.includes('glimepiride');
-    }) || queryContext.details.medication_classes.includes('insulin') || queryContext.details.medication_classes.includes('sulfonylurea');
+    }) || queryContext.details.medication_classes.includes('insulin') || queryContext.details.medication_classes.includes('sulfonylurea') ||
+       /\b(glipizide|glimepiride|glyburide|sulfonylurea|lantus|levemir|tresiba|humalog|novolog|insulin)\b/i.test(normQ);
 
     if (patientApplicability !== 'not_applicable' && hasInsulinOrSulfonylurea) {
       if (lowerDocTitle.includes('fasting') || normQ.includes('fasting') || normQ.includes('16:8')) {
@@ -672,19 +686,29 @@ export function evaluatePolicy({
         reasons.push('REVIEW REQUIRED: Patient is prescribed insulin or sulfonylurea. Prolonged fasting (16:8) requires clinical review and medication adjustment to prevent severe nocturnal/fasting hypoglycemia.');
       }
 
-      if (normQ.includes('recurrent lows') || normQ.includes('frequent lows') || normQ.includes('shaky, sugar low')) {
+      if (normQ.includes('recurrent lows') || normQ.includes('frequent lows') || normQ.includes('shaky, sugar low') || normQ.includes('going low') || normQ.includes('low') || normQ.includes('lows') || normQ.includes('hypo')) {
         patientApplicability = 'review_required';
         matchedRules.push('RULE-SAFETY-HYPO-RECURRENT-REVIEW');
-        reasons.push('REVIEW REQUIRED: Patient prescribed insulin or sulfonylurea experiencing recurrent hypoglycemia requires clinical review and hypoglycemia protocol education.');
+        reasons.push('REVIEW REQUIRED: Patient prescribed insulin or sulfonylurea experiencing hypoglycemia requires clinical review and hypoglycemia protocol education.');
       }
     }
 
-    // 3h. CKD + High-Protein Request Precaution:
-    const isCkdPatient = patient?.program?.includes('Renal') || queryContext.details.ckd_stage;
-    if (patientApplicability !== 'not_applicable' && isCkdPatient && queryContext.details.protein_target === 'high') {
+    // 3h. CKD + High-Protein Request or High-Protein Handout Precaution:
+    const isCkdPatient = patient?.program?.includes('Renal') || 
+                         queryContext.details.ckd_stage || 
+                         normQ.includes('ckd') || 
+                         normQ.includes('renal') || 
+                         normQ.includes('kidney');
+    const isHighProteinHandoutOrRequest = queryContext.details.protein_target === 'high' ||
+                                         normQ.includes('high protein') ||
+                                         normQ.includes('high-protein') ||
+                                         normQ.includes('100g protein') ||
+                                         normQ.includes('protein for muscle') ||
+                                         ['DOC-MENO-001', 'DOC-BAR-005', 'DOC-WM-001'].includes(document?.doc_id);
+    if (patientApplicability !== 'not_applicable' && isCkdPatient && isHighProteinHandoutOrRequest) {
       patientApplicability = 'review_required';
       matchedRules.push('RULE-SAFETY-CKD-PROTEIN-REVIEW');
-      reasons.push('REVIEW REQUIRED: Non-dialysis Chronic Kidney Disease (CKD) with high-protein intake request requires RD clinical review to avoid glomerular hyperfiltration.');
+      reasons.push(`REVIEW REQUIRED: Chronic Kidney Disease (CKD) patient paired with high-protein intake (${['DOC-MENO-001', 'DOC-BAR-005', 'DOC-WM-001'].includes(document?.doc_id) ? `high-protein handout ${document?.doc_id}` : 'high-protein request'}) requires RD clinical review to prevent glomerular hyperfiltration and renal decline.`);
     }
 
     // 3i. Query Mentioning Clinical Attribute With No Patient Selected

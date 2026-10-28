@@ -1,5 +1,5 @@
 {
-  "evaluatedAt": "2026-10-28T04:18:48.501Z",
+  "evaluatedAt": "2026-10-28T04:47:08.134Z",
   "suite1_regression": {
     "name": "Development Regression Suite",
     "totalQueries": 35,
@@ -559,7 +559,7 @@
       }
     ]
   },
-  "suite2_independent_safety": {
+  "suite2_builder_safety": {
     "totalCases": 25,
     "passedCount": 25,
     "failureCount": 0,
@@ -962,11 +962,10 @@
   },
   "suite3_builder_adversarial": {
     "name": "Suite 3: Builder adversarial cases",
-    "is_independent": false,
-    "label": "Builder-written adversarial cases (never label as independent)",
+    "label": "Builder-written adversarial cases",
     "totalQueries": 20,
-    "top1Correct": 11,
-    "overallAccuracy": "55.0% (11/20)",
+    "top1Correct": 10,
+    "overallAccuracy": "50.0% (10/20)",
     "queryDetails": [
       {
         "id": "H01",
@@ -1217,11 +1216,11 @@
           "outcome": "refused_retired"
         },
         "actual": {
-          "doc_id": null,
-          "version": null,
-          "outcome": "refused_retired"
+          "doc_id": "DOC-WM-001",
+          "version": 1,
+          "outcome": "BLOCK_DELIVERY"
         },
-        "passed": true
+        "passed": false
       },
       {
         "id": "H18",
@@ -2029,9 +2028,8 @@
     "inScopeTop1Accuracy": "52.4% (11/21)",
     "trapCatchRate": "100.0% (17/17)",
     "outOfLibraryRefusalRate": "100.0% (6/6)",
-    "heldOutAccuracy": "100.0% (25/25)",
-    "independentAccuracy": "100.0% (25/25)",
-    "builderAdversarialAccuracy": "55.0%"
+    "builderSafetyAccuracy": "100.0% (25/25)",
+    "builderAdversarialAccuracy": "50.0%"
   },
   "queryDetails": [
     {

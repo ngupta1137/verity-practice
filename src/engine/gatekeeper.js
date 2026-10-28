@@ -51,22 +51,28 @@ export function validateSendCheck({
 
   // 2. Status Gate: Must be 'approved'
   if (document.status === 'draft') {
-    blocks.push({
-      code: 'STATUS_DRAFT',
-      message: `BLOCKED: Document status is DRAFT (v${document.version}). Only APPROVED documents may be given to patients.`
-    });
+    if (!blocks.some(b => b.code === 'STATUS_DRAFT')) {
+      blocks.push({
+        code: 'STATUS_DRAFT',
+        message: `BLOCKED: Document status is DRAFT (v${document.version}). Only APPROVED documents may be given to patients.`
+      });
+    }
   } else if (document.status === 'retired') {
-    blocks.push({
-      code: 'STATUS_RETIRED',
-      message: `BLOCKED: Document is RETIRED. ${document.retired_reason || 'Archived by Clinical Director'}. Never distribute retired materials.`
-    });
+    if (!blocks.some(b => b.code === 'STATUS_RETIRED')) {
+      blocks.push({
+        code: 'STATUS_RETIRED',
+        message: `BLOCKED: Document is RETIRED. ${document.retired_reason || 'Archived by Clinical Director'}. Never distribute retired materials.`
+      });
+    }
   } else if (document.status === 'approved') {
     passes.push({ code: 'STATUS_APPROVED', message: 'Document status is APPROVED.' });
   } else {
-    blocks.push({
-      code: 'STATUS_UNKNOWN',
-      message: `BLOCKED: Document has invalid or unknown status "${document.status}".`
-    });
+    if (!blocks.some(b => b.code === 'STATUS_UNKNOWN' || b.code === 'STATUS_INVALID')) {
+      blocks.push({
+        code: 'STATUS_UNKNOWN',
+        message: `BLOCKED: Document has invalid or unknown status "${document.status}".`
+      });
+    }
   }
 
   // 3. Version Lineage Gate: Check if superseded
@@ -76,13 +82,15 @@ export function validateSendCheck({
   );
 
   if (document.superseded_by || newerApproved) {
-    const latestDoc = newerApproved || allDocuments.find(d => d.doc_id === document.superseded_by && d.status === 'approved');
-    blocks.push({
-      code: 'VERSION_SUPERSEDED',
-      message: `BLOCKED: Version v${document.version} is superseded. Current approved version is v${latestDoc ? latestDoc.version : 'latest'} (${latestDoc ? latestDoc.title : document.superseded_by}).`,
-      currentVersion: latestDoc ? latestDoc.version : null,
-      currentDocId: latestDoc ? latestDoc.doc_id : document.superseded_by
-    });
+    if (!blocks.some(b => b.code === 'VERSION_SUPERSEDED')) {
+      const latestDoc = newerApproved || allDocuments.find(d => d.doc_id === document.superseded_by && d.status === 'approved');
+      blocks.push({
+        code: 'VERSION_SUPERSEDED',
+        message: `BLOCKED: Version v${document.version} is superseded. Current approved version is v${latestDoc ? latestDoc.version : 'latest'} (${latestDoc ? latestDoc.title : document.superseded_by}).`,
+        currentVersion: latestDoc ? latestDoc.version : null,
+        currentDocId: latestDoc ? latestDoc.doc_id : document.superseded_by
+      });
+    }
   } else {
     passes.push({ code: 'VERSION_LATEST', message: `Document is the latest approved version (v${document.version}).` });
   }
@@ -91,10 +99,12 @@ export function validateSendCheck({
   if (document.review_by) {
     const reviewDate = new Date(document.review_by);
     if (reviewDate < asOf) {
-      blocks.push({
-        code: 'REVIEW_EXPIRED',
-        message: `BLOCKED: Document expired on ${document.review_by} and is overdue for clinical review. Locked until re-approved by Clinical Director.`
-      });
+      if (!blocks.some(b => b.code === 'REVIEW_EXPIRED')) {
+        blocks.push({
+          code: 'REVIEW_EXPIRED',
+          message: `BLOCKED: Document expired on ${document.review_by} and is overdue for clinical review. Locked until re-approved by Clinical Director.`
+        });
+      }
     } else {
       const daysUntilExpiry = Math.ceil((reviewDate - asOf) / (1000 * 60 * 60 * 24));
       if (daysUntilExpiry <= 30) {
@@ -389,6 +399,22 @@ export function validateSendCheck({
 
   const gateResult = allowed ? (finalPatientApplicability === 'review_required' ? 'REVIEW_REQUIRED' : 'PASS') : 'FAIL';
   const status = allowed ? (finalPatientApplicability === 'review_required' ? 'REVIEW_REQUIRED' : (warnings.length > 0 ? 'APPROVED_WITH_WARNINGS' : 'APPROVED')) : 'BLOCKED';
+
+  // De-duplicate blocks by code and normalized message
+  const uniqueBlocks = [];
+  const seenCodes = new Set();
+  const seenNormMsgs = new Set();
+  for (const b of blocks) {
+    const code = b.code || '';
+    const norm = (b.message || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!seenCodes.has(code) && !seenNormMsgs.has(norm)) {
+      seenCodes.add(code);
+      seenNormMsgs.add(norm);
+      uniqueBlocks.push(b);
+    }
+  }
+  blocks.length = 0;
+  blocks.push(...uniqueBlocks);
 
   let summary = '';
   if (!allowed) {

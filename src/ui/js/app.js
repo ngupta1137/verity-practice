@@ -612,7 +612,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let reasonText = '';
     if (!isEligible) {
       if (check.blocks && check.blocks.length > 0) {
-        reasonText = check.blocks.map(b => b.message).join(' | ');
+        const uniqueMessages = [];
+        const seenNorm = new Set();
+        for (const b of check.blocks) {
+          const norm = (b.message || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (!seenNorm.has(norm)) {
+            seenNorm.add(norm);
+            uniqueMessages.push(b.message);
+          }
+        }
+        reasonText = uniqueMessages.join(' | ');
       } else {
         reasonText = (check.summary || 'Safety, stage, or authorization rule failed.').replace(/^DELIVERY PROHIBITED:\s*/i, '');
         if (reasonText.toLowerCase().startsWith('eligible to deliver')) {
@@ -677,8 +686,21 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="gate-checklist">
     `;
 
-    // Blocks
+    // Blocks (de-duplicated)
+    const uniqueBlocks = [];
+    const seenBlockCodes = new Set();
+    const seenBlockMsgs = new Set();
     (check.blocks || []).forEach(b => {
+      const code = b.code || '';
+      const norm = (b.message || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!seenBlockCodes.has(code) && !seenBlockMsgs.has(norm)) {
+        seenBlockCodes.add(code);
+        seenBlockMsgs.add(norm);
+        uniqueBlocks.push(b);
+      }
+    });
+
+    uniqueBlocks.forEach(b => {
       html += `
         <div class="gate-item fail">
           <span class="gate-icon">❌</span>
@@ -1158,12 +1180,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const data = await res.json();
       if (data.success) {
-        alert(data.message);
         await loadExposureQueue();
         await loadDashboard();
+      } else {
+        console.warn('Exposure update failed:', data.message);
       }
     } catch (err) {
-      alert(`Error updating exposure: ${err.message}`);
+      console.error(`Error updating exposure: ${err.message}`);
     }
   }
 
@@ -1200,7 +1223,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const badge = document.getElementById('stalenessCountBadge');
     if (!stalenessList) return;
 
-    if (badge) badge.textContent = `${stalenessList.length} Overdue / Due Soon`;
+    const expiredItems = stalenessList.filter(i => (i.daysOverdue && i.daysOverdue > 0) || i.severity === 'HIGH_BLOCK');
+    const dueSoonItems = stalenessList.filter(i => !i.daysOverdue && i.daysRemaining);
+
+    if (badge) {
+      badge.className = 'badge';
+      badge.style.background = '#FFEBEE';
+      badge.style.color = '#D32F2F';
+      badge.style.border = '1px solid #FFCDD2';
+      badge.innerHTML = `<strong>${expiredItems.length} Expired (Blocked)</strong> &bull; <span style="color: #E65100;">${dueSoonItems.length} Due Soon</span>`;
+    }
 
     tableBody.innerHTML = stalenessList.map(item => `
       <tr>
@@ -1782,23 +1814,48 @@ document.addEventListener('DOMContentLoaded', () => {
     // Conflict Resolution Form Submission (Workstream 5)
     conflictResolveForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const feedback = document.getElementById('conflictResolutionFeedback');
+      const showFeedback = (type, message) => {
+        if (!feedback) return;
+        feedback.style.display = 'block';
+        feedback.style.padding = '12px 16px';
+        feedback.style.borderRadius = '6px';
+        feedback.style.fontSize = '13px';
+        feedback.style.fontWeight = '600';
+        if (type === 'error') {
+          feedback.style.background = '#FFEBEE';
+          feedback.style.border = '1px solid #FFCDD2';
+          feedback.style.color = '#D32F2F';
+          feedback.innerHTML = `⚠️ ${message}`;
+        } else if (type === 'success') {
+          feedback.style.background = '#E8F5E9';
+          feedback.style.border = '1px solid #C8E6C9';
+          feedback.style.color = 'var(--brand-green-dark)';
+          feedback.innerHTML = `✓ ${message}`;
+        }
+      };
+
       if (state.currentRole !== 'owner') {
-        alert('PERMISSION DENIED: Only Practice Owner & Clinical Director Dr. Sarah Jenkins can resolve clinical conflicts. Please switch active role to Dr. Sarah Jenkins above.');
+        showFeedback('error', 'PERMISSION DENIED: Only Practice Owner & Clinical Director Dr. Sarah Jenkins can resolve clinical conflicts. Please switch active role to Dr. Sarah Jenkins above.');
         return;
       }
 
       const conflictId = conflictSelect.value;
       const decision = conflictDecision.value;
-      const reviewer = conflictReviewer.value;
-      const rationale = conflictRationale.value;
-      const resultingState = conflictResultingState.value;
+      const reviewer = (conflictReviewer.value || '').trim() || 'Dr. Sarah Jenkins, RDN (Practice Owner & Clinical Director)';
+      const rationale = (conflictRationale.value || '').trim();
+      const resultingState = (conflictResultingState.value || '').trim() || 'DOC-GEST-001 retired; DOC-GEST-002 active; exposure review queue generated for past recipients.';
 
-      if (!rationale || rationale.trim().length < 15) {
-        alert('CLINICAL JUSTIFICATION REQUIRED: Rationale must be at least 15 characters per practice governance policy.');
+      if (!rationale || rationale.length < 15) {
+        showFeedback('error', 'CLINICAL JUSTIFICATION REQUIRED: Rationale must be at least 15 characters per practice governance policy.');
+        conflictRationale.focus();
         return;
       }
 
       try {
+        const btn = document.getElementById('btnSubmitConflictResolution');
+        if (btn) btn.disabled = true;
+
         const res = await fetch('/api/conflicts/resolve', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1814,16 +1871,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const data = await res.json();
         if (data.success) {
-          alert(`SUCCESS: Conflict resolved with recorded clinical rationale!\n\n${data.message}\nAudit Event: ${data.auditEventId}\nExposure Queue updated.`);
+          showFeedback('success', `Conflict resolved with recorded clinical rationale! Retired DOC-GEST-001, unlocked DOC-GEST-002 as practice standard. Exposure Queue generated.`);
           await loadDashboard();
           await loadExposureQueue();
           await loadConflicts();
           renderConflictHistory();
         } else {
-          alert(`RESOLUTION FAILED: ${data.message || data.error}`);
+          showFeedback('error', `RESOLUTION FAILED: ${data.message || data.error}`);
         }
       } catch (err) {
-        alert(`Error resolving conflict: ${err.message}`);
+        showFeedback('error', `Error resolving conflict: ${err.message}`);
+      } finally {
+        const btn = document.getElementById('btnSubmitConflictResolution');
+        if (btn) btn.disabled = false;
       }
     });
 
@@ -1968,6 +2028,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const result = await res.json();
         if (result.success) {
+          const feedback = document.getElementById('conflictResolutionFeedback');
+          if (feedback) {
+            feedback.style.display = 'none';
+            feedback.innerHTML = '';
+          }
+          if (conflictReviewer) conflictReviewer.value = 'Dr. Sarah Jenkins, RDN (Practice Owner & Clinical Director)';
+          if (conflictResultingState) conflictResultingState.value = 'DOC-GEST-001 retired; DOC-GEST-002 active; exposure review queue generated for past recipients.';
+          if (conflictRationale) conflictRationale.value = 'Updated practice standard to ADA 2026 guidelines specifying minimum 175g/day CHO without rigid meal ceilings.';
           alert('✓ Demo data restored: Seed documents, patients, conflict CONF-001 locked, and seeded demo audit history.');
           await loadInitialData();
           renderLibraryTable();

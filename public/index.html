@@ -375,6 +375,7 @@
               <span>✍️ Record Clinical Resolution Decision & Generate Exposure Queue</span>
             </button>
           </div>
+          <div id="conflictResolutionFeedback" style="display: none; margin-top: 12px;"></div>
         </form>
       </div>
 
@@ -435,7 +436,7 @@
       <div class="card">
         <div class="card-header">
           <span class="card-title">Review Staleness & Expiration Monitor</span>
-          <span class="badge badge-expired" id="stalenessCountBadge">10 Overdue</span>
+          <span class="badge" id="stalenessCountBadge" style="background: #FFEBEE; color: #D32F2F; border: 1px solid #FFCDD2;">5 Expired (Blocked) &bull; 6 Due Soon</span>
         </div>
         <p style="font-size: 13px; color: var(--ink-muted); margin-bottom: 16px;">Documents past review date are automatically blocked from patient distribution by the Send Check gatekeeper.</p>
 

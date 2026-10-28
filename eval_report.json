@@ -1,5 +1,5 @@
 {
-  "evaluatedAt": "2026-10-28T12:59:11.587Z",
+  "evaluatedAt": "2026-10-28T13:19:19.609Z",
   "suite1_regression": {
     "name": "Development Regression Suite",
     "totalQueries": 35,
@@ -1748,9 +1748,6 @@
           "STATUS_RETIRED",
           "VERSION_SUPERSEDED",
           "REVIEW_EXPIRED",
-          "STATUS_RETIRED",
-          "VERSION_SUPERSEDED",
-          "REVIEW_EXPIRED",
           "ALLERGY_CONTRAINDICATION_LACTOSE"
         ],
         "passed": true
@@ -1763,9 +1760,6 @@
           "POLICY_GATE_BLOCK",
           "STATUS_RETIRED",
           "VERSION_SUPERSEDED",
-          "REVIEW_EXPIRED",
-          "STATUS_RETIRED",
-          "VERSION_SUPERSEDED",
           "REVIEW_EXPIRED"
         ],
         "passed": true
@@ -1776,9 +1770,6 @@
         "isBlocked": true,
         "blocks": [
           "POLICY_GATE_BLOCK",
-          "POLICY_GATE_BLOCK",
-          "STATUS_RETIRED",
-          "REVIEW_EXPIRED",
           "STATUS_RETIRED",
           "REVIEW_EXPIRED",
           "MEDICATION_CONTRAINDICATION_SGLT2I"
@@ -1791,7 +1782,6 @@
         "isBlocked": true,
         "blocks": [
           "POLICY_GATE_BLOCK",
-          "REVIEW_EXPIRED",
           "REVIEW_EXPIRED"
         ],
         "passed": true
@@ -1802,8 +1792,6 @@
         "isBlocked": true,
         "blocks": [
           "POLICY_GATE_BLOCK",
-          "POLICY_GATE_BLOCK",
-          "STATUS_DRAFT",
           "STATUS_DRAFT"
         ],
         "passed": true
@@ -1814,7 +1802,6 @@
         "isBlocked": true,
         "blocks": [
           "POLICY_GATE_BLOCK",
-          "POLICY_GATE_BLOCK",
           "INTERNAL_AUDIENCE_PROHIBITED"
         ],
         "passed": true
@@ -1824,7 +1811,6 @@
         "name": "Stage Mismatch: Giving pureed Stage 2 handout to a Day 4 clear-liquid patient",
         "isBlocked": true,
         "blocks": [
-          "POLICY_GATE_BLOCK",
           "POLICY_GATE_BLOCK",
           "STAGE_MISMATCH"
         ],
@@ -1847,7 +1833,6 @@
         "blocks": [
           "POLICY_GATE_BLOCK",
           "ACTIVE_CLINICAL_CONFLICT_BLOCK",
-          "ACTIVE_CLINICAL_CONFLICT_BLOCK",
           "PREGNANCY_CARB_FLOOR_VIOLATION"
         ],
         "passed": true
@@ -1858,7 +1843,6 @@
         "isBlocked": true,
         "blocks": [
           "POLICY_GATE_BLOCK",
-          "ACTIVE_CLINICAL_CONFLICT_BLOCK",
           "ACTIVE_CLINICAL_CONFLICT_BLOCK",
           "PREGNANCY_CARB_FLOOR_VIOLATION"
         ],
@@ -1872,9 +1856,6 @@
           "STATUS_RETIRED",
           "VERSION_SUPERSEDED",
           "REVIEW_EXPIRED",
-          "STATUS_RETIRED",
-          "VERSION_SUPERSEDED",
-          "REVIEW_EXPIRED",
           "ALLERGY_CONTRAINDICATION_LACTOSE"
         ],
         "passed": true
@@ -1885,9 +1866,6 @@
         "isBlocked": true,
         "blocks": [
           "POLICY_GATE_BLOCK",
-          "POLICY_GATE_BLOCK",
-          "STATUS_RETIRED",
-          "REVIEW_EXPIRED",
           "STATUS_RETIRED",
           "REVIEW_EXPIRED",
           "MEDICATION_CONTRAINDICATION_SGLT2I"
@@ -1900,9 +1878,6 @@
         "isBlocked": true,
         "blocks": [
           "POLICY_GATE_BLOCK",
-          "POLICY_GATE_BLOCK",
-          "STATUS_RETIRED",
-          "REVIEW_EXPIRED",
           "STATUS_RETIRED",
           "REVIEW_EXPIRED",
           "PROGRAM_MISMATCH",
@@ -2565,9 +2540,6 @@
         "STATUS_RETIRED",
         "VERSION_SUPERSEDED",
         "REVIEW_EXPIRED",
-        "STATUS_RETIRED",
-        "VERSION_SUPERSEDED",
-        "REVIEW_EXPIRED",
         "ALLERGY_CONTRAINDICATION_LACTOSE"
       ],
       "passed": true
@@ -2580,9 +2552,6 @@
         "POLICY_GATE_BLOCK",
         "STATUS_RETIRED",
         "VERSION_SUPERSEDED",
-        "REVIEW_EXPIRED",
-        "STATUS_RETIRED",
-        "VERSION_SUPERSEDED",
         "REVIEW_EXPIRED"
       ],
       "passed": true
@@ -2593,9 +2562,6 @@
       "isBlocked": true,
       "blocks": [
         "POLICY_GATE_BLOCK",
-        "POLICY_GATE_BLOCK",
-        "STATUS_RETIRED",
-        "REVIEW_EXPIRED",
         "STATUS_RETIRED",
         "REVIEW_EXPIRED",
         "MEDICATION_CONTRAINDICATION_SGLT2I"
@@ -2608,7 +2574,6 @@
       "isBlocked": true,
       "blocks": [
         "POLICY_GATE_BLOCK",
-        "REVIEW_EXPIRED",
         "REVIEW_EXPIRED"
       ],
       "passed": true
@@ -2619,8 +2584,6 @@
       "isBlocked": true,
       "blocks": [
         "POLICY_GATE_BLOCK",
-        "POLICY_GATE_BLOCK",
-        "STATUS_DRAFT",
         "STATUS_DRAFT"
       ],
       "passed": true
@@ -2631,7 +2594,6 @@
       "isBlocked": true,
       "blocks": [
         "POLICY_GATE_BLOCK",
-        "POLICY_GATE_BLOCK",
         "INTERNAL_AUDIENCE_PROHIBITED"
       ],
       "passed": true
@@ -2641,7 +2603,6 @@
       "name": "Stage Mismatch: Giving pureed Stage 2 handout to a Day 4 clear-liquid patient",
       "isBlocked": true,
       "blocks": [
-        "POLICY_GATE_BLOCK",
         "POLICY_GATE_BLOCK",
         "STAGE_MISMATCH"
       ],
@@ -2664,7 +2625,6 @@
       "blocks": [
         "POLICY_GATE_BLOCK",
         "ACTIVE_CLINICAL_CONFLICT_BLOCK",
-        "ACTIVE_CLINICAL_CONFLICT_BLOCK",
         "PREGNANCY_CARB_FLOOR_VIOLATION"
       ],
       "passed": true
@@ -2675,7 +2635,6 @@
       "isBlocked": true,
       "blocks": [
         "POLICY_GATE_BLOCK",
-        "ACTIVE_CLINICAL_CONFLICT_BLOCK",
         "ACTIVE_CLINICAL_CONFLICT_BLOCK",
         "PREGNANCY_CARB_FLOOR_VIOLATION"
       ],
@@ -2689,9 +2648,6 @@
         "STATUS_RETIRED",
         "VERSION_SUPERSEDED",
         "REVIEW_EXPIRED",
-        "STATUS_RETIRED",
-        "VERSION_SUPERSEDED",
-        "REVIEW_EXPIRED",
         "ALLERGY_CONTRAINDICATION_LACTOSE"
       ],
       "passed": true
@@ -2702,9 +2658,6 @@
       "isBlocked": true,
       "blocks": [
         "POLICY_GATE_BLOCK",
-        "POLICY_GATE_BLOCK",
-        "STATUS_RETIRED",
-        "REVIEW_EXPIRED",
         "STATUS_RETIRED",
         "REVIEW_EXPIRED",
         "MEDICATION_CONTRAINDICATION_SGLT2I"
@@ -2717,9 +2670,6 @@
       "isBlocked": true,
       "blocks": [
         "POLICY_GATE_BLOCK",
-        "POLICY_GATE_BLOCK",
-        "STATUS_RETIRED",
-        "REVIEW_EXPIRED",
         "STATUS_RETIRED",
         "REVIEW_EXPIRED",
         "PROGRAM_MISMATCH",

@@ -291,6 +291,16 @@ app.post('/api/send-check', (req, res) => {
   }
 
   if (!check.allowed || check.blocks.length > 0) {
+    const unique = [];
+    const seen = new Set();
+    for (const b of check.blocks) {
+      const norm = (b.message || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!seen.has(norm)) {
+        seen.add(norm);
+        unique.push(b);
+      }
+    }
+    check.blocks = unique;
     check.summary = `DELIVERY PROHIBITED: ${check.blocks.map(b => b.message).join(' | ')}`;
     check.outcome = 'BLOCK_DELIVERY';
     check.delivery_authorization = 'denied';

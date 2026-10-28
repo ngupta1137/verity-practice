@@ -143,13 +143,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // -------------------------------------------------------------
   // Feature 1: Right Doc (Context Search)
   // -------------------------------------------------------------
+  // Feature 1: Right Doc (Context Search with Inline Send Check)
+  // -------------------------------------------------------------
   async function executeRightDocSearch(queryText) {
     if (!queryText || !queryText.trim()) return;
     rightDocQuery.value = queryText;
 
+    const patientContextSelect = document.getElementById('rightDocPatientContext');
+    const selectedPatientId = patientContextSelect ? patientContextSelect.value : null;
+
     rightDocResults.innerHTML = `
       <div class="card" style="text-align: center; padding: 30px;">
-        <p style="color: var(--brand-green-dark); font-weight: 600;">Searching approved clinical documents & extracting exact section citations...</p>
+        <p style="color: var(--brand-green-dark); font-weight: 600;">Searching approved clinical documents & evaluating Send Check pre-send safeguard status...</p>
       </div>
     `;
 
@@ -159,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           query: queryText,
+          patient_id: selectedPatientId,
           audience: 'patient',
           role: state.currentRole,
           actor: roleSelect.options[roleSelect.selectedIndex].text
@@ -169,6 +175,34 @@ document.addEventListener('DOMContentLoaded', () => {
       renderRightDocResults(data);
     } catch (err) {
       rightDocResults.innerHTML = `<div class="result-banner blocked">Search failed: ${err.message}</div>`;
+    }
+  }
+
+  function renderInlineSendCheckBadge(sendCheck) {
+    if (!sendCheck) return '';
+    if (sendCheck.allowed) {
+      return `
+        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid #10b981; border-radius: var(--radius-sm); padding: 10px 14px; margin: 12px 0; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <span style="color: #065f46; font-weight: 800; font-size: 13px;">✓ SEND CHECK STATUS: PASS (PRE-CLEARED)</span>
+            <p style="margin: 2px 0 0 0; font-size: 11px; color: #047857;">Pre-send gate verified: Current approved version &bull; Non-expired &bull; Stage compatible &bull; Zero active guideline conflicts.</p>
+          </div>
+          <span style="font-size: 11px; font-weight: 700; background: #10b981; color: #fff; padding: 3px 8px; border-radius: 4px; white-space: nowrap;">SAFE TO SEND</span>
+        </div>
+      `;
+    } else {
+      return `
+        <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid #ef4444; border-radius: var(--radius-sm); padding: 10px 14px; margin: 12px 0;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="color: #991b1b; font-weight: 800; font-size: 13px;">⛔ SEND CHECK STATUS: BLOCKED (GATE WILL INTERCEPT)</span>
+            <span style="font-size: 11px; font-weight: 700; background: #ef4444; color: #fff; padding: 3px 8px; border-radius: 4px; white-space: nowrap;">CANNOT DELIVER</span>
+          </div>
+          <p style="margin: 4px 0 2px 0; font-size: 12px; color: #b91c1c; font-weight: 600;">The pre-send gatekeeper will block this document if sent:</p>
+          <ul style="margin: 4px 0 0 16px; font-size: 11px; color: #7f1d1d; line-height: 1.4;">
+            ${(sendCheck.blocks || []).map(b => `<li><strong>${b.code || 'BLOCK'}:</strong> ${b.message || b}</li>`).join('')}
+          </ul>
+        </div>
+      `;
     }
   }
 
@@ -212,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const doc = top.document;
     const citation = top.citation;
+    const isTopBlocked = top.sendCheck && !top.sendCheck.allowed;
 
     let html = `
       <div class="result-banner ${bannerClass}">
@@ -222,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
 
-      <div class="citation-card">
+      <div class="citation-card" style="${isTopBlocked ? 'border-color: #ef4444;' : ''}">
         <div class="citation-header">
           <div>
             <span class="badge badge-approved">STATUS: ${doc.status}</span>
@@ -238,6 +273,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <strong>Match Rationale:</strong> ${top.matchReason}
         </div>
 
+        ${renderInlineSendCheckBadge(top.sendCheck)}
+
         ${citation ? `
           <div class="citation-section-title">
             <span>📌 Exact Section Citation: ${citation.heading}</span>
@@ -251,12 +288,47 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="font-size: 13px; color: var(--ink-muted);">
             Program: <strong>${doc.program}</strong> &bull; Stage: <strong>${doc.patient_stage}</strong>
           </div>
-          <button class="btn-send-check" id="btnLaunchSendCheckFromSearch">
-            <span>🛡️ Pre-Send Check & Deliver to Patient</span>
-          </button>
+          ${isTopBlocked 
+            ? `<button class="btn-send-check" disabled style="opacity: 0.6; cursor: not-allowed; background: var(--border-dark); color: var(--ink-muted);"><span>⛔ Delivery Blocked by Send Check Gate</span></button>`
+            : `<button class="btn-send-check" id="btnLaunchSendCheckFromSearch"><span>🛡️ Pre-Send Check & Deliver to Patient</span></button>`
+          }
         </div>
       </div>
     `;
+
+    // If additional candidate documents exist in search matches
+    if (data.matches && data.matches.length > 1) {
+      const additional = data.matches.slice(1);
+      html += `
+        <div style="margin-top: 24px; margin-bottom: 12px;">
+          <h4 style="font-size: 14px; font-weight: 700; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.5px;">
+            Additional Evaluated Candidates & Send Check Status (${additional.length})
+          </h4>
+        </div>
+      `;
+
+      additional.forEach((m, idx) => {
+        const d = m.document;
+        const mBlocked = m.sendCheck && !m.sendCheck.allowed;
+        html += `
+          <div class="citation-card" style="margin-bottom: 14px; opacity: 0.95; ${mBlocked ? 'border-color: #fca5a5;' : ''}">
+            <div class="citation-header">
+              <div>
+                <span class="badge badge-approved">${d.doc_id} v${d.version}</span>
+                <span class="citation-title" style="margin-left: 8px;">${d.title}</span>
+              </div>
+              <div style="font-size: 12px; color: var(--ink-muted);">
+                Score: <strong>${(m.score * 100).toFixed(0)}%</strong>
+              </div>
+            </div>
+            <div style="font-size: 12px; color: var(--ink-muted); margin: 6px 0;">
+              ${m.matchReason}
+            </div>
+            ${renderInlineSendCheckBadge(m.sendCheck)}
+          </div>
+        `;
+      });
+    }
 
     rightDocResults.innerHTML = html;
 
@@ -272,7 +344,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // Feature 2: Send Check (Deterministic Gatekeeper)
   // -------------------------------------------------------------
   function renderSendCheckSelectors() {
+    const rightDocPatSelect = document.getElementById('rightDocPatientContext');
+    if (rightDocPatSelect) {
+      rightDocPatSelect.innerHTML = `
+        <option value="">-- General Practice Context (Evaluates Intrinsic Safety, Status & Conflicts) --</option>
+        ${state.patients.map(p => `
+          <option value="${p.patient_id}">
+            ${p.patient_id} - ${p.name} (${p.program} | ${p.patient_stage})
+          </option>
+        `).join('')}
+      `;
+    }
+
     sendCheckDocSelect.innerHTML = state.documents.map(d => `
+      <option value="${d.doc_id}:${d.version}">
+        [${d.status.toUpperCase()}] ${d.doc_id} v${d.version} - ${d.title.substring(0, 50)}...
+      </option>
+    `).join('');
       <option value="${d.doc_id}:${d.version}">
         [${d.status.toUpperCase()}] ${d.doc_id} v${d.version} - ${d.title.substring(0, 50)}...
       </option>
@@ -728,8 +816,44 @@ document.addEventListener('DOMContentLoaded', () => {
         <div style="margin-top: 12px; font-size: 12px; color: var(--ink-muted);">
           <strong>Remediation:</strong> ${c.remediation}
         </div>
+
+        <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; gap: 12px; align-items: center; justify-content: flex-end;">
+          <span style="font-size: 13px; font-weight: 600; color: var(--ink);">Practice Director Action:</span>
+          <button class="btn-demo-step btn-resolve-conflict" data-conflict-id="${c.conflict_id}" data-retire-doc="${c.docA.doc_id}" data-unlock-doc="${c.docB.doc_id}" style="background: var(--brand-green-dark); color: #fff; border: none; font-weight: 600;">
+            <span>⚡ Resolve: Retire ${c.docA.doc_id} & Unlock ${c.docB.doc_id} (ADA/ACOG Standard)</span>
+          </button>
+        </div>
       </div>
     `).join('');
+
+    container.querySelectorAll('.btn-resolve-conflict').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const conflictId = btn.dataset.conflictId;
+        const retireDoc = btn.dataset.retireDoc;
+        const unlockDoc = btn.dataset.unlockDoc;
+        try {
+          const res = await fetch('/api/conflicts/resolve', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              conflict_id: conflictId,
+              doc_to_retire: retireDoc,
+              doc_to_unlock: unlockDoc,
+              actor: 'Dr. Sarah Jenkins, RDN',
+              role: 'owner'
+            })
+          });
+          const result = await res.json();
+          if (result.success) {
+            alert(`CLINICAL CONFLICT RESOLVED BY OWNER\n\n${result.message}\nAudit Event: ${result.auditEventId}\nDocument ${unlockDoc} unlocked for distribution.`);
+            await loadInitialData();
+            loadDashboard();
+          }
+        } catch (err) {
+          alert(`Error resolving conflict: ${err.message}`);
+        }
+      });
+    });
   }
 
   function renderStaleness(stalenessList) {
@@ -1009,29 +1133,101 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       state.evalReport = data;
 
-      document.getElementById('evalInScopeAcc').textContent = data.metrics.inScopeTop1Accuracy;
-      document.getElementById('evalTrapCatch').textContent = data.metrics.trapCatchRate;
-      document.getElementById('evalRefusalRate').textContent = data.metrics.outOfLibraryRefusalRate;
-      document.getElementById('evalOverallAcc').textContent = data.metrics.overallAccuracy;
+      const s1 = data.suite1_regression;
+      const s2 = data.suite2_held_out;
+      const traps = data.preSendCheckTraps;
 
-      const badge = document.getElementById('evalBadge');
-      if (badge) badge.textContent = data.metrics.overallAccuracy.split(' ')[0];
+      // Suite 1 Metrics
+      if (s1) {
+        if (document.getElementById('evalInScopeAcc')) document.getElementById('evalInScopeAcc').textContent = s1.inScopeTop1Accuracy.split(' ')[0];
+        if (document.getElementById('evalInScopeCount')) document.getElementById('evalInScopeCount').textContent = `${s1.counts.inScope.passed}/${s1.counts.inScope.total} Cases (Target: ≥ 90.0%)`;
+        if (document.getElementById('evalTrapCatch')) document.getElementById('evalTrapCatch').textContent = s1.trapHandlingRate.split(' ')[0];
+        if (document.getElementById('evalTrapCount')) document.getElementById('evalTrapCount').textContent = `${s1.counts.traps.passed}/${s1.counts.traps.total} Cases (Target: 100.0%)`;
+        if (document.getElementById('evalRefusalRate')) document.getElementById('evalRefusalRate').textContent = s1.outOfLibraryRefusalRate.split(' ')[0];
+        if (document.getElementById('evalRefusalCount')) document.getElementById('evalRefusalCount').textContent = `${s1.counts.outOfLibrary.passed}/${s1.counts.outOfLibrary.total} Cases (Target: 100.0%)`;
+        if (document.getElementById('evalInternalAcc')) document.getElementById('evalInternalAcc').textContent = s1.internalQnAccuracy ? s1.internalQnAccuracy.split(' ')[0] : '100.0%';
+        if (document.getElementById('evalInternalCount')) document.getElementById('evalInternalCount').textContent = `${s1.counts.internal.passed}/${s1.counts.internal.total} Cases (Target: ≥ 90.0%)`;
+        if (document.getElementById('evalOverallAcc')) document.getElementById('evalOverallAcc').textContent = s1.overallAccuracy.split(' ')[0];
+        if (document.getElementById('evalOverallCount')) document.getElementById('evalOverallCount').textContent = `${s1.counts.total.passed}/${s1.counts.total.total} Test Cases Passed`;
+        if (document.getElementById('evalMathSummary')) document.getElementById('evalMathSummary').textContent = `${s1.counts.inScope.total} In-Scope + ${s1.counts.outOfLibrary.total} Out-of-Library + ${s1.counts.traps.total} Traps + ${s1.counts.internal.total} Internal = ${s1.counts.total.total} / ${s1.counts.total.total} Total Queries (All categories sum exactly to total)`;
 
-      const evalTableBody = document.getElementById('evalTableBody');
-      evalTableBody.innerHTML = data.queryDetails.map(q => `
-        <tr>
-          <td><code>${q.id}</code></td>
-          <td style="max-width: 280px;">${q.query}</td>
-          <td><span class="badge badge-expired">${q.category}</span></td>
-          <td>${q.expected.doc_id || 'REFUSAL'} (${q.expected.outcome})</td>
-          <td>${q.actual.doc_id || 'REFUSAL'} (${q.actual.outcome})</td>
-          <td>
-            <span class="badge ${q.passed ? 'badge-approved' : 'badge-retired'}">
-              ${q.passed ? 'PASSED' : 'FAILED'}
-            </span>
-          </td>
-        </tr>
-      `).join('');
+        const evalTableBody = document.getElementById('evalTableBody');
+        if (evalTableBody && s1.queryDetails) {
+          evalTableBody.innerHTML = s1.queryDetails.map(q => `
+            <tr>
+              <td><code>${q.id}</code></td>
+              <td style="max-width: 280px; font-weight: 500;">${q.query}</td>
+              <td><span class="badge" style="background: var(--surface-alt); border: 1px solid var(--border); font-size: 11px;">${q.category}</span></td>
+              <td><code>${q.expected.doc_id || 'REFUSAL'}</code> <span style="font-size: 11px; color: var(--ink-muted);">(${q.expected.outcome})</span></td>
+              <td><code>${q.actual.doc_id || 'REFUSAL'}</code> <span style="font-size: 11px; color: var(--ink-muted);">(${q.actual.outcome})</span></td>
+              <td>
+                <span class="badge ${q.passed ? 'badge-approved' : 'badge-retired'}" style="font-weight: 700;">
+                  ${q.passed ? '✓ PASSED' : '✗ FAILED'}
+                </span>
+              </td>
+            </tr>
+          `).join('');
+        }
+      }
+
+      // Suite 2 Metrics (Held-Out)
+      if (s2) {
+        if (document.getElementById('evalHeldOutInScope')) document.getElementById('evalHeldOutInScope').textContent = s2.inScopeTop1Accuracy.split(' ')[0];
+        if (document.getElementById('evalHeldOutInScopeCount')) document.getElementById('evalHeldOutInScopeCount').textContent = `${s2.counts.inScope.passed}/${s2.counts.inScope.total} Cases (Target: ≥ 90.0%)`;
+        if (document.getElementById('evalHeldOutRefusal')) document.getElementById('evalHeldOutRefusal').textContent = s2.outOfLibraryRefusalRate.split(' ')[0];
+        if (document.getElementById('evalHeldOutRefusalCount')) document.getElementById('evalHeldOutRefusalCount').textContent = `${s2.counts.outOfLibrary.passed}/${s2.counts.outOfLibrary.total} Cases (Target: 100.0%)`;
+        if (document.getElementById('evalHeldOutTraps')) document.getElementById('evalHeldOutTraps').textContent = s2.trapHandlingRate.split(' ')[0];
+        if (document.getElementById('evalHeldOutTrapsCount')) document.getElementById('evalHeldOutTrapsCount').textContent = `${s2.counts.traps.passed}/${s2.counts.traps.total} Cases (Target: 100.0%)`;
+        if (document.getElementById('evalHeldOutOverall')) document.getElementById('evalHeldOutOverall').textContent = s2.overallAccuracy.split(' ')[0];
+        if (document.getElementById('evalHeldOutOverallCount')) document.getElementById('evalHeldOutOverallCount').textContent = `${s2.counts.total.passed}/${s2.counts.total.total} Test Cases Passed`;
+        if (document.getElementById('evalHeldOutMathSummary')) document.getElementById('evalHeldOutMathSummary').textContent = `${s2.counts.inScope.total} In-Scope + ${s2.counts.outOfLibrary.total} Out-of-Scope + ${s2.counts.traps.total} Trap = ${s2.counts.total.total} / ${s2.counts.total.total} Total Queries (All categories sum exactly to total)`;
+
+        const heldOutTableBody = document.getElementById('heldOutTableBody');
+        if (heldOutTableBody && s2.queryDetails) {
+          heldOutTableBody.innerHTML = s2.queryDetails.map(q => `
+            <tr>
+              <td><code>${q.id}</code></td>
+              <td style="max-width: 280px; font-weight: 500;">${q.query}</td>
+              <td><span class="badge" style="background: var(--surface-alt); border: 1px solid var(--border); font-size: 11px;">${q.category}</span></td>
+              <td><code>${q.expected.doc_id || 'REFUSAL'}</code> <span style="font-size: 11px; color: var(--ink-muted);">(${q.expected.outcome})</span></td>
+              <td><code>${q.actual.doc_id || 'REFUSAL'}</code> <span style="font-size: 11px; color: var(--ink-muted);">(${q.actual.outcome})</span></td>
+              <td>
+                <span class="badge ${q.passed ? 'badge-approved' : 'badge-retired'}" style="font-weight: 700;">
+                  ${q.passed ? '✓ PASSED' : '✗ FAILED'}
+                </span>
+              </td>
+            </tr>
+          `).join('');
+        }
+      }
+
+      // Pre-Send Check Traps
+      if (traps) {
+        if (document.getElementById('evalTrapCatchRateBadge')) {
+          document.getElementById('evalTrapCatchRateBadge').textContent = `${traps.catchRate} Catch Rate (${traps.trapsCaught}/${traps.totalTraps})`;
+        }
+        const gateTrapTableBody = document.getElementById('gateTrapTableBody');
+        if (gateTrapTableBody && traps.trapDetails) {
+          gateTrapTableBody.innerHTML = traps.trapDetails.map(t => `
+            <tr>
+              <td><code>${t.id}</code></td>
+              <td style="max-width: 240px; font-weight: 500;">${t.name}</td>
+              <td><code>${t.doc_id || 'N/A'}</code> <span style="font-size: 11px; color: var(--ink-muted);">(v${t.version || '?'})</span></td>
+              <td><code>${t.patient_id}</code></td>
+              <td><span class="badge" style="background: #FFF3E0; color: #E65100; border: 1px solid #FFE0B2; font-size: 11px;">${t.expectedGate}</span></td>
+              <td><span class="badge" style="background: #FEE8E7; color: var(--outcome-blocked); border: 1px solid #FAC5C3; font-size: 11px;">${t.actualGate || 'BLOCKED'}</span></td>
+              <td>
+                <span class="badge ${t.caught ? 'badge-approved' : 'badge-retired'}" style="font-weight: 700;">
+                  ${t.caught ? '✓ CAUGHT' : '✗ MISSED'}
+                </span>
+              </td>
+            </tr>
+          `).join('');
+        }
+      }
+
+      const evalBadge = document.getElementById('evalBadge');
+      if (evalBadge && s1) evalBadge.textContent = s1.overallAccuracy.split(' ')[0];
     } catch (err) {
       console.error('Failed to load evaluation data:', err);
     }

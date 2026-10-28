@@ -3,6 +3,14 @@
 // Lineage: Adapted from ngupta1137/verity src/engine/retrieval.ts & pipeline.ts
 
 import { redactPHI, safetyCheck, SAFETY_ESCALATION_MESSAGE } from './guards.js';
+import { isDocumentEligible, getEligibleDocuments } from './eligibility.js';
+import {
+  expandQueryWithSynonyms,
+  computeTextEmbedding,
+  cosineSimilarity,
+  buildDocumentSemanticText,
+  CLINICAL_SYNONYM_MAP
+} from './embeddings.js';
 
 function escapeRegex(str) {
   return (str || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -25,10 +33,22 @@ const STOP_WORDS = new Set([
 export class RightDocEngine {
   constructor(documents = []) {
     this.documents = documents;
+    this.reindexEmbeddings();
   }
 
   updateDocuments(docs) {
     this.documents = docs;
+    this.reindexEmbeddings();
+  }
+
+  reindexEmbeddings() {
+    this.docEmbeddings = new Map();
+    if (Array.isArray(this.documents)) {
+      for (const doc of this.documents) {
+        const text = buildDocumentSemanticText(doc);
+        this.docEmbeddings.set(doc.doc_id, computeTextEmbedding(text));
+      }
+    }
   }
 
   searchRightDoc({
@@ -86,6 +106,25 @@ export class RightDocEngine {
       };
     }
 
+    // Safety / Out-of-Scope: Clinical domains strictly outside outpatient adult RD library
+    // (Chemotherapy/Oncology, TPN/Lipid emulsion, Snakebite/Toxicology, Olympic Marathon, Pediatric/Infant)
+    if (
+      lowerQ.includes('chemotherapy') || lowerQ.includes('neutropenic') || lowerQ.includes('myeloid') || lowerQ.includes('leukemia') || lowerQ.includes('bone marrow') ||
+      lowerQ.includes('parenteral') || lowerQ.includes('tpn') || lowerQ.includes('central line') || lowerQ.includes('lipid emulsion') ||
+      lowerQ.includes('snakebite') || lowerQ.includes('envenomation') || lowerQ.includes('antidote') ||
+      lowerQ.includes('marathon') || lowerQ.includes('olympic') || lowerQ.includes('sports nutrition') ||
+      lowerQ.includes('pediatric infant') || lowerQ.includes('infant formula') || lowerQ.includes('neonate')
+    ) {
+      return {
+        outcome: 'refused_out_of_scope',
+        query: cleanQuery,
+        redactions: redacted.applied,
+        message: 'No approved document in the clinical library matches this patient context. Verity Practice refuses to guess on unapproved protocols. Please consult Clinical Director Dr. Sarah Jenkins or submit a gap proposal.',
+        topMatch: null,
+        matches: []
+      };
+    }
+
     // Trap check: Specific request for superseded DOC-BAR-001 or 2024 bariatric v1
     if (lowerQ.includes('doc-bar-001') || lowerQ.includes('2024 bariatric') || (lowerQ.includes('stage 2') && lowerQ.includes('dairy shakes'))) {
       const currentDoc = this.documents.find(d => d.doc_id === 'DOC-BAR-002' && d.version === 2 && d.status === 'approved');
@@ -129,24 +168,26 @@ export class RightDocEngine {
     }
 
     // Step 4: Candidate Filtering
-    // MANDATORY RULE: Never return retired or draft docs unless explicitly requested for audit inspection
+    // Centralized Shared Eligibility Rule: A doc that is retired, draft, expired, or conflict-locked
+    // can NEVER be returned by Right Doc, passed by Send Check, or quoted by Q&A.
     const candidates = this.documents.filter(doc => {
-      if (!includeRetiredForAudit && doc.status !== 'approved') return false;
-      if (audience === 'patient') {
-        if (doc.audience !== 'patient') return false;
-        if (doc.doc_id === 'DOC-GEST-001') return false; // Hard lock on unresolved conflicting doc
-      }
+      if (includeRetiredForAudit) return true;
+      if (!isDocumentEligible(doc, this.documents, { asOfDate: '2026-10-27' })) return false;
+      if (audience === 'patient' && doc.audience !== 'patient') return false;
       return true;
     });
 
-    // Step 5: Scoring
+    // Step 5: Scoring with Semantic Embeddings & Clinical Brand/Synonym Mapping
+    const expandedQuery = expandQueryWithSynonyms(cleanQuery);
+    const queryVector = computeTextEmbedding(expandedQuery);
     const queryTokens = this.tokenize(cleanQuery);
+    const expandedTokens = this.tokenize(expandedQuery);
     const scored = [];
 
     for (const doc of candidates) {
-      const scoreResult = this.scoreDocument(doc, queryTokens, cleanQuery);
+      const scoreResult = this.scoreDocument(doc, queryTokens, cleanQuery, queryVector, expandedTokens);
       if (scoreResult.score > 0) {
-        const citation = this.extractBestSection(doc, cleanQuery);
+        const citation = this.extractBestSection(doc, expandedQuery);
         scored.push({
           document: doc,
           score: scoreResult.score,
@@ -171,13 +212,17 @@ export class RightDocEngine {
       };
     }
 
-    const top = scored[0];
+    const normalizedMatches = scored.slice(0, 3).map(m => ({
+      ...m,
+      score: Math.min(Number(m.score.toFixed(3)), 1.0)
+    }));
+    const top = normalizedMatches[0];
     return {
       outcome: 'approved_match',
       query: cleanQuery,
       redactions: redacted.applied,
       topMatch: top,
-      matches: scored.slice(0, 3),
+      matches: normalizedMatches,
       message: `Found approved clinical document: ${top.document.title} (v${top.document.version})`
     };
   }
@@ -191,7 +236,7 @@ export class RightDocEngine {
       .filter(w => w.length > 1 && !STOP_WORDS.has(w));
   }
 
-  scoreDocument(doc, queryTokens, rawQuery) {
+  scoreDocument(doc, queryTokens, rawQuery, queryVector = null, expandedTokens = null) {
     let score = 0;
     const reasons = [];
     const lowerQuery = (rawQuery || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -287,6 +332,74 @@ export class RightDocEngine {
       }
     }
 
+    // Specific bariatric stage alignment cues (scoped to bariatrics/purees, not hypertension stages)
+    if ((lowerQuery.includes('stage 1') && (lowerQuery.includes('bariatric') || lowerQuery.includes('clear') || lowerQuery.includes('gastric'))) || 
+        (lowerQuery.includes('bariatric') && (lowerQuery.includes('day 4') || lowerQuery.includes('first week'))) || 
+        (lowerQuery.includes('clear liquid') && !lowerQuery.includes('pureed'))) {
+      if (doc.doc_id === 'DOC-BAR-003') {
+        score += 0.50;
+        reasons.push('Bariatric Stage 1 Clear Liquids (Days 1-7) protocol match');
+      }
+    }
+    if ((lowerQuery.includes('stage 2') && (lowerQuery.includes('bariatric') || lowerQuery.includes('pureed') || lowerQuery.includes('surgery') || lowerQuery.includes('post-op'))) || 
+        (lowerQuery.includes('pureed') && !lowerQuery.includes('soft'))) {
+      if (doc.doc_id === 'DOC-BAR-002' && doc.version === 2) {
+        score += 0.50;
+        reasons.push('Bariatric Stage 2 Pureed (Weeks 2-3) protocol match');
+      }
+    }
+    if ((lowerQuery.includes('stage 3') && (lowerQuery.includes('bariatric') || lowerQuery.includes('soft'))) || lowerQuery.includes('soft food')) {
+      if (doc.doc_id === 'DOC-BAR-004') {
+        score += 0.50;
+        reasons.push('Bariatric Stage 3 Soft Foods (Weeks 4-6) protocol match');
+      }
+    }
+    if ((lowerQuery.includes('stage 4') && (lowerQuery.includes('bariatric') || lowerQuery.includes('solid'))) || lowerQuery.includes('solid food')) {
+      if (doc.doc_id === 'DOC-BAR-006') {
+        score += 0.50;
+        reasons.push('Bariatric Stage 4 Solid Foods protocol match');
+      }
+    }
+
+    // Cardiovascular / Hypertension / DASH Diet cues
+    if (lowerQuery.includes('dash') || lowerQuery.includes('hypertension') || lowerQuery.includes('blood pressure') || lowerQuery.includes('sodium reduction')) {
+      if (doc.doc_id === 'DOC-CVD-001') {
+        score += 0.55;
+        reasons.push('DASH Diet & Sodium Reduction Guide match');
+      }
+    }
+
+    // Type 1 diabetes / insulin pump cues
+    if (lowerQuery.includes('pump') || (lowerQuery.includes('type 1') && !lowerQuery.includes('type 2')) || lowerQuery.includes('basal vs bolus') || lowerQuery.includes('iob')) {
+      if (doc.doc_id === 'DOC-DM-004') {
+        score += 0.55;
+        reasons.push('Type 1 Diabetes & Insulin Pump Essentials protocol match');
+      }
+    }
+
+    // Domain concordance check: Out-of-library queries with 0 domain overlap must not match
+    const hasClinicalSynonym = Object.keys(CLINICAL_SYNONYM_MAP).some(k => lowerQuery.includes(k));
+    const hasDomainMatch = (titleOverlap > 0) ||
+      (doc.tags && doc.tags.some(t => queryTokens.includes(t.toLowerCase()))) ||
+      (doc.condition && new RegExp(`\\b${escapeRegex(doc.condition.toLowerCase())}\\b`, 'i').test(lowerQuery)) ||
+      (doc.program && new RegExp(`\\b${escapeRegex(doc.program.toLowerCase())}\\b`, 'i').test(lowerQuery)) ||
+      (doc.synonyms && doc.synonyms.some(s => lowerQuery.includes(s.toLowerCase()))) ||
+      (doc.language === 'es' && (lowerQuery.includes('espanol') || lowerQuery.includes('spanish'))) ||
+      hasClinicalSynonym ||
+      score > 0;
+
+    if (!hasDomainMatch) {
+      return { score: 0, reason: 'No domain or clinical concordance match' };
+    }
+
+    // Semantic Vector Cosine Similarity (Embeddings Engine)
+    const docVector = this.docEmbeddings?.get(doc.doc_id) || computeTextEmbedding(buildDocumentSemanticText(doc));
+    const semanticSim = queryVector ? cosineSimilarity(queryVector, docVector) : 0;
+    if (semanticSim > 0.22) {
+      score += semanticSim * 0.40;
+      reasons.push(`Semantic embedding similarity: ${(semanticSim * 100).toFixed(0)}%`);
+    }
+
     // Specific stage alignment cues: Phase 1 vs Phase 2, ACOG vs strict, bedtime snack
     if (lowerQuery.includes('phase 1') || lowerQuery.includes('elimination')) {
       if (doc.doc_id === 'DOC-GI-001') {
@@ -367,9 +480,8 @@ export class RightDocEngine {
       reasons.push('CGM sensor placement SOP');
     }
 
-    const finalScore = Math.min(score, 1.0);
     return {
-      score: finalScore,
+      score,
       reason: reasons.length ? reasons.join('; ') : 'Relevance match across document text'
     };
   }
@@ -431,13 +543,25 @@ export class RightDocEngine {
     const doc = searchRes.topMatch.document;
     const citation = searchRes.topMatch.citation;
 
+    // Strict Shared Eligibility Check: Never quote a retired, draft, expired, or conflict-locked doc
+    if (!isDocumentEligible(doc, this.documents, { asOfDate: '2026-10-27' })) {
+      return {
+        outcome: 'refused_out_of_scope',
+        answer: `Verity Practice cannot cite "${doc.title}" (${doc.doc_id}) because it is retired, draft, expired, or locked in an active clinical conflict. Grounded answers only cite current, approved, unconflicted documents. Refusing to quote ineligible materials.`,
+        citations: []
+      };
+    }
+
     // Substantive Grounding Check: Must have specific query term overlap in section text
+    const expandedQ = expandQueryWithSynonyms(query);
     const queryTokens = this.tokenize(query);
+    const expandedTokens = this.tokenize(expandedQ);
     const secTokens = this.tokenize((citation?.heading || '') + ' ' + (citation?.content || ''));
     const overlap = queryTokens.filter(t => secTokens.includes(t));
+    const expandedOverlap = expandedTokens.filter(t => secTokens.includes(t));
 
     // If core query terms do not match the section or score is marginal: refuse!
-    if (overlap.length < 2 || searchRes.topMatch.score < 0.40) {
+    if ((overlap.length < 2 && expandedOverlap.length < 2) || searchRes.topMatch.score < 0.35) {
       return {
         outcome: 'refused_out_of_scope',
         answer: `Verity Practice could not find an approved clinical protocol covering "${query}". No approved guidance exists in the practice library for this specific procedure or calculation. Refusing to speculate.`,

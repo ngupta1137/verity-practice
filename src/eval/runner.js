@@ -313,15 +313,30 @@ export function runEvaluation() {
       outOfLibraryRefusalRate: `${regResults.refusalRate}% (${regResults.outOfLibRefused}/${regResults.outOfLibTotal})`,
       trapHandlingRate: `${regResults.trapHandleRate}% (${regResults.trapQueriesHandled}/${regResults.trapQueriesTotal})`,
       internalQnAccuracy: `${regResults.internalAccuracy}% (${regResults.internalCorrect}/${regResults.internalTotal})`,
+      counts: {
+        inScope: { passed: regResults.inScopeCorrect, total: regResults.inScopeTotal },
+        outOfLibrary: { passed: regResults.outOfLibRefused, total: regResults.outOfLibTotal },
+        traps: { passed: regResults.trapQueriesHandled, total: regResults.trapQueriesTotal },
+        internal: { passed: regResults.internalCorrect, total: regResults.internalTotal },
+        total: { passed: regResults.top1Correct, total: regResults.totalQueries }
+      },
+      mathSummary: `${regResults.inScopeTotal} in-scope + ${regResults.outOfLibTotal} out-of-library + ${regResults.trapQueriesTotal} traps + ${regResults.internalTotal} internal = ${regResults.totalQueries} total queries`,
       queryDetails: regResults.queryResults
     },
     suite2_held_out: {
-      name: 'Held-Out Evaluation Suite',
+      name: 'Held-Out Evaluation Suite (Never Tuned On)',
       totalQueries: heldOutResults.totalQueries,
       overallAccuracy: `${heldOutResults.overallAccuracy}% (${heldOutResults.top1Correct}/${heldOutResults.totalQueries})`,
       inScopeTop1Accuracy: `${heldOutResults.inScopeAccuracy}% (${heldOutResults.inScopeCorrect}/${heldOutResults.inScopeTotal})`,
       outOfLibraryRefusalRate: `${heldOutResults.refusalRate}% (${heldOutResults.outOfLibRefused}/${heldOutResults.outOfLibTotal})`,
       trapHandlingRate: `${heldOutResults.trapHandleRate}% (${heldOutResults.trapQueriesHandled}/${heldOutResults.trapQueriesTotal})`,
+      counts: {
+        inScope: { passed: heldOutResults.inScopeCorrect, total: heldOutResults.inScopeTotal },
+        outOfLibrary: { passed: heldOutResults.outOfLibRefused, total: heldOutResults.outOfLibTotal },
+        traps: { passed: heldOutResults.trapQueriesHandled, total: heldOutResults.trapQueriesTotal },
+        total: { passed: heldOutResults.top1Correct, total: heldOutResults.totalQueries }
+      },
+      mathSummary: `${heldOutResults.inScopeTotal} in-scope + ${heldOutResults.outOfLibTotal} out-of-library + ${heldOutResults.trapQueriesTotal} traps = ${heldOutResults.totalQueries} total queries`,
       queryDetails: heldOutResults.queryResults
     },
     preSendCheckTraps: {

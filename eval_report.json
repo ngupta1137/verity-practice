@@ -1,5 +1,5 @@
 {
-  "evaluatedAt": "2026-10-28T01:22:27.641Z",
+  "evaluatedAt": "2026-10-28T02:19:05.008Z",
   "suite1_regression": {
     "name": "Golden Regression Suite",
     "totalQueries": 35,
@@ -8,6 +8,29 @@
     "outOfLibraryRefusalRate": "100.0% (6/6)",
     "trapHandlingRate": "100.0% (4/4)",
     "internalQnAccuracy": "100.0% (4/4)",
+    "counts": {
+      "inScope": {
+        "passed": 21,
+        "total": 21
+      },
+      "outOfLibrary": {
+        "passed": 6,
+        "total": 6
+      },
+      "traps": {
+        "passed": 4,
+        "total": 4
+      },
+      "internal": {
+        "passed": 4,
+        "total": 4
+      },
+      "total": {
+        "passed": 35,
+        "total": 35
+      }
+    },
+    "mathSummary": "21 in-scope + 6 out-of-library + 4 traps + 4 internal = 35 total queries",
     "queryDetails": [
       {
         "id": "Q01",
@@ -537,12 +560,31 @@
     ]
   },
   "suite2_held_out": {
-    "name": "Held-Out Evaluation Suite",
+    "name": "Held-Out Evaluation Suite (Never Tuned On)",
     "totalQueries": 20,
     "overallAccuracy": "100.0% (20/20)",
     "inScopeTop1Accuracy": "100.0% (17/17)",
     "outOfLibraryRefusalRate": "100.0% (2/2)",
     "trapHandlingRate": "100.0% (1/1)",
+    "counts": {
+      "inScope": {
+        "passed": 17,
+        "total": 17
+      },
+      "outOfLibrary": {
+        "passed": 2,
+        "total": 2
+      },
+      "traps": {
+        "passed": 1,
+        "total": 1
+      },
+      "total": {
+        "passed": 20,
+        "total": 20
+      }
+    },
+    "mathSummary": "17 in-scope + 2 out-of-library + 1 traps = 20 total queries",
     "queryDetails": [
       {
         "id": "H01",
@@ -859,6 +901,9 @@
           "STATUS_RETIRED",
           "VERSION_SUPERSEDED",
           "REVIEW_EXPIRED",
+          "STATUS_RETIRED",
+          "VERSION_SUPERSEDED",
+          "REVIEW_EXPIRED",
           "STAGE_MISMATCH",
           "ALLERGY_CONTRAINDICATION_LACTOSE"
         ],
@@ -869,6 +914,9 @@
         "name": "Attempt to send retired DOC-BAR-001 v1 to patient",
         "isBlocked": true,
         "blocks": [
+          "STATUS_RETIRED",
+          "VERSION_SUPERSEDED",
+          "REVIEW_EXPIRED",
           "STATUS_RETIRED",
           "VERSION_SUPERSEDED",
           "REVIEW_EXPIRED",
@@ -883,6 +931,8 @@
         "blocks": [
           "STATUS_RETIRED",
           "REVIEW_EXPIRED",
+          "STATUS_RETIRED",
+          "REVIEW_EXPIRED",
           "STAGE_MISMATCH",
           "MEDICATION_CONTRAINDICATION_SGLT2I"
         ],
@@ -893,6 +943,7 @@
         "name": "Attempt to send expired review date handout (DOC-CKD-001, expired 2024)",
         "isBlocked": true,
         "blocks": [
+          "REVIEW_EXPIRED",
           "REVIEW_EXPIRED"
         ],
         "passed": true
@@ -902,6 +953,7 @@
         "name": "Attempt to send unapproved draft handout (DOC-DRAFT-001)",
         "isBlocked": true,
         "blocks": [
+          "STATUS_DRAFT",
           "STATUS_DRAFT",
           "STAGE_MISMATCH"
         ],
@@ -941,6 +993,7 @@
         "isBlocked": true,
         "blocks": [
           "ACTIVE_CLINICAL_CONFLICT_BLOCK",
+          "ACTIVE_CLINICAL_CONFLICT_BLOCK",
           "PREGNANCY_CARB_FLOOR_VIOLATION"
         ],
         "passed": true
@@ -951,6 +1004,7 @@
         "isBlocked": true,
         "blocks": [
           "ACTIVE_CLINICAL_CONFLICT_BLOCK",
+          "ACTIVE_CLINICAL_CONFLICT_BLOCK",
           "PREGNANCY_CARB_FLOOR_VIOLATION"
         ],
         "passed": true
@@ -960,6 +1014,9 @@
         "name": "Allergy Contraindication: Attempting to send cow milk Stage 2 (DOC-BAR-002 v1) to lactose intolerant patient (SYNTH-PAT-101)",
         "isBlocked": true,
         "blocks": [
+          "STATUS_RETIRED",
+          "VERSION_SUPERSEDED",
+          "REVIEW_EXPIRED",
           "STATUS_RETIRED",
           "VERSION_SUPERSEDED",
           "REVIEW_EXPIRED",
@@ -975,6 +1032,8 @@
         "blocks": [
           "STATUS_RETIRED",
           "REVIEW_EXPIRED",
+          "STATUS_RETIRED",
+          "REVIEW_EXPIRED",
           "STAGE_MISMATCH",
           "MEDICATION_CONTRAINDICATION_SGLT2I"
         ],
@@ -985,6 +1044,8 @@
         "name": "Medication Contraindication: Attempting to send VLCD protocol (DOC-RET-001) to patient on Sulfonylurea Glipizide (SYNTH-PAT-102)",
         "isBlocked": true,
         "blocks": [
+          "STATUS_RETIRED",
+          "REVIEW_EXPIRED",
           "STATUS_RETIRED",
           "REVIEW_EXPIRED",
           "PROGRAM_MISMATCH",
@@ -1046,18 +1107,13 @@
     ]
   },
   "stalenessEngine": {
-    "expiredDocumentsCount": 10,
+    "expiredDocumentsCount": 5,
     "expiredDocuments": [
       "DOC-BAR-001: Bariatric Post-Op Meal Plan - Early Guidelines (Stage 1 & 2) (expired 2025-06-01)",
       "DOC-BAR-002: Bariatric Post-Op Stage 2 Pureed Diet Handout (2024 Edition) (expired 2025-05-15)",
       "DOC-CKD-001: Renal Diet Management: Potassium, Phosphorus, and Sodium Guidelines (expired 2024-01-15)",
       "DOC-RET-001: Legacy Very-Low-Calorie Diet (VLCD) 800-Calorie Rapid Loss Protocol (expired 2023-05-10)",
-      "DOC-DM-001: Type 2 Diabetes Carbohydrate Counting & Plate Method Handout (2023 Edition) (expired 2025-01-15)",
-      "DOC-DM-003: Continuous Glucose Monitor (CGM) Patient Quick-Start & Trend Guide (expired 2026-10-01)",
-      "DOC-PCOS-001: PCOS Insulin Resistance & Hormone Balancing Nutrition Guide (expired 2026-09-30)",
-      "DOC-GI-001: Low-FODMAP Diet Phase 1: Strict Elimination Protocol (2-6 Weeks) (expired 2026-10-15)",
-      "DOC-GI-002: Low-FODMAP Diet Phase 2: Systematic Challenge & Reintroduction Protocol (expired 2026-10-15)",
-      "DOC-INT-003: Clinical Policy: Continuous Glucose Monitor (CGM) Sensor Billing & CPT 95249/95250 (expired 2026-08-30)"
+      "DOC-DM-001: Type 2 Diabetes Carbohydrate Counting & Plate Method Handout (2023 Edition) (expired 2025-01-15)"
     ]
   },
   "metrics": {
@@ -1604,6 +1660,9 @@
         "STATUS_RETIRED",
         "VERSION_SUPERSEDED",
         "REVIEW_EXPIRED",
+        "STATUS_RETIRED",
+        "VERSION_SUPERSEDED",
+        "REVIEW_EXPIRED",
         "STAGE_MISMATCH",
         "ALLERGY_CONTRAINDICATION_LACTOSE"
       ],
@@ -1614,6 +1673,9 @@
       "name": "Attempt to send retired DOC-BAR-001 v1 to patient",
       "isBlocked": true,
       "blocks": [
+        "STATUS_RETIRED",
+        "VERSION_SUPERSEDED",
+        "REVIEW_EXPIRED",
         "STATUS_RETIRED",
         "VERSION_SUPERSEDED",
         "REVIEW_EXPIRED",
@@ -1628,6 +1690,8 @@
       "blocks": [
         "STATUS_RETIRED",
         "REVIEW_EXPIRED",
+        "STATUS_RETIRED",
+        "REVIEW_EXPIRED",
         "STAGE_MISMATCH",
         "MEDICATION_CONTRAINDICATION_SGLT2I"
       ],
@@ -1638,6 +1702,7 @@
       "name": "Attempt to send expired review date handout (DOC-CKD-001, expired 2024)",
       "isBlocked": true,
       "blocks": [
+        "REVIEW_EXPIRED",
         "REVIEW_EXPIRED"
       ],
       "passed": true
@@ -1647,6 +1712,7 @@
       "name": "Attempt to send unapproved draft handout (DOC-DRAFT-001)",
       "isBlocked": true,
       "blocks": [
+        "STATUS_DRAFT",
         "STATUS_DRAFT",
         "STAGE_MISMATCH"
       ],
@@ -1686,6 +1752,7 @@
       "isBlocked": true,
       "blocks": [
         "ACTIVE_CLINICAL_CONFLICT_BLOCK",
+        "ACTIVE_CLINICAL_CONFLICT_BLOCK",
         "PREGNANCY_CARB_FLOOR_VIOLATION"
       ],
       "passed": true
@@ -1696,6 +1763,7 @@
       "isBlocked": true,
       "blocks": [
         "ACTIVE_CLINICAL_CONFLICT_BLOCK",
+        "ACTIVE_CLINICAL_CONFLICT_BLOCK",
         "PREGNANCY_CARB_FLOOR_VIOLATION"
       ],
       "passed": true
@@ -1705,6 +1773,9 @@
       "name": "Allergy Contraindication: Attempting to send cow milk Stage 2 (DOC-BAR-002 v1) to lactose intolerant patient (SYNTH-PAT-101)",
       "isBlocked": true,
       "blocks": [
+        "STATUS_RETIRED",
+        "VERSION_SUPERSEDED",
+        "REVIEW_EXPIRED",
         "STATUS_RETIRED",
         "VERSION_SUPERSEDED",
         "REVIEW_EXPIRED",
@@ -1720,6 +1791,8 @@
       "blocks": [
         "STATUS_RETIRED",
         "REVIEW_EXPIRED",
+        "STATUS_RETIRED",
+        "REVIEW_EXPIRED",
         "STAGE_MISMATCH",
         "MEDICATION_CONTRAINDICATION_SGLT2I"
       ],
@@ -1730,6 +1803,8 @@
       "name": "Medication Contraindication: Attempting to send VLCD protocol (DOC-RET-001) to patient on Sulfonylurea Glipizide (SYNTH-PAT-102)",
       "isBlocked": true,
       "blocks": [
+        "STATUS_RETIRED",
+        "REVIEW_EXPIRED",
         "STATUS_RETIRED",
         "REVIEW_EXPIRED",
         "PROGRAM_MISMATCH",

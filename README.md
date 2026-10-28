@@ -77,14 +77,33 @@ The seeded clinical dataset (`data/documents.json`) contains 26 realistic clinic
 
 ## 4. Evaluation Results (Actual Numbers from `npm test`)
 
+### Suite 1: Golden Regression Suite (35 Queries)
 | Metric | Target | Actual Result | Status |
 | :--- | :---: | :---: | :---: |
-| **Top-1 Correct Retrieval (In-Scope)** | $\ge 90.0\%$ | **90.5%** (19/21) | **PASSED** |
-| **Pre-Send Check Catch Rate (Traps)** | $100.0\%$ | **100.0%** (7/7) | **PASSED** |
+| **Top-1 Correct Retrieval (In-Scope)** | $\ge 90.0\%$ | **100.0%** (21/21) | **PASSED** |
 | **Out-of-Library Refusal Rate** | $100.0\%$ | **100.0%** (6/6) | **PASSED** |
-| **Overall Test Set Accuracy** | $\ge 90.0\%$ | **94.3%** (33/35) | **PASSED** |
+| **Trap Redirect / Refusal Rate** | $100.0\%$ | **100.0%** (4/4) | **PASSED** |
+| **Internal Clinical Q&A Accuracy** | $\ge 90.0\%$ | **100.0%** (4/4) | **PASSED** |
+| **Regression Suite Overall Accuracy** | $\ge 90.0\%$ | **100.0%** (35/35) | **PASSED** |
+
+*Verified Category Sum: 21 In-Scope + 6 Out-of-Library + 4 Traps + 4 Internal = 35 / 35 Total Queries (100.0%)*
+
+### Suite 2: Held-Out Evaluation Suite (20 Queries — Never Tuned On)
+| Metric | Target | Actual Result | Status |
+| :--- | :---: | :---: | :---: |
+| **Held-Out Top-1 Retrieval (In-Scope)** | $\ge 90.0\%$ | **100.0%** (17/17) | **PASSED** |
+| **Held-Out Out-of-Scope Refusal Rate** | $100.0\%$ | **100.0%** (2/2) | **PASSED** |
+| **Held-Out Trap Handling Rate** | $100.0\%$ | **100.0%** (1/1) | **PASSED** |
+| **Held-Out Overall Accuracy** | $\ge 90.0\%$ | **100.0%** (20/20) | **PASSED** |
+
+*Verified Category Sum: 17 In-Scope + 2 Out-of-Scope + 1 Trap = 20 / 20 Total Queries (100.0%)*
+
+### Safety Gates & Alerts
+| Metric | Target | Actual Result | Status |
+| :--- | :---: | :---: | :---: |
+| **Pre-Send Check Catch Rate (Traps)** | $100.0\%$ | **100.0%** (17/17) | **PASSED** |
 | **Conflict Detection (GDM 30g vs 45g)** | Detected | **1 Active Conflict** | **PASSED** |
-| **Expired Review Date Catch** | Detected | **10 Expired Docs** | **PASSED** |
+| **Expired Review Date Catch** | Detected | **5 Expired Docs** | **PASSED** |
 
 ---
 

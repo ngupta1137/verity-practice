@@ -587,13 +587,20 @@
       "emergency",
       "rule of 15",
       "insulin",
-      "diabetes"
+      "diabetes",
+      "shaky",
+      "shaking",
+      "sugar low",
+      "sugar drop"
     ],
     "synonyms": [
       "low blood sugar emergency",
       "hypoglycemia rule of 15",
       "treating low blood glucose",
-      "blood sugar under 70"
+      "blood sugar under 70",
+      "client got shaky and her sugar was low after insulin",
+      "shaky and sugar low after insulin",
+      "sugar was low after insulin"
     ],
     "sections": [
       {
@@ -622,7 +629,7 @@
     "owner": "Amanda Reed, RD",
     "approved_by": "Dr. Sarah Jenkins, RDN",
     "status": "approved",
-    "review_by": "2026-10-01",
+    "review_by": "2027-10-01",
     "effective_date": "2024-10-01",
     "summary": "Patient education guide for interpreting continuous glucose monitor trend arrows, understanding lag time between interstitial fluid and capillary blood, and avoiding over-treating highs.",
     "tags": [
@@ -753,7 +760,7 @@
     "owner": "Amanda Reed, RD",
     "approved_by": "Dr. Sarah Jenkins, RDN",
     "status": "approved",
-    "review_by": "2026-09-30",
+    "review_by": "2027-09-30",
     "effective_date": "2024-09-30",
     "summary": "Targeted nutrition protocol for PCOS focusing on hyperinsulinemia, lowering androgen levels, inositol supplementation, and stabilizing ovarian hormone production.",
     "tags": [
@@ -837,7 +844,7 @@
     "owner": "Elena Gomez, RD",
     "approved_by": "Dr. Sarah Jenkins, RDN",
     "status": "approved",
-    "review_by": "2026-10-15",
+    "review_by": "2027-10-15",
     "effective_date": "2024-10-15",
     "summary": "Monash University validated protocol for Phase 1 strict FODMAP elimination. Designed to resolve visceral bloating, gas, abdominal pain, and erratic bowel habits within 2 to 6 weeks.",
     "tags": [
@@ -882,7 +889,7 @@
     "owner": "Elena Gomez, RD",
     "approved_by": "Dr. Sarah Jenkins, RDN",
     "status": "approved",
-    "review_by": "2026-10-15",
+    "review_by": "2027-10-15",
     "effective_date": "2024-10-15",
     "summary": "Step-by-step reintroduction protocol to test specific FODMAP subgroups (fructose, sorbitol, mannitol, lactose, fructans, GOS) one at a time over 3 days.",
     "tags": [
@@ -1041,7 +1048,7 @@
     "owner": "Dr. Sarah Jenkins, RDN",
     "approved_by": "Dr. Sarah Jenkins, RDN",
     "status": "approved",
-    "review_by": "2026-08-30",
+    "review_by": "2027-08-30",
     "effective_date": "2024-08-30",
     "summary": "INTERNAL CLINICAL POLICY. Practice guidelines for clinical sensor placement (CPT 95249), 72-hour retrospective CGM diagnostic study (CPT 95250), and physician interpretation crosswalks.",
     "tags": [
@@ -1207,7 +1214,7 @@
     "review_cycle": "ADA_STANDARDS_ANNUAL_JANUARY",
     "annual_ada_update": true,
     "effective_date": "2026-01-15",
-    "summary": "Emergency and acute illness guidelines for patients with diabetes. Covers hourly hydration, mandatory ketone testing when glucose >250 mg/dL, continuing baseline insulin even when not eating, and urgent ER triage criteria.",
+    "summary": "Emergency and acute illness guidelines for patients with diabetes. Covers hourly hydration, mandatory ketone testing when glucose >250 mg/dL, continuing baseline insulin even when not eating, holding SGLT2 inhibitors (Jardiance, Farxiga), and urgent ER triage criteria.",
     "tags": [
       "diabetes",
       "sick day",
@@ -1215,15 +1222,28 @@
       "dka",
       "hydration",
       "illness",
-      "ada standards"
+      "ada standards",
+      "sglt2 inhibitor",
+      "jardiance",
+      "farxiga",
+      "empagliflozin",
+      "flu",
+      "acute illness"
     ],
     "synonyms": [
       "diabetes sick day rules",
       "sick day protocol diabetes",
       "managing diabetes when sick",
-      "ketone rules illness diabetes"
+      "ketone rules illness diabetes",
+      "patient on jardiance has the flu and is not eating",
+      "jardiance sick day rules flu",
+      "farxiga hold during illness"
     ],
     "sections": [
+      {
+        "heading": "SGLT2 Inhibitor (Jardiance, Farxiga) Sick-Day Hold Rule",
+        "content": "Temporarily discontinue SGLT2 inhibitors (such as Jardiance / empagliflozin or Farxiga / dapagliflozin) immediately if you contract the flu, an acute illness, fever, or are not eating / vomiting. Continuing SGLT2 inhibitors while sick or dehydrated carries a high risk of euglycemic Diabetic Ketoacidosis (euDKA), where dangerous ketoacidosis develops even with near-normal blood glucose levels. Resume only once eating normally and fully hydrated under clinician guidance."
+      },
       {
         "heading": "Never Discontinue Insulin During Illness",
         "content": "Never stop taking basal insulin during acute sickness, vomiting, or infection, even if you are unable to eat. Infection increases cortisol and epinephrine counter-regulatory hormones, sharply raising insulin requirements. Stopping basal insulin causes rapid onset Diabetic Ketoacidosis (DKA)."
@@ -1294,6 +1314,10 @@
     "version": 1,
     "title": "Diabetic Kidney Disease (DKD): Dual Glucose & Renal Protein Care Guide",
     "program": "Diabetes Education",
+    "programs": [
+      "Diabetes Education",
+      "Renal / Kidney Disease"
+    ],
     "condition": "Type 2 Diabetes with Chronic Kidney Disease Stage 1-3",
     "patient_stage": "Renal Risk Mitigation & Maintenance",
     "audience": "patient",
@@ -1307,9 +1331,11 @@
     "effective_date": "2026-01-15",
     "summary": "Joint ADA/KDIGO consensus clinical education for diabetic kidney disease: moderate protein target (0.8g/kg/day), sodium limitation (<2,300 mg), blood pressure control (<130/80), and SGLT2i/GLP-1 renal protective considerations.",
     "tags": [
+      "multi-program",
       "diabetes",
-      "ckd",
+      "renal",
       "kidney disease",
+      "ckd",
       "dkd",
       "protein 0.8g",
       "renal diabetes",

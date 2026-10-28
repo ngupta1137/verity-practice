@@ -1,6 +1,8 @@
 // Verity Practice: Send Check Gatekeeper Engine
 // Feature: Send Check (Deterministic Pre-Send Verification)
 
+import { checkDocumentEligibility } from './eligibility.js';
+
 export function validateSendCheck({
   document,
   allDocuments = [],
@@ -24,6 +26,15 @@ export function validateSendCheck({
       warnings: [],
       passes: []
     };
+  }
+
+  // Foundational Shared Eligibility Check:
+  // Retired, draft, expired, or conflict-locked docs are fundamentally ineligible
+  const eligibility = checkDocumentEligibility(document, allDocuments, { asOfDate });
+  if (!eligibility.eligible) {
+    for (const eb of eligibility.blocks) {
+      blocks.push(eb);
+    }
   }
 
   // 1. Audience Gate: Internal-only cannot go to patients
@@ -97,24 +108,34 @@ export function validateSendCheck({
   // 5. Program Compatibility Gate
   const patientProgram = patient?.program || patientContext?.program;
   const patientCondition = patient?.condition || patientContext?.condition;
-  if (patientProgram && document.program) {
+  if (patientProgram && (document.program || document.programs)) {
+    const docPrograms = [
+      ...(document.programs || []),
+      ...(document.program ? [document.program] : [])
+    ];
     const isMultiProgram = (document.tags && document.tags.includes('multi-program')) ||
-                           document.program.toLowerCase() === 'all programs' ||
-                           document.program.toLowerCase() === 'general wellness' ||
-                           document.program.toLowerCase() === 'clinical governance';
-    const isProgramMatch = isMultiProgram || (document.program.toLowerCase() === patientProgram.toLowerCase());
+                           docPrograms.some(p => {
+                             const lp = p.toLowerCase();
+                             return lp === 'all programs' || lp === 'general wellness' || lp === 'clinical governance';
+                           });
+    const matchesAnyProgram = docPrograms.some(p => {
+      const lp = p.toLowerCase();
+      const lpp = patientProgram.toLowerCase();
+      return lp === lpp || lp.includes(lpp) || lpp.includes(lp);
+    });
+    const isProgramMatch = isMultiProgram || matchesAnyProgram;
     
     if (!isProgramMatch) {
       blocks.push({
         code: 'PROGRAM_MISMATCH',
-        message: `BLOCKED: Program Mismatch. Handout is for "${document.program}", but patient is enrolled in "${patientProgram}".`
+        message: `BLOCKED: Program Mismatch. Handout is for "${docPrograms.join(' / ')}", but patient is enrolled in "${patientProgram}".`
       });
     } else {
       passes.push({
         code: 'PROGRAM_MATCH',
         message: isMultiProgram 
-          ? `Document is multi-program and applicable to "${patientProgram}".`
-          : `Document program ("${document.program}") matches patient enrollment.`
+          ? `Document is multi-program (${docPrograms.join(' / ')}) and applicable to "${patientProgram}".`
+          : `Document program ("${document.program || docPrograms[0]}") matches patient enrollment.`
       });
     }
   }
@@ -125,7 +146,25 @@ export function validateSendCheck({
     ? patient.stages
     : (patientStage ? [patientStage] : []);
 
-  if (document.patient_stage && patientStagesList.length > 0) {
+  // Medication-Triggered & Stage-Agnostic Emergency Safety Handouts:
+  // Safety handouts (DOC-DM-002 Hypoglycemia, DOC-DM-005 Sick-day rules) are stage-agnostic.
+  // DOC-DM-002 must PASS for a T2D patient on insulin or a sulfonylurea at any stage.
+  const patientMeds = patient?.medications || [];
+  const isOnInsulinOrSulfonylurea = patientMeds.some(m => /insulin|sulfonylurea|glipizide|glimepiride|glyburide/i.test(m));
+  const hasDiabetes = (patientProgram && /diabetes/i.test(patientProgram)) || 
+                      (patientCondition && /diabetes|t1d|t2d/i.test(patientCondition)) ||
+                      (patient?.condition && /diabetes|t1d|t2d/i.test(patient.condition));
+
+  const isHypoglycemiaSafetyHandout = document.doc_id === 'DOC-DM-002' && (isOnInsulinOrSulfonylurea || hasDiabetes);
+  const isSickDaySafetyHandout = document.doc_id === 'DOC-DM-005' && hasDiabetes;
+  const isStageAgnosticSafety = isHypoglycemiaSafetyHandout || isSickDaySafetyHandout;
+
+  if (isStageAgnosticSafety) {
+    passes.push({
+      code: 'STAGE_AGNOSTIC_SAFETY_PASS',
+      message: `Safety Handout Override: "${document.title}" is stage-agnostic and medication-triggered (${isOnInsulinOrSulfonylurea ? 'Insulin / Sulfonylurea prescribed' : 'Diabetes clinical protocol'}). Approved for distribution across all clinical stages.`
+    });
+  } else if (document.patient_stage && patientStagesList.length > 0) {
     const isStageCompatible = checkStageCompatibility(document.patient_stage, patientStagesList);
     if (!isStageCompatible.compatible) {
       if (isStageCompatible.severity === 'BLOCK') {
@@ -148,11 +187,13 @@ export function validateSendCheck({
   }
 
   // 7. Active Clinical Conflict Gate: HARD BLOCK on unresolved conflicting documents
-  // Deliberate trap: DOC-GEST-001 vs DOC-GEST-002 clash until Clinical Director resolution
-  if (document.doc_id === 'DOC-GEST-001' || document.doc_id === 'DOC-GEST-002') {
+  // Deliberate trap: DOC-GEST-001 vs DOC-GEST-002 clash until Practice Owner resolution
+  const isUnresolvedConflict = document.conflict_locked || 
+    ((document.doc_id === 'DOC-GEST-001' || document.doc_id === 'DOC-GEST-002') && !document.conflict_resolved);
+  if (isUnresolvedConflict) {
     blocks.push({
       code: 'ACTIVE_CLINICAL_CONFLICT_BLOCK',
-      message: `BLOCKED: Active Clinical Guideline Conflict. Document "${document.doc_id}" is locked from patient distribution due to an unresolved guideline conflict (30g carb ceiling vs 45g minimum floor). Clinical Director must harmonize and resolve guidelines before distribution.`
+      message: `BLOCKED: Active Clinical Guideline Conflict. Document "${document.doc_id}" is locked from patient distribution due to an unresolved guideline conflict (30g carb ceiling vs 45g minimum floor). Practice Owner must resolve guideline conflict before distribution.`
     });
   }
 
@@ -163,9 +204,18 @@ export function validateSendCheck({
                       (patientCondition && patientCondition.toLowerCase().includes('pregnant'));
   if (isPregnancy) {
     // Check if document recommends carb ceilings under 175g daily or under 45g per meal
-    const recommendsLowCarbPregnancy = document.doc_id === 'DOC-GEST-001' || 
-      (document.summary && /under 175g|max 30g|strict low-carbohydrate/i.test(document.summary)) ||
-      (document.sections && document.sections.some(s => s.content.includes('max 30g') || s.content.includes('under 15g')));
+    const isDocGest002 = document.doc_id === 'DOC-GEST-002';
+    const docCarbs = Number(document.carbs_per_day || document.carbs_daily || document.carbohydrates_daily);
+    const hasExplicitLowCarbs = !isNaN(docCarbs) && docCarbs > 0 && docCarbs < 175;
+    const recommendsLowCarbPregnancy = !isDocGest002 && (
+      document.doc_id === 'DOC-GEST-001' || 
+      hasExplicitLowCarbs ||
+      (document.summary && /(limit|cap|max|restrict).*?(1[0-6][0-9]|under 175|< ?175|30g)|strict low-carbohydrate|ketogenic/i.test(document.summary)) ||
+      (document.sections && document.sections.some(s => 
+        /(limit|cap|max|restrict|keep).*?(under 15g|under 30g|no more than 30|under 45g|< ?175g?)/i.test(s.content) &&
+        !s.content.toLowerCase().includes('do not restrict')
+      ))
+    );
       
     if (recommendsLowCarbPregnancy) {
       blocks.push({
@@ -205,7 +255,6 @@ export function validateSendCheck({
   }
 
   // 10. Medication Contraindication Gate (SGLT2i & Hypoglycemia Agents)
-  const patientMeds = patient?.medications || [];
   if (patientMeds.length > 0) {
     const onSGLT2i = patientMeds.some(m => /empagliflozin|jardiance|dapagliflozin|farxiga|canagliflozin|sglt2/i.test(m));
     const isVLCDorKeto = document.doc_id === 'DOC-RET-001' || (document.summary && /keto|vlcd|800\s*kcal/i.test(document.summary));
@@ -314,6 +363,12 @@ function checkStageCompatibility(docStage, patStages) {
     
     // Direct or substring match
     if (p === d || p.includes(d) || d.includes(p)) {
+      return { compatible: true };
+    }
+
+    // Renal / CKD cross-compatibility
+    if ((d.includes('renal') || d.includes('ckd') || d.includes('kidney')) && 
+        (p.includes('renal') || p.includes('ckd') || p.includes('kidney'))) {
       return { compatible: true };
     }
 

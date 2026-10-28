@@ -104,9 +104,9 @@ app.post('/api/documents/diff', (req, res) => {
   res.json(diffResult);
 });
 
-// 3. Feature: Right Doc (Context-Aware Document Finder)
+// 3. Feature: Right Doc (Context-Aware Document Finder with Inline Send Check)
 app.post('/api/right-doc', (req, res) => {
-  const { query, audience = 'patient', role = 'dietitian', patientContext } = req.body;
+  const { query, audience = 'patient', role = 'dietitian', patientContext, patient_id } = req.body;
   if (!query) return res.status(400).json({ error: 'Search query is required' });
 
   const result = rightDocEngine.searchRightDoc({
@@ -115,6 +115,42 @@ app.post('/api/right-doc', (req, res) => {
     role,
     patientContext
   });
+
+  const selectedPatient = (patient_id && patients.find(p => p.patient_id === patient_id)) || 
+                          (patientContext?.patient_id && patients.find(p => p.patient_id === patientContext.patient_id)) || 
+                          null;
+
+  function attachInlineSendCheck(matchObj) {
+    if (!matchObj || !matchObj.document) return matchObj;
+    const doc = matchObj.document;
+    const check = validateSendCheck({
+      document: doc,
+      allDocuments: documents,
+      patient: selectedPatient,
+      patientContext,
+      actor: req.body.actor || 'Elena Gomez, RD',
+      role
+    });
+    return {
+      ...matchObj,
+      sendCheck: {
+        allowed: check.allowed,
+        gateResult: check.gateResult,
+        status: check.status,
+        blocks: check.blocks,
+        warnings: check.warnings,
+        passes: check.passes,
+        summary: check.summary
+      }
+    };
+  }
+
+  if (result.topMatch) {
+    result.topMatch = attachInlineSendCheck(result.topMatch);
+  }
+  if (Array.isArray(result.matches)) {
+    result.matches = result.matches.map(attachInlineSendCheck);
+  }
 
   // Log search in audit ledger
   auditLedger.logEvent({
@@ -126,7 +162,7 @@ app.post('/api/right-doc', (req, res) => {
     doc_title: result.topMatch?.document?.title || 'No match',
     patient_context: query,
     status: result.outcome === 'approved_match' ? 'APPROVED' : 'REFUSED',
-    gate_result: result.outcome === 'approved_match' ? 'PASS' : 'REFUSED',
+    gate_result: result.outcome === 'approved_match' ? (result.topMatch?.sendCheck?.allowed ? 'PASS' : 'GATE_INTERCEPT') : 'REFUSED',
     details: result.message
   });
 
@@ -224,9 +260,15 @@ app.post('/api/send', (req, res) => {
   });
 
   // Automatically record DSMES / MNT Education Delivery & Billing Record
-  const isInitial = patient?.patient_stage?.includes('Initial') || patient?.patient_stage?.includes('Stage 1');
-  const isDiabetesProgram = doc.program === 'Diabetes Education' || doc.program === 'Gestational Diabetes';
-  const defaultCpt = isDiabetesProgram ? (isInitial ? 'G0108' : '97803') : (isInitial ? '97802' : '97803');
+  // Clinical CPT Rule: First visit / initial assessment -> CPT 97802 (4 units, 60 min)
+  // Re-assessment / follow-up visit -> CPT 97803 (2 units, 30 min)
+  const hasPriorMnt = dsmesRecords.some(r => r.patient_id === (patient ? patient.patient_id : patient_id));
+  const isInitialStage = patient?.patient_stage?.toLowerCase().includes('initial') || 
+                         patient?.patient_stage?.toLowerCase().includes('stage 1') ||
+                         patient?.patient_stage?.toLowerCase().includes('intake') ||
+                         patient?.patient_stage?.toLowerCase().includes('new');
+  const isInitial = !hasPriorMnt || isInitialStage;
+  const defaultCpt = isInitial ? '97802' : '97803';
   const mntRecord = {
     record_id: `MNT-${Date.now()}`,
     patient_id: patient ? patient.patient_id : patient_id,
@@ -241,9 +283,9 @@ app.post('/api/send', (req, res) => {
     billing_cpt_code: defaultCpt,
     cpt_description: defaultCpt === '97802' 
       ? 'MNT Initial assessment and intervention, individual (each 15 min)' 
-      : (defaultCpt === 'G0108' ? 'DSMES Outpatient training, individual (each 30 min)' : 'MNT Re-assessment and intervention, individual (each 15 min)'),
-    units_billed: defaultCpt === 'G0108' ? 2 : (isInitial ? 4 : 2),
-    duration_minutes: defaultCpt === 'G0108' ? 60 : (isInitial ? 60 : 30),
+      : 'MNT Re-assessment and intervention, individual (each 15 min)',
+    units_billed: defaultCpt === '97802' ? 4 : 2,
+    duration_minutes: defaultCpt === '97802' ? 60 : 30,
     channel: 'In-Clinic Handout & Clinical Documentation',
     pre_send_verified: true,
     claim_status: 'Ready for Superbill Batch'
@@ -296,6 +338,68 @@ app.get('/api/dsmes-mnt', (req, res) => {
   res.json({ records });
 });
 
+// 9. Conflict Resolution API (Owner Action)
+app.post('/api/conflicts/resolve', (req, res) => {
+  const {
+    conflict_id = 'CONF-DOC-GEST-001-DOC-GEST-002',
+    doc_to_retire = 'DOC-GEST-001',
+    doc_to_unlock = 'DOC-GEST-002',
+    resolution_note = 'Resolved by Practice Owner Dr. Sarah Jenkins: Retired DOC-GEST-001 (strict 30g carb ceiling). Approved and unlocked DOC-GEST-002 (ADA & ACOG consensus guideline requiring >=175g carbs/day).',
+    actor = 'Dr. Sarah Jenkins, RDN',
+    role = 'owner'
+  } = req.body;
+
+  const retireDoc = documents.find(d => d.doc_id === doc_to_retire);
+  const unlockDoc = documents.find(d => d.doc_id === doc_to_unlock);
+
+  if (retireDoc) {
+    retireDoc.status = 'retired';
+    retireDoc.retired_reason = `Retired by Practice Owner during conflict resolution in favor of ${doc_to_unlock}: ${resolution_note}`;
+    retireDoc.retired_date = new Date().toISOString().split('T')[0];
+    retireDoc.conflict_resolved = true;
+    retireDoc.conflict_locked = false;
+  }
+
+  if (unlockDoc) {
+    unlockDoc.status = 'approved';
+    unlockDoc.conflict_resolved = true;
+    unlockDoc.conflict_locked = false;
+  }
+
+  // Persist updated documents to data/documents.json
+  try {
+    const docPath = path.resolve(process.cwd(), 'data/documents.json');
+    if (fs.existsSync(path.dirname(docPath))) {
+      fs.writeFileSync(docPath, JSON.stringify(documents, null, 2), 'utf8');
+    }
+  } catch (err) {
+    console.warn('Documents save notice:', err.message);
+  }
+
+  // Update RightDoc engine documents
+  rightDocEngine.updateDocuments(documents);
+
+  // Log to Audit Ledger
+  const event = auditLedger.logEvent({
+    actor,
+    role,
+    action: 'CONFLICT_RESOLVED',
+    doc_id: unlockDoc ? unlockDoc.doc_id : doc_to_unlock,
+    version: unlockDoc ? unlockDoc.version : 1,
+    doc_title: unlockDoc ? unlockDoc.title : 'Guideline Resolution',
+    status: 'APPROVED',
+    gate_result: 'PASS',
+    details: resolution_note
+  });
+
+  res.json({
+    success: true,
+    message: `Conflict ${conflict_id} resolved: Retired ${doc_to_retire}, unlocked ${doc_to_unlock}.`,
+    auditEventId: event.event_id,
+    activeConflictsRemaining: detectConflicts(documents).length
+  });
+});
+
 // 8. Owner Dashboard & Analytics
 app.get('/api/dashboard', (req, res) => {
   const stats = auditLedger.getOwnerDashboardStats(documents);
@@ -309,6 +413,16 @@ app.get('/api/audit-log', (req, res) => {
 
 // 10. Run Evaluation Endpoint
 app.get('/api/eval', (req, res) => {
+  const report = runEvaluation();
+  res.json(report);
+});
+
+app.get('/api/eval/run', (req, res) => {
+  const report = runEvaluation();
+  res.json(report);
+});
+
+app.post('/api/eval/run', (req, res) => {
   const report = runEvaluation();
   res.json(report);
 });

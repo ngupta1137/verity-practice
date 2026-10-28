@@ -84,7 +84,35 @@ for (const id of requiredElementIds) {
 }
 console.log(`[PASS] All ${requiredElementIds.length} required interactive element IDs present.`);
 
-// 3. Execution Smoke Test with Virtual Browser Environment
+// 3. Validate Seed Data Integrity (Patient Assignments against Document Library)
+console.log('\n[CHECK] Validating synthetic patient document assignments against document library...');
+const patientsPath = path.join(ROOT_DIR, 'data/synthetic_patients.json');
+const docsPath = path.join(ROOT_DIR, 'data/documents.json');
+
+if (fs.existsSync(patientsPath) && fs.existsSync(docsPath)) {
+  const seedPatients = JSON.parse(fs.readFileSync(patientsPath, 'utf8'));
+  const seedDocs = JSON.parse(fs.readFileSync(docsPath, 'utf8'));
+  let seedAssignmentErrors = 0;
+
+  for (const pat of seedPatients) {
+    for (const ad of (pat.assigned_documents || [])) {
+      const match = seedDocs.find(d => d.doc_id === ad.doc_id && Number(d.version) === Number(ad.version));
+      if (!match) {
+        seedAssignmentErrors++;
+        const msg = `Patient ${pat.patient_id} (${pat.name}) assigned non-existent document ${ad.doc_id} v${ad.version}`;
+        console.error(`[FAIL] ${msg}`);
+        errors.push(msg);
+        failed = true;
+      }
+    }
+  }
+
+  if (seedAssignmentErrors === 0) {
+    console.log('[PASS] All synthetic patient assignments reference valid doc_ids and versions in the document library.');
+  }
+}
+
+// 4. Execution Smoke Test with Virtual Browser Environment
 console.log('\n[CHECK] Running execution smoke test with DOM environment...');
 const consoleErrors = [];
 

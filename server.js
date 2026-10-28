@@ -52,6 +52,24 @@ let seededAudit = loadJSON('data/audit_log.json');
 if (!Array.isArray(seededAudit) || seededAudit.length === 0) {
   seededAudit = loadJSON('data/seed_audit_log.json');
 }
+function validateSeedIntegrity(patientsList, docsList) {
+  const violations = [];
+  for (const pat of patientsList) {
+    for (const ad of (pat.assigned_documents || [])) {
+      const match = docsList.find(d => d.doc_id === ad.doc_id && Number(d.version) === Number(ad.version));
+      if (!match) {
+        violations.push(`Patient ${pat.patient_id} (${pat.name}) has assigned document ${ad.doc_id} v${ad.version} which does not exist in library.`);
+      }
+    }
+  }
+  if (violations.length > 0) {
+    console.error('[CRITICAL] Seed Integrity Violations Detected:\n' + violations.join('\n'));
+  }
+  return violations;
+}
+
+validateSeedIntegrity(patients, documents);
+
 let dsmesRecords = loadJSON('data/dsmes_records.json');
 
 // Seeded Exposure Review Queue (Workstream 5)
@@ -715,6 +733,7 @@ app.post('/api/demo/reset', (req, res) => {
 
   // Restore seed synthetic patients
   patients = loadJSON('data/synthetic_patients.json');
+  validateSeedIntegrity(patients, documents);
 
   // Restore SEEDED demo history (8-10 audit events: successful sends, blocked attempts, past delivery of DOC-GEST-001 to Maria Santos)
   const seedAudit = loadJSON('data/seed_audit_log.json') || [];

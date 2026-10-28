@@ -56,7 +56,7 @@
     ],
     "assigned_documents": [
       { "doc_id": "DOC-DM-001", "version": 2, "assigned_by": "Elena Gomez, RD", "assigned_at": "2026-10-25T14:30:00Z" },
-      { "doc_id": "DOC-DM-002", "version": 2, "assigned_by": "Elena Gomez, RD", "assigned_at": "2026-10-25T14:30:00Z" }
+      { "doc_id": "DOC-DM-002", "version": 1, "assigned_by": "Elena Gomez, RD", "assigned_at": "2026-10-25T14:30:00Z" }
     ],
     "language": "en",
     "insurance": "Blue Cross Blue Shield",

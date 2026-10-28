@@ -712,7 +712,7 @@ export function evaluatePolicy({
     }
 
     // 3i. Query Mentioning Clinical Attribute With No Patient Selected
-    if (!patient && queryContext.hasClinicalAttributes && patientApplicability === 'applicable') {
+    if (!patient && queryContext.hasClinicalAttributes && patientApplicability === 'applicable' && document?.audience !== 'internal') {
       patientApplicability = 'review_required';
       matchedRules.push('RULE-QUERY-CLINICAL-CONTEXT-NEEDS-PATIENT');
       reasons.push(`REVIEW REQUIRED: Query specifies clinical attributes (${queryContext.attributesSummary}) without a selected patient. Patient profile selection and clinical verification required before approval.`);

@@ -336,28 +336,29 @@ export class RightDocEngine {
       }
     }
 
-    // Step 6: Refusal Gate for Out-of-Library Queries & Locked Conflict Intercept
+    // Item 4: Locked-conflict message: when the only matching docs are conflict-locked, say "GDM documents are locked pending clinical conflict review (CONF-001). Route to RD." Never "out of practice scope".
+    const isGdmQuery = /\b(gdm|gestational|gestation|pregnancy diabetes|pregnant.*carb|30g carbs|max 30g)\b/i.test(cleanQuery);
+    const hasGdmConflict = this.documents.some(d => (d.doc_id === 'DOC-GEST-001' || d.doc_id === 'DOC-GEST-002') && d.conflict_locked);
+    const hasEligibleGdm = scored.some(s => s.document.program === 'Gestational Diabetes');
+    if (isGdmQuery && hasGdmConflict && !hasEligibleGdm) {
+      return {
+        outcome: 'BLOCK_DELIVERY',
+        decision: 'BLOCK_DELIVERY',
+        document_validity: 'invalid',
+        patient_applicability: 'not_applicable',
+        delivery_authorization: 'denied',
+        query: cleanQuery,
+        redactions: redacted.applied,
+        message: 'GDM documents are locked pending clinical conflict review (CONF-001). Route to RD.',
+        reasons: ['GDM documents are locked pending clinical conflict review (CONF-001). Route to RD.'],
+        topMatch: null,
+        matches: []
+      };
+    }
+
+    // Step 6: Refusal Gate for Out-of-Library Queries
     const MIN_THRESHOLD = 0.22;
     if (scored.length === 0 || scored[0].score < MIN_THRESHOLD) {
-      // Item 4: Locked-conflict message: when the only matching docs are conflict-locked, say "GDM documents are locked pending clinical conflict review (CONF-001). Route to RD." Never "out of practice scope".
-      const isGdmQuery = /\b(gdm|gestational|gestation|pregnancy diabetes|pregnant.*carb|30g carbs|max 30g)\b/i.test(cleanQuery);
-      const hasGdmConflict = this.documents.some(d => (d.doc_id === 'DOC-GEST-001' || d.doc_id === 'DOC-GEST-002') && d.conflict_locked);
-      if (isGdmQuery && hasGdmConflict) {
-        return {
-          outcome: 'BLOCK_DELIVERY',
-          decision: 'BLOCK_DELIVERY',
-          document_validity: 'invalid',
-          patient_applicability: 'not_applicable',
-          delivery_authorization: 'denied',
-          query: cleanQuery,
-          redactions: redacted.applied,
-          message: 'GDM documents are locked pending clinical conflict review (CONF-001). Route to RD.',
-          reasons: ['GDM documents are locked pending clinical conflict review (CONF-001). Route to RD.'],
-          topMatch: null,
-          matches: []
-        };
-      }
-
       return {
         outcome: 'refused_out_of_scope',
         query: cleanQuery,

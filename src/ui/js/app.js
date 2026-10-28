@@ -609,7 +609,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const outcomeCode = isEligible ? (check.outcome || 'ANSWER_WITH_APPROVED_SOURCE') : 'BLOCK_DELIVERY';
-    const reasonText = (check.summary || '').replace(/^DELIVERY PROHIBITED:\s*/i, '');
+    let reasonText = '';
+    if (!isEligible) {
+      if (check.blocks && check.blocks.length > 0) {
+        reasonText = check.blocks.map(b => b.message).join(' | ');
+      } else {
+        reasonText = (check.summary || 'Safety, stage, or authorization rule failed.').replace(/^DELIVERY PROHIBITED:\s*/i, '');
+        if (reasonText.toLowerCase().startsWith('eligible to deliver')) {
+          reasonText = 'Delivery prohibited: Recipient authorization or role permissions not verified.';
+        }
+      }
+    }
 
     let html = `
       <div class="result-banner ${isEligible ? 'approved' : 'blocked'}" style="margin-bottom: 16px;">

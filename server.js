@@ -269,6 +269,14 @@ app.post('/api/send-check', (req, res) => {
     }
   }
 
+  if (!check.allowed || check.blocks.length > 0) {
+    check.summary = `DELIVERY PROHIBITED: ${check.blocks.map(b => b.message).join(' | ')}`;
+    check.outcome = 'BLOCK_DELIVERY';
+    check.delivery_authorization = 'denied';
+    check.status = 'BLOCKED';
+    check.gateResult = 'FAIL';
+  }
+
   // Log pre-send check event
   auditLedger.logEvent({
     actor,

@@ -6,8 +6,9 @@
     "expected_doc_id": "DOC-BAR-002",
     "expected_version": 2,
     "audience_filter": "patient",
-    "expected_outcome": "approved_match",
+    "expected_outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW",
     "expected_section_match": "Lactose Sensitivity & Plant / Whey Isolate Options",
+    "policy_rationale": "Round 4 Rule 1: Query specifies clinical attributes (post_op_week_2) without selected patient context. Policy intentionally mandates RD review rather than automatic delivery clearance.",
     "description": "Standard Right Doc query: week 2 bariatric patient needing lactose-free pureed guidance."
   },
   {
@@ -17,8 +18,9 @@
     "expected_doc_id": "DOC-BAR-003",
     "expected_version": 1,
     "audience_filter": "patient",
-    "expected_outcome": "approved_match",
+    "expected_outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW",
     "expected_section_match": "Stage 1 Clear Liquids Protocol",
+    "policy_rationale": "Round 4 Rule 1: Query specifies post-op day timeline (post_op_day_4) without selected patient context. Policy requires RD review for stage 1 clear liquids.",
     "description": "Bariatric patient in first week needing Stage 1 clear liquids."
   },
   {
@@ -28,8 +30,9 @@
     "expected_doc_id": "DOC-BAR-004",
     "expected_version": 1,
     "audience_filter": "patient",
-    "expected_outcome": "approved_match",
+    "expected_outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW",
     "expected_section_match": "Stage 3 Soft Food Timing & Consistency",
+    "policy_rationale": "Round 4 Rule 1: Query specifies post-op week 5 soft food progression without selected patient context. Policy mandates RD verification before soft food delivery.",
     "description": "Bariatric patient at week 5 needing Stage 3 soft food guidelines."
   },
   {
@@ -61,8 +64,9 @@
     "expected_doc_id": "DOC-WM-001",
     "expected_version": 1,
     "audience_filter": "patient",
-    "expected_outcome": "approved_match",
+    "expected_outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW",
     "expected_section_match": "Preserving Lean Skeletal Muscle (1.2g to 1.5g Protein/kg)",
+    "policy_rationale": "Round 4 Rule 1: Query specifies prescription GLP-1 drug (Wegovy) and GI side effect (nausea) with no patient selected. Intentional review requirement to protect lean muscle and titrate safely.",
     "description": "GLP-1 agonist nutritional support for nausea and protein goals."
   },
   {
@@ -72,8 +76,9 @@
     "expected_doc_id": "DOC-WM-001",
     "expected_version": 1,
     "audience_filter": "patient",
-    "expected_outcome": "approved_match",
+    "expected_outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW",
     "expected_section_match": "Constipation Prevention Protocol",
+    "policy_rationale": "Round 4 Rule 1: Query specifies prescription GLP-1 drug (semaglutide) and GI side effect with no patient selected. Intentional review requirement.",
     "description": "GLP-1 GI side effect protocol."
   },
   {
@@ -94,8 +99,9 @@
     "expected_doc_id": "DOC-DM-002",
     "expected_version": 1,
     "audience_filter": "patient",
-    "expected_outcome": "approved_match",
+    "expected_outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW",
     "expected_section_match": "The Rule of 15 Treatment Step-by-Step",
+    "policy_rationale": "Round 5 Item 3: Insulin + acute hypoglycemia (< 70 mg/dL) must return DOC-DM-002 as candidate with RD review required, never automatic unverified delivery.",
     "description": "Hypoglycemia emergency action protocol."
   },
   {
@@ -113,22 +119,24 @@
     "id": "Q11",
     "query": "gestational diabetes standard ACOG guideline carb targets to protect fetal brain",
     "category": "in_scope_clinical",
-    "expected_doc_id": "DOC-GEST-002",
-    "expected_version": 1,
+    "expected_doc_id": null,
+    "expected_version": null,
     "audience_filter": "patient",
-    "expected_outcome": "approved_match",
+    "expected_outcome": "BLOCK_DELIVERY",
     "expected_section_match": "Fetal Brain Development & Minimum Daily Carbohydrates",
+    "policy_rationale": "Round 5 Item 4: Active clinical conflict CONF-001 locks all Gestational Diabetes documents pending Clinical Director review. Delivery is intentionally blocked with locked conflict message.",
     "description": "ACOG standard gestational diabetes care guide."
   },
   {
     "id": "Q12",
     "query": "pregnant patient with gestational diabetes bedtime snack for fasting blood sugar",
     "category": "in_scope_clinical",
-    "expected_doc_id": "DOC-GEST-002",
-    "expected_version": 1,
+    "expected_doc_id": null,
+    "expected_version": null,
     "audience_filter": "patient",
-    "expected_outcome": "approved_match",
+    "expected_outcome": "BLOCK_DELIVERY",
     "expected_section_match": "Bedtime Snack Protocol to Prevent Overnight Ketonuria",
+    "policy_rationale": "Round 5 Item 4: Active clinical conflict CONF-001 locks all Gestational Diabetes documents pending Clinical Director review. Delivery is intentionally blocked with locked conflict message.",
     "description": "Gestational diabetes bedtime snack guide."
   },
   {
@@ -138,8 +146,9 @@
     "expected_doc_id": "DOC-PCOS-001",
     "expected_version": 1,
     "audience_filter": "patient",
-    "expected_outcome": "approved_match",
+    "expected_outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW",
     "expected_section_match": "Myo-Inositol & D-Chiro-Inositol Support",
+    "policy_rationale": "Round 4 Rule 1: Endocrine clinical attribute (insulin resistance) specified without selected patient. Policy requires RD review.",
     "description": "PCOS insulin resistance and inositol guidance."
   },
   {
@@ -204,8 +213,9 @@
     "expected_doc_id": "DOC-WM-001",
     "expected_version": 1,
     "audience_filter": "patient",
-    "expected_outcome": "approved_match",
+    "expected_outcome": "DOCUMENT_CANDIDATE_REQUIRES_REVIEW",
     "expected_section_match": "Hydration and Electrolyte Goals",
+    "policy_rationale": "Round 4 Rule 1: Prescription GLP-1 drug (Zepbound) and high protein goal specified without selected patient. Policy requires RD review.",
     "description": "GLP-1 Zepbound patient nutrition handout."
   },
   {

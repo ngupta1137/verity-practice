@@ -57,9 +57,17 @@ function evaluateQuerySet(engine, testSet) {
 
     if (item.category === 'in_scope_clinical') {
       inScopeTotal++;
-      if (res.outcome === 'approved_match' && actualDocId === item.expected_doc_id && actualVersion === item.expected_version) {
-        passed = true;
-        inScopeCorrect++;
+      const expectedOutcome = item.expected_outcome || 'approved_match';
+      if (expectedOutcome === 'BLOCK_DELIVERY') {
+        if (res.outcome === 'BLOCK_DELIVERY') {
+          passed = true;
+          inScopeCorrect++;
+        }
+      } else {
+        if (res.outcome === expectedOutcome && actualDocId === item.expected_doc_id && actualVersion === item.expected_version) {
+          passed = true;
+          inScopeCorrect++;
+        }
       }
     } else if (item.category === 'out_of_library') {
       outOfLibTotal++;
@@ -78,7 +86,8 @@ function evaluateQuerySet(engine, testSet) {
       }
     } else if (item.category === 'internal_clinical') {
       internalTotal++;
-      if (res.outcome === 'approved_match' && actualDocId === item.expected_doc_id) {
+      const expectedOutcome = item.expected_outcome || 'approved_match';
+      if (res.outcome === expectedOutcome && actualDocId === item.expected_doc_id) {
         passed = true;
         internalCorrect++;
       }

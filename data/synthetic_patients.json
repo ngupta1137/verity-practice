@@ -87,6 +87,7 @@
       { "name": "Insulin Lispro 6 units with meals", "class": "Rapid-Acting Insulin", "reconciled": "yes" }
     ],
     "assigned_documents": [
+      { "doc_id": "DOC-GEST-001", "version": 1, "assigned_by": "Amanda Reed, RD", "assigned_at": "2026-10-22T14:15:00Z" },
       { "doc_id": "DOC-GEST-002", "version": 1, "assigned_by": "Amanda Reed, RD", "assigned_at": "2026-10-26T11:00:00Z" }
     ],
     "language": "en",

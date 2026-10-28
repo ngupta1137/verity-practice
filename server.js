@@ -82,7 +82,7 @@ let exposureQueue = [
     doc_id: 'DOC-GEST-001',
     version: 1,
     doc_title: 'Gestational Diabetes Meal Planning: Strict Low-Carbohydrate Approach (Legacy 2023)',
-    withdrawn_reason: 'Guideline conflict resolution: Withdrawn due to <175g carb restriction violating ADA/ACOG consensus minimum maternal carb RDA.',
+    withdrawn_reason: 'Guideline conflict resolution: Withdrawn due to <175g carb restriction violating 175 g/day minimum (Dietary Reference Intakes, cited in ADA Standards of Care).',
     delivered_date: '2026-10-22T14:15:00Z',
     exposure_status: 'PENDING_REVIEW',
     reviewed_by: null,

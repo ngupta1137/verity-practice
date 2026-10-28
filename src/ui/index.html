@@ -341,13 +341,13 @@
             <div>
               <label for="conflictSelect" style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px;">Target Guideline Conflict:</label>
               <select id="conflictSelect" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;">
-                <option value="CONF-001">CONF-001: DOC-GEST-001 (Restrictive GDM) vs DOC-GEST-002 (ADA 2026 GDM Standard)</option>
+                <option value="CONF-001">CONF-001: DOC-GEST-001 (30g/meal ceiling) vs DOC-GEST-002 (175 g/day minimum)</option>
               </select>
             </div>
             <div>
               <label for="conflictDecision" style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px;">Clinical Decision:</label>
               <select id="conflictDecision" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;">
-                <option value="WITHDRAW_A_KEEP_B">Withdraw DOC-GEST-001 v1 & Unlock DOC-GEST-002 v2 (ADA 2026 Minimum 175g CHO Standard)</option>
+                <option value="WITHDRAW_A_KEEP_B">Withdraw DOC-GEST-001 v1 & Unlock DOC-GEST-002 v1 (175 g/day minimum - Dietary Reference Intakes, cited in ADA Standards of Care)</option>
                 <option value="REVISE_B">Revise DOC-GEST-002 with Custom Practice Distribution</option>
                 <option value="PUBLISH_NEW_VERSION">Publish New Version v3 (Practice Consensus)</option>
               </select>
@@ -367,7 +367,7 @@
 
           <div>
             <label for="conflictRationale" style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px;">Written Clinical Rationale (Minimum 15 characters, required):</label>
-            <textarea id="conflictRationale" rows="2" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;" placeholder="Document clinical evidence justifying withdrawal/un-locking...">Updated practice standard to ADA 2026 guidelines specifying minimum 175g/day CHO without rigid meal ceilings.</textarea>
+            <textarea id="conflictRationale" rows="2" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;" placeholder="Document clinical evidence justifying withdrawal/un-locking...">Updated practice standard to 175 g/day minimum (Dietary Reference Intakes, cited in ADA Standards of Care) without rigid meal ceilings.</textarea>
           </div>
 
           <div style="display: flex; justify-content: flex-end; gap: 10px;">
@@ -413,7 +413,7 @@
       <div class="card" style="margin-bottom: 24px;">
         <div class="card-header">
           <span class="card-title">📜 Permanent Clinical Conflict Governance Ledger</span>
-          <span class="badge" style="background: #E8F5E9; color: var(--brand-green-dark); font-size: 11px;">IMMUTABLE AUDIT TRAIL</span>
+          <span class="badge" style="background: #E8F5E9; color: var(--brand-green-dark); font-size: 11px;">Append-only log (SIMULATED, resets with demo data)</span>
         </div>
         <div class="table-wrapper">
           <table class="data-table" id="conflictHistoryTable">
@@ -465,7 +465,7 @@
     <section class="tab-pane" id="tab-owner">
       <div class="section-header">
         <h2>Practice Owner Dashboard & Compliance Ledger</h2>
-        <p>Real-time oversight for Practice Owner Dr. Sarah Jenkins. Monitor blocked delivery attempts, staff compliance rate, most distributed handouts, and immutable audit history.</p>
+        <p>Real-time oversight for Practice Owner Dr. Sarah Jenkins. Monitor blocked delivery attempts, staff compliance rate, most distributed handouts, and append-only audit history (SIMULATED, resets with demo data).</p>
       </div>
 
       <!-- Stat Cards -->

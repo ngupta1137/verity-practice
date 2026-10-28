@@ -71,7 +71,7 @@ function evaluateQuerySet(engine, testSet) {
       }
     } else if (item.category === 'out_of_library') {
       outOfLibTotal++;
-      if ((res.outcome === 'refused_out_of_scope' || res.outcome === 'OUT_OF_SCOPE_REFERRAL') && actualDocId === null) {
+      if ((res.outcome === 'refused_out_of_scope' || res.outcome === 'OUT_OF_SCOPE_REFERRAL' || res.outcome === 'INSUFFICIENT_EVIDENCE') && actualDocId === null) {
         passed = true;
         outOfLibRefused++;
       }

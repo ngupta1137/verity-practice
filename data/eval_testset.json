@@ -376,5 +376,14 @@
     "expected_outcome": "approved_match",
     "expected_section_match": "Calcium Citrate vs Calcium Carbonate",
     "description": "Clinical question on bariatric calcium form and dosage."
+  },
+  {
+    "id": "Q36",
+    "query": "pt wants keto diet sheet for rapid weight loss",
+    "category": "out_of_library",
+    "expected_doc_id": null,
+    "audience_filter": "patient",
+    "expected_outcome": "INSUFFICIENT_EVIDENCE",
+    "description": "OUT-OF-LIBRARY / SUB-THRESHOLD: Ketogenic diet sheet for rapid weight loss has no approved handout. Must return INSUFFICIENT_EVIDENCE."
   }
 ]

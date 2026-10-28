@@ -129,6 +129,23 @@ export class RightDocEngine {
       };
     }
 
+    if (triage.hasSglt2KetoBlock) {
+      return {
+        outcome: 'BLOCK_DELIVERY',
+        decision: 'BLOCK_DELIVERY',
+        document_validity: 'valid',
+        patient_applicability: 'not_applicable',
+        delivery_authorization: 'denied',
+        reasons: ['SGLT2 inhibitor + very low carbohydrate diet increases euglycemic DKA risk; RD and prescriber review required.'],
+        policy_version: '2.1.0',
+        query: cleanQuery,
+        redactions: redacted.applied,
+        message: 'BLOCKED: SGLT2 inhibitor + very low carbohydrate diet increases euglycemic DKA risk; RD and prescriber review required.',
+        topMatch: null,
+        matches: []
+      };
+    }
+
     if (triage.hasOutOfScope) {
       return {
         outcome: 'OUT_OF_SCOPE_REFERRAL',
@@ -374,6 +391,38 @@ export class RightDocEngine {
       score: Math.min(Number(m.score.toFixed(3)), 1.0)
     }));
     const top = normalizedMatches[0];
+
+    // Minimum Relevance & Semantic Concordance Gate:
+    // A document cannot be returned or marked eligible based on a weak single-keyword match
+    // with sub-threshold semantic similarity (e.g. matching only "weight" at 38% similarity for an unapproved "keto diet sheet" query).
+    const topDocVector = this.docEmbeddings?.get(top.document.doc_id) || computeTextEmbedding(buildDocumentSemanticText(top.document));
+    const semanticSimilarity = queryVector && topDocVector ? cosineSimilarity(queryVector, topDocVector) : 0;
+    const titleTokens = this.tokenize(top.document.title);
+    const hasTitleMatch = titleTokens.some(t => queryTokens.includes(t) || expandedTokens.includes(t));
+    const conditionTokens = top.document.condition ? this.tokenize(top.document.condition) : [];
+    const hasConditionMatch = conditionTokens.some(t => queryTokens.includes(t) || expandedTokens.includes(t));
+    const hasSynonymMatch = top.document.synonyms && top.document.synonyms.some(s => lowerQ.includes(s.toLowerCase()) || this.tokenize(s).some(t => queryTokens.includes(t)));
+    const hasDirectClinicalMatch = hasTitleMatch || hasConditionMatch || hasSynonymMatch;
+
+    const isUnapprovedDietPattern = /\b(keto|ketogenic|carnivore)\b/i.test(lowerQ) && !hasDirectClinicalMatch;
+    const isSubThreshold = top.score < 0.50 || (semanticSimilarity < 0.45 && !hasDirectClinicalMatch) || isUnapprovedDietPattern;
+
+    if (isSubThreshold) {
+      return {
+        outcome: 'INSUFFICIENT_EVIDENCE',
+        decision: 'INSUFFICIENT_EVIDENCE',
+        document_validity: 'valid',
+        patient_applicability: 'not_applicable',
+        delivery_authorization: 'denied',
+        reasons: ['No approved handout matches this request.'],
+        policy_version: '2.1.0',
+        query: cleanQuery,
+        redactions: redacted.applied,
+        message: 'No approved handout matches this request.',
+        topMatch: null,
+        matches: []
+      };
+    }
 
     // Evaluate Unified Clinical Policy (Workstream 1)
     const policyRes = evaluatePolicy({

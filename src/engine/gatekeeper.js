@@ -61,7 +61,7 @@ export function validateSendCheck({
     if (!blocks.some(b => b.code === 'STATUS_RETIRED')) {
       blocks.push({
         code: 'STATUS_RETIRED',
-        message: `BLOCKED: Document is RETIRED. ${document.retired_reason || 'Archived by Clinical Director'}. Never distribute retired materials.`
+        message: `BLOCKED: Document is RETIRED. ${(document.retired_reason || 'Archived by Clinical Director').replace(/\.+$/, '')}. Never distribute retired materials.`
       });
     }
   } else if (document.status === 'approved') {
@@ -242,7 +242,7 @@ export function validateSendCheck({
     } else {
       passes.push({
         code: 'PREGNANCY_CARB_SAFETY_VALID',
-        message: 'Handout satisfies ADA/ACOG consensus minimum carbohydrate requirements for pregnancy (>=175g/day).'
+        message: 'Handout satisfies 175 g/day minimum (Dietary Reference Intakes, cited in ADA Standards of Care).'
       });
     }
 

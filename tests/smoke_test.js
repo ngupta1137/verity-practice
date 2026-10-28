@@ -51,6 +51,7 @@ const htmlContent = fs.readFileSync(htmlPath, 'utf8');
 
 const requiredElementIds = [
   'currentRole',
+  'rightDocPatientContext',
   'rightDocQuery',
   'btnSearchRightDoc',
   'rightDocResults',
@@ -207,8 +208,8 @@ const virtualSandbox = {
     }
   },
   fetch: async (url) => {
-    if (url.includes('/api/documents')) return { json: async () => mockDocuments };
-    if (url.includes('/api/patients')) return { json: async () => mockPatients };
+    if (url.includes('/api/documents')) return { json: async () => ({ documents: mockDocuments }) };
+    if (url.includes('/api/patients')) return { json: async () => ({ patients: mockPatients }) };
     if (url.includes('/api/dashboard')) return {
       json: async () => ({
         summary: { complianceRate: 98, blockedSends: 2, successfulSends: 45, expiredDocsCount: 5 },
@@ -248,6 +249,18 @@ try {
 
   // Allow async promises in init() to flush
   await new Promise(r => setTimeout(r, 200));
+
+  // Assert #rightDocPatientContext is populated with synthetic patients (options > 1)
+  const rightDocSelect = virtualSandbox.document.getElementById('rightDocPatientContext');
+  const optionMatches = (rightDocSelect?.innerHTML || '').match(/<option/g) || [];
+  if (optionMatches.length <= 1) {
+    failed = true;
+    const msg = `Regression: #rightDocPatientContext has only ${optionMatches.length} option(s). Expected > 1.`;
+    console.error(`[FAIL] ${msg}`);
+    errors.push(msg);
+  } else {
+    console.log(`[PASS] #rightDocPatientContext populated with ${optionMatches.length} options (> 1).`);
+  }
 
   if (consoleErrors.length > 0) {
     failed = true;

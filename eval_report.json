@@ -1,11 +1,11 @@
 {
-  "evaluatedAt": "2026-10-28T13:19:19.609Z",
+  "evaluatedAt": "2026-10-28T14:17:43.593Z",
   "suite1_regression": {
     "name": "Development Regression Suite",
-    "totalQueries": 35,
-    "overallAccuracy": "100.0% (35/35)",
+    "totalQueries": 36,
+    "overallAccuracy": "100.0% (36/36)",
     "inScopeTop1Accuracy": "100.0% (21/21)",
-    "outOfLibraryRefusalRate": "100.0% (6/6)",
+    "outOfLibraryRefusalRate": "100.0% (7/7)",
     "trapHandlingRate": "100.0% (4/4)",
     "internalQnAccuracy": "100.0% (4/4)",
     "counts": {
@@ -14,8 +14,8 @@
         "total": 21
       },
       "outOfLibrary": {
-        "passed": 6,
-        "total": 6
+        "passed": 7,
+        "total": 7
       },
       "traps": {
         "passed": 4,
@@ -26,11 +26,11 @@
         "total": 4
       },
       "total": {
-        "passed": 35,
-        "total": 35
+        "passed": 36,
+        "total": 36
       }
     },
-    "mathSummary": "21 in-scope + 6 out-of-library + 4 traps + 4 internal = 35 total queries",
+    "mathSummary": "21 in-scope + 7 out-of-library + 4 traps + 4 internal = 36 total queries",
     "queryDetails": [
       {
         "id": "Q01",
@@ -554,6 +554,21 @@
           "doc_id": "DOC-BAR-005",
           "version": 2,
           "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q36",
+        "query": "pt wants keto diet sheet for rapid weight loss",
+        "category": "out_of_library",
+        "expected": {
+          "doc_id": null,
+          "outcome": "INSUFFICIENT_EVIDENCE"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "INSUFFICIENT_EVIDENCE"
         },
         "passed": true
       }
@@ -1216,9 +1231,9 @@
           "outcome": "refused_retired"
         },
         "actual": {
-          "doc_id": "DOC-WM-001",
-          "version": 1,
-          "outcome": "BLOCK_DELIVERY"
+          "doc_id": null,
+          "version": null,
+          "outcome": "INSUFFICIENT_EVIDENCE"
         },
         "passed": false
       },
@@ -1937,7 +1952,7 @@
       {
         "id": "CONF-DOC-GEST-001-DOC-GEST-002",
         "topic": "Gestational Diabetes Carbohydrate Guidance (Ceilings vs Individualized Floor)",
-        "explanation": "DOC-GEST-001 enforces a rigid ceiling of max 30g carbohydrates per meal (failing the 175g/day pregnancy RDA), whereas DOC-GEST-002 specifies individualized carbohydrate distribution with a minimum daily floor of >= 175g/day (ADA 2026 / IOM standard) without fixed per-meal ceilings. While CONF-001 is open, both documents are locked from patient distribution until Clinical Director resolution."
+        "explanation": "DOC-GEST-001 enforces a rigid ceiling of max 30g carbohydrates per meal (failing the 175g/day pregnancy RDA), whereas DOC-GEST-002 specifies individualized carbohydrate distribution with a minimum daily floor of >= 175g/day (175 g/day minimum - Dietary Reference Intakes, cited in ADA Standards of Care) without fixed per-meal ceilings. While CONF-001 is open, both documents are locked from patient distribution until Clinical Director resolution."
       }
     ]
   },
@@ -1996,11 +2011,11 @@
     }
   ],
   "metrics": {
-    "totalQueries": 35,
-    "overallAccuracy": "100.0% (35/35)",
+    "totalQueries": 36,
+    "overallAccuracy": "100.0% (36/36)",
     "inScopeTop1Accuracy": "100.0% (21/21)",
     "trapCatchRate": "100.0% (17/17)",
-    "outOfLibraryRefusalRate": "100.0% (6/6)",
+    "outOfLibraryRefusalRate": "100.0% (7/7)",
     "builderSafetyAccuracy": "100.0% (25/25)",
     "builderAdversarialAccuracy": "50.0%"
   },
@@ -2527,6 +2542,21 @@
         "doc_id": "DOC-BAR-005",
         "version": 2,
         "outcome": "approved_match"
+      },
+      "passed": true
+    },
+    {
+      "id": "Q36",
+      "query": "pt wants keto diet sheet for rapid weight loss",
+      "category": "out_of_library",
+      "expected": {
+        "doc_id": null,
+        "outcome": "INSUFFICIENT_EVIDENCE"
+      },
+      "actual": {
+        "doc_id": null,
+        "version": null,
+        "outcome": "INSUFFICIENT_EVIDENCE"
       },
       "passed": true
     }

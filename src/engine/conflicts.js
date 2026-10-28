@@ -117,7 +117,7 @@ function findSectionGuidelineConflict(docA, docB) {
       topic: 'Gestational Diabetes Carbohydrate Guidance (Ceilings vs Individualized Floor)',
       sectionA: sec1,
       sectionB: sec2,
-      explanation: 'DOC-GEST-001 enforces a rigid ceiling of max 30g carbohydrates per meal (failing the 175g/day pregnancy RDA), whereas DOC-GEST-002 specifies individualized carbohydrate distribution with a minimum daily floor of >= 175g/day (ADA 2026 / IOM standard) without fixed per-meal ceilings. While CONF-001 is open, both documents are locked from patient distribution until Clinical Director resolution.'
+      explanation: 'DOC-GEST-001 enforces a rigid ceiling of max 30g carbohydrates per meal (failing the 175g/day pregnancy RDA), whereas DOC-GEST-002 specifies individualized carbohydrate distribution with a minimum daily floor of >= 175g/day (175 g/day minimum - Dietary Reference Intakes, cited in ADA Standards of Care) without fixed per-meal ceilings. While CONF-001 is open, both documents are locked from patient distribution until Clinical Director resolution.'
     };
   }
 

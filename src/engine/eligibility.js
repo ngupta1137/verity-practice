@@ -18,7 +18,7 @@ export function checkDocumentEligibility(doc, allDocuments = [], options = {}) {
   if (doc.status === 'retired') {
     blocks.push({
       code: 'STATUS_RETIRED',
-      message: `BLOCKED: Document is RETIRED. ${doc.retired_reason || 'Archived by Clinical Director'}. Never distribute or quote retired materials.`
+      message: `BLOCKED: Document is RETIRED. ${(doc.retired_reason || 'Archived by Clinical Director').replace(/\.+$/, '')}. Never distribute or quote retired materials.`
     });
   } else if (doc.status === 'draft') {
     blocks.push({

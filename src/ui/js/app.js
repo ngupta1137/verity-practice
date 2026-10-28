@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const rightDocQuery = document.getElementById('rightDocQuery');
   const btnSearchRightDoc = document.getElementById('btnSearchRightDoc');
   const rightDocResults = document.getElementById('rightDocResults');
+  const rightDocPatientContext = document.getElementById('rightDocPatientContext');
   
   // Send Check elements
   const sendCheckDocSelect = document.getElementById('sendCheckDocSelect');
@@ -122,7 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Update badge counts
       const confBadge = document.getElementById('conflictsBadge');
-      if (confBadge) confBadge.textContent = state.conflicts.length;
+      if (confBadge) {
+        confBadge.textContent = state.conflicts.length;
+        confBadge.style.display = state.conflicts.length > 0 ? 'inline-block' : 'none';
+      }
 
       renderConflicts(dashData.conflicts);
       renderStaleness(dashData.documentsDueForReview);
@@ -150,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
       state.currentRole = roleSelect.value;
       updateRoleUI();
       updateDocSelectorForRole();
+      renderRightDocPatientContext();
     });
   }
 
@@ -157,6 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const role = state.currentRole;
     const isFrontDesk = role === 'front_desk';
     const isOwner = role === 'owner';
+
+    renderRightDocPatientContext();
 
     const fdBadge = document.getElementById('fdVerifyBadge');
     if (fdBadge) {
@@ -204,6 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     try {
+      const selectedPatientId = rightDocPatientContext?.value || undefined;
       const res = await fetch('/api/right-doc', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -211,7 +219,8 @@ document.addEventListener('DOMContentLoaded', () => {
           query: queryText,
           audience: 'patient',
           role: state.currentRole,
-          actor: roleSelect.options[roleSelect.selectedIndex].text
+          actor: roleSelect.options[roleSelect.selectedIndex].text,
+          patient_id: selectedPatientId
         })
       });
 
@@ -337,11 +346,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (data.outcome === 'refused_out_of_scope' || data.outcome === 'refused_retired') {
+    if (data.outcome === 'refused_out_of_scope' || data.outcome === 'refused_retired' || data.outcome === 'INSUFFICIENT_EVIDENCE') {
       rightDocResults.innerHTML = `
         <div class="result-banner refused">
           <div>
-            <strong>${data.outcome === 'refused_retired' ? 'DISTRIBUTION REFUSED (RETIRED DOCUMENT)' : 'REQUEST REFUSED (OUT OF PRACTICE SCOPE)'}</strong>
+            <strong>${data.outcome === 'refused_retired' ? 'DISTRIBUTION REFUSED (RETIRED DOCUMENT)' : (data.outcome === 'INSUFFICIENT_EVIDENCE' ? 'INSUFFICIENT EVIDENCE (NO MATCH)' : 'REQUEST REFUSED (OUT OF PRACTICE SCOPE)')}</strong>
             <p style="margin-top: 6px;">${data.message}</p>
           </div>
         </div>
@@ -497,6 +506,26 @@ document.addEventListener('DOMContentLoaded', () => {
   // -------------------------------------------------------------
   // Feature 2: Send Check (Deterministic Pre-Send Verification)
   // -------------------------------------------------------------
+  function renderRightDocPatientContext() {
+    if (!rightDocPatientContext) return;
+    const currentVal = rightDocPatientContext.value;
+    let html = `<option value="">-- General Practice Context (Evaluates Intrinsic Safety, Status & Conflicts) --</option>`;
+
+    const patientsToRender = (state.currentRole === 'front_desk')
+      ? (state.patients || []).filter(p => (p.assigned_documents && p.assigned_documents.length > 0))
+      : (state.patients || []);
+
+    html += patientsToRender.map(p => `
+      <option value="${p.patient_id}">
+        ${p.patient_id} - ${p.name} (${p.program} | ${p.patient_stage})
+      </option>
+    `).join('');
+    rightDocPatientContext.innerHTML = html;
+    if (currentVal && Array.from(rightDocPatientContext.options).some(o => o.value === currentVal)) {
+      rightDocPatientContext.value = currentVal;
+    }
+  }
+
   function renderSendCheckSelectors() {
     sendCheckPatientSelect.innerHTML = state.patients.map(p => `
       <option value="${p.patient_id}">
@@ -506,6 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     modalPatientSelect.innerHTML = sendCheckPatientSelect.innerHTML;
 
+    renderRightDocPatientContext();
     updateDocSelectorForRole();
     updatePatientPreview();
 
@@ -1064,6 +1094,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('/api/dashboard');
       const data = await res.json();
       state.conflicts = data.conflicts || [];
+      const confBadge = document.getElementById('conflictsBadge');
+      if (confBadge) {
+        confBadge.textContent = state.conflicts.length;
+        confBadge.style.display = state.conflicts.length > 0 ? 'inline-block' : 'none';
+      }
       renderConflicts(state.conflicts);
     } catch (err) {
       console.warn('Failed to load conflicts:', err.message);
@@ -1175,7 +1210,7 @@ document.addEventListener('DOMContentLoaded', () => {
           patient_id: patId,
           doc_id: docId,
           reviewer: roleSelect.options[roleSelect.selectedIndex].text,
-          notes: 'Exposure reviewed; patient contacted, GDM carbohydrate minimum (175g/day) explained, updated DOC-GEST-002 v2 dispatched.'
+          notes: 'Exposure reviewed; patient contacted, GDM carbohydrate minimum (175g/day) explained, updated DOC-GEST-002 v1 dispatched.'
         })
       });
       const data = await res.json();
@@ -1201,7 +1236,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td><code>CONF-001</code></td>
           <td>Dr. Sarah Jenkins, RDN (Practice Owner)</td>
           <td><span class="badge badge-approved">WITHDRAW_A_KEEP_B</span><br><small>DOC-GEST-001 retired; DOC-GEST-002 active</small></td>
-          <td style="font-size: 12px;">Updated practice standard to ADA 2026 guidelines specifying minimum 175g/day CHO without rigid meal ceilings.</td>
+          <td style="font-size: 12px;">Updated practice standard to 175 g/day minimum (Dietary Reference Intakes, cited in ADA Standards of Care) without rigid meal ceilings.</td>
         </tr>
       `;
       return;
@@ -1289,6 +1324,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (statBlocked) statBlocked.textContent = blockedSends.length;
       if (statSuccess) statSuccess.textContent = successfulSends.length;
       if (statOverdue) statOverdue.textContent = dashData?.summary?.expiredDocsCount ?? 0;
+
+      // Update Staleness & Expiration Monitor table
+      if (dashData && dashData.documentsDueForReview) {
+        renderStaleness(dashData.documentsDueForReview);
+      }
 
       // Most Used Docs
       const mostUsedList = document.getElementById('mostUsedList');
@@ -1769,7 +1809,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (conflictDecision) conflictDecision.value = 'WITHDRAW_A_KEEP_B';
       if (conflictReviewer) conflictReviewer.value = 'Dr. Sarah Jenkins, RDN (Practice Owner & Clinical Director)';
-      if (conflictRationale) conflictRationale.value = 'Updated practice standard to ADA 2026 guidelines specifying minimum 175g/day CHO without rigid meal ceilings.';
+      if (conflictRationale) conflictRationale.value = 'Updated practice standard to 175 g/day minimum (Dietary Reference Intakes, cited in ADA Standards of Care) without rigid meal ceilings.';
       if (conflictResultingState) conflictResultingState.value = 'DOC-GEST-001 retired; DOC-GEST-002 active; exposure review queue generated for past recipients.';
 
       await loadConflicts();
@@ -1872,6 +1912,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await res.json();
         if (data.success) {
           showFeedback('success', `Conflict resolved with recorded clinical rationale! Retired DOC-GEST-001, unlocked DOC-GEST-002 as practice standard. Exposure Queue generated.`);
+          await loadInitialData();
+          renderLibraryTable();
+          renderRightDocPatientContext();
           await loadDashboard();
           await loadExposureQueue();
           await loadConflicts();
@@ -2035,12 +2078,13 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           if (conflictReviewer) conflictReviewer.value = 'Dr. Sarah Jenkins, RDN (Practice Owner & Clinical Director)';
           if (conflictResultingState) conflictResultingState.value = 'DOC-GEST-001 retired; DOC-GEST-002 active; exposure review queue generated for past recipients.';
-          if (conflictRationale) conflictRationale.value = 'Updated practice standard to ADA 2026 guidelines specifying minimum 175g/day CHO without rigid meal ceilings.';
+          if (conflictRationale) conflictRationale.value = 'Updated practice standard to 175 g/day minimum (Dietary Reference Intakes, cited in ADA Standards of Care) without rigid meal ceilings.';
           alert('✓ Demo data restored: Seed documents, patients, conflict CONF-001 locked, and seeded demo audit history.');
           await loadInitialData();
           renderLibraryTable();
           renderSendCheckSelectors();
           loadDashboard();
+          await loadConflicts();
           loadDsmesRecords();
           loadEvaluationData();
           await loadExposureQueue();

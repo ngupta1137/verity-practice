@@ -255,15 +255,21 @@ export function runSafetyTriage({ query = '', patient = null, user = null, conte
 
   const hasVomitingOrIllness = normQ.includes('vomit') || 
                               normQ.includes('nausea') ||
+                              normQ.includes('stomach pain') ||
+                              normQ.includes('abdominal pain') ||
+                              normQ.includes('trouble breathing') ||
+                              normQ.includes('shortness of breath') ||
                               normQ.includes('flu') || 
                               normQ.includes('ill') || 
+                              normQ.includes('fever') || 
                               normQ.includes('not eating') || 
                               normQ.includes("can't eat") || 
-                              normQ.includes('cant eat') ||
-                              normQ.includes('keto') || 
-                              normQ.includes('fasting');
+                              normQ.includes('cant eat');
 
-  // Red Flag 1: SGLT2 Inhibitor + illness / vomiting / keto / fasting (eDKA)
+  const hasSglt2Keto = hasSglt2 && (normQ.includes('keto') || normQ.includes('vlcd') || normQ.includes('fasting'));
+  let sglt2KetoBlock = null;
+
+  // Red Flag 1: SGLT2 Inhibitor + illness / vomiting / nausea / symptoms (eDKA emergency)
   // Scope-safe text: Never tell staff to start, stop or change a medication.
   if (hasSglt2 && hasVomitingOrIllness) {
     matchedRules.push('RULE-TRIAGE-SGLT2-DKA');
@@ -278,6 +284,15 @@ export function runSafetyTriage({ query = '', patient = null, user = null, conte
       secondary_label: 'Secondary Handout (not a substitute for escalation)'
     };
     secondaryDocId = 'DOC-DM-005';
+  } else if (hasSglt2Keto && !hasVomitingOrIllness) {
+    // SGLT2 + Keto/Fasting without symptoms: BLOCK_DELIVERY contraindication, not emergency sick-day protocol
+    matchedRules.push('RULE-MED-SGLT2-KETO-CONTRAINDICATION');
+    triageFlags.push('SGLT2_KETO_CONTRAINDICATION');
+    sglt2KetoBlock = {
+      rule_id: 'RULE-MED-SGLT2-KETO-CONTRAINDICATION',
+      title: 'CONTRAINDICATION: SGLT2 Inhibitor with Ketogenic Diet',
+      message: 'BLOCKED: SGLT2 inhibitor + very low carbohydrate diet increases euglycemic DKA risk; RD and prescriber review required.'
+    };
   }
 
   // Red Flag 2: Persistent Vomiting / Cannot Keep Fluids Down (Bariatric, GLP-1, Any)
@@ -430,6 +445,8 @@ export function runSafetyTriage({ query = '', patient = null, user = null, conte
     escalation,
     hasOutOfScope: !!outOfScope,
     outOfScope,
+    hasSglt2KetoBlock: !!sglt2KetoBlock,
+    sglt2KetoBlock,
     matchedRules,
     triageFlags,
     secondaryDocId,

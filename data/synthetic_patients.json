@@ -5,7 +5,10 @@
     "program": "Bariatric Surgery",
     "condition": "Gastric Bypass (Roux-en-Y)",
     "patient_stage": "Post-Op Week 2-3 (Stage 2: Pureed)",
+    "stages": ["Post-Op Week 2-3 (Stage 2: Pureed)", "Stage 2 Pureed"],
     "allergies_sensitivities": ["Lactose Intolerance"],
+    "medications": ["Omeprazole 20mg daily", "Bariatric Chewable Multivitamin"],
+    "language": "en",
     "insurance": "Aetna Commercial",
     "dietitian": "Elena Gomez, RD"
   },
@@ -15,7 +18,10 @@
     "program": "Diabetes Education",
     "condition": "Type 2 Diabetes (A1c 8.2%)",
     "patient_stage": "Maintenance / Initial Education",
+    "stages": ["Maintenance / Initial Education", "T2D Initial"],
     "allergies_sensitivities": ["None"],
+    "medications": ["Metformin 1000mg BID", "Glipizide 5mg daily (Sulfonylurea)"],
+    "language": "en",
     "insurance": "Blue Cross Blue Shield",
     "dietitian": "Elena Gomez, RD"
   },
@@ -25,7 +31,10 @@
     "program": "Gestational Diabetes",
     "condition": "Gestational Diabetes Mellitus (28 Weeks)",
     "patient_stage": "Trimester 2 & 3",
+    "stages": ["Trimester 2 & 3", "GDM 28 Weeks"],
     "allergies_sensitivities": ["None"],
+    "medications": ["Prenatal Multivitamin with DHA", "Insulin Lispro 6 units with meals"],
+    "language": "en",
     "insurance": "UnitedHealthcare",
     "dietitian": "Amanda Reed, RD"
   },
@@ -35,7 +44,10 @@
     "program": "Bariatric Surgery",
     "condition": "Sleeve Gastrectomy (Post-Op Day 4)",
     "patient_stage": "Post-Op Week 1 (Stage 1: Clear Liquids)",
+    "stages": ["Post-Op Week 1 (Stage 1: Clear Liquids)", "Stage 1 Clear Liquids"],
     "allergies_sensitivities": ["None"],
+    "medications": ["Enoxaparin 40mg SubQ daily", "Acetaminophen 500mg liquid PRN"],
+    "language": "en",
     "insurance": "Cigna Commercial",
     "dietitian": "Elena Gomez, RD"
   },
@@ -45,9 +57,12 @@
     "program": "Renal / Kidney Disease",
     "condition": "Chronic Kidney Disease Stage 3b (eGFR 38)",
     "patient_stage": "Stage 3-4 Non-Dialysis CKD",
+    "stages": ["Stage 3-4 Non-Dialysis CKD", "CKD Stage 3b"],
     "allergies_sensitivities": ["ACE Inhibitor Cough"],
+    "medications": ["Lisinopril 20mg daily", "Furosemide 20mg daily"],
+    "language": "en",
     "insurance": "Medicare Part B",
-    "dietitian": "Marcus Vance"
+    "dietitian": "Amanda Reed, RD"
   },
   {
     "patient_id": "SYNTH-PAT-106",
@@ -55,7 +70,10 @@
     "program": "Weight Management",
     "condition": "Obesity on Semaglutide 0.5mg (GLP-1)",
     "patient_stage": "Dose Escalation & Maintenance",
+    "stages": ["Dose Escalation & Maintenance", "GLP-1 Induction"],
     "allergies_sensitivities": ["Severe Nausea with Dairy Fats"],
+    "medications": ["Semaglutide 0.5mg SQ weekly", "Empagliflozin 10mg daily (SGLT2 inhibitor)"],
+    "language": "en",
     "insurance": "Commercial PPO",
     "dietitian": "Dr. Sarah Jenkins, RDN"
   },
@@ -65,7 +83,10 @@
     "program": "Menopause & Women's Health",
     "condition": "Polycystic Ovary Syndrome (PCOS)",
     "patient_stage": "Lifestyle Intervention",
+    "stages": ["Lifestyle Intervention", "PCOS Insulin Resistance"],
     "allergies_sensitivities": ["Gluten Sensitive"],
+    "medications": ["Metformin 500mg ER daily", "Spironolactone 50mg daily"],
+    "language": "en",
     "insurance": "Aetna Open Access",
     "dietitian": "Amanda Reed, RD"
   },
@@ -75,7 +96,10 @@
     "program": "Gastrointestinal Health",
     "condition": "IBS-Diarrhea with Severe Post-Meal Bloating",
     "patient_stage": "Phase 1 Elimination (Strict)",
+    "stages": ["Phase 1 Elimination (Strict)", "Low FODMAP Phase 1"],
     "allergies_sensitivities": ["Garlic / Onion Intolerance"],
+    "medications": ["Dicyclomine 10mg PRN abdominal cramping", "Probiotic (Bifidobacterium infantis)"],
+    "language": "en",
     "insurance": "Oscar Health",
     "dietitian": "Elena Gomez, RD"
   },
@@ -85,8 +109,24 @@
     "program": "Cardiovascular Health",
     "condition": "Essential Hypertension (BP 148/92)",
     "patient_stage": "Maintenance / Blood Pressure Management",
+    "stages": ["Maintenance / Blood Pressure Management", "Stage 2 HTN"],
     "allergies_sensitivities": ["None"],
+    "medications": ["Amlodipine 5mg daily", "Hydrochlorothiazide 25mg daily"],
+    "language": "en",
     "insurance": "Medicare Advantage",
-    "dietitian": "Marcus Vance"
+    "dietitian": "Amanda Reed, RD"
+  },
+  {
+    "patient_id": "SYNTH-PAT-110",
+    "name": "Synthetic Patient 110 (C.M.)",
+    "program": "Diabetes Education",
+    "condition": "Type 2 Diabetes (Spanish Speaking)",
+    "patient_stage": "Maintenance / Initial Education",
+    "stages": ["Maintenance / Initial Education", "T2D Hispanic Outreach"],
+    "allergies_sensitivities": ["None"],
+    "medications": ["Metformin 850mg BID"],
+    "language": "es",
+    "insurance": "Medicaid Managed Care",
+    "dietitian": "Elena Gomez, RD"
   }
 ]

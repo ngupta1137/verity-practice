@@ -47,6 +47,7 @@ function loadJSON(relPath) {
 let documents = loadJSON('data/documents.json');
 let patients = loadJSON('data/synthetic_patients.json');
 let seededAudit = loadJSON('data/audit_log.json');
+let dsmesRecords = loadJSON('data/dsmes_records.json');
 
 const auditLedger = new AuditLedger(seededAudit);
 const rightDocEngine = new RightDocEngine(documents);
@@ -207,6 +208,7 @@ app.post('/api/send', (req, res) => {
   }
 
   // Record successful delivery
+  // Record successful delivery
   const event = auditLedger.logEvent({
     actor,
     role,
@@ -221,6 +223,40 @@ app.post('/api/send', (req, res) => {
     details: `Successfully dispatched approved v${doc.version} to patient ${patient_id}.`
   });
 
+  // Automatically record DSMES / MNT Education Delivery & Billing Record
+  const isInitial = patient?.patient_stage?.includes('Initial') || patient?.patient_stage?.includes('Stage 1');
+  const isDiabetesProgram = doc.program === 'Diabetes Education' || doc.program === 'Gestational Diabetes';
+  const defaultCpt = isDiabetesProgram ? (isInitial ? 'G0108' : '97803') : (isInitial ? '97802' : '97803');
+  const mntRecord = {
+    record_id: `MNT-${Date.now()}`,
+    patient_id: patient ? patient.patient_id : patient_id,
+    patient_name: patient ? patient.name : 'Outpatient',
+    program: doc.program,
+    condition: doc.condition || (patient ? patient.condition : 'Clinical Nutrition'),
+    education_delivered: doc.title,
+    doc_id: doc.doc_id,
+    version: doc.version,
+    delivered_by: actor,
+    delivered_at: event.timestamp,
+    billing_cpt_code: defaultCpt,
+    cpt_description: defaultCpt === '97802' 
+      ? 'MNT Initial assessment and intervention, individual (each 15 min)' 
+      : (defaultCpt === 'G0108' ? 'DSMES Outpatient training, individual (each 30 min)' : 'MNT Re-assessment and intervention, individual (each 15 min)'),
+    units_billed: defaultCpt === 'G0108' ? 2 : (isInitial ? 4 : 2),
+    duration_minutes: defaultCpt === 'G0108' ? 60 : (isInitial ? 60 : 30),
+    channel: 'In-Clinic Handout & Clinical Documentation',
+    pre_send_verified: true,
+    claim_status: 'Ready for Superbill Batch'
+  };
+
+  dsmesRecords.unshift(mntRecord);
+  try {
+    const dsmesPath = path.resolve(process.cwd(), 'data/dsmes_records.json');
+    if (fs.existsSync(path.dirname(dsmesPath))) {
+      fs.writeFileSync(dsmesPath, JSON.stringify(dsmesRecords, null, 2), 'utf8');
+    }
+  } catch (err) {}
+
   res.json({
     success: true,
     blocked: false,
@@ -230,7 +266,8 @@ app.post('/api/send', (req, res) => {
       document: { id: doc.doc_id, version: doc.version, title: doc.title },
       patient: patient ? { id: patient.patient_id, name: patient.name } : { id: patient_id },
       actor: { name: actor, role },
-      message: `Document ${doc.doc_id} v${doc.version} safely delivered and recorded in audit ledger.`
+      mntRecord,
+      message: `Document ${doc.doc_id} v${doc.version} safely delivered and recorded in DSMES/MNT billing ledger.`
     }
   });
 });
@@ -247,6 +284,16 @@ app.post('/api/qa', (req, res) => {
 // 7. Synthetic Patients API
 app.get('/api/patients', (req, res) => {
   res.json({ patients });
+});
+
+// 8. DSMES / MNT Education Delivery Records API
+app.get('/api/dsmes-mnt', (req, res) => {
+  const { patient_id } = req.query;
+  let records = dsmesRecords;
+  if (patient_id) {
+    records = records.filter(r => r.patient_id === patient_id);
+  }
+  res.json({ records });
 });
 
 // 8. Owner Dashboard & Analytics

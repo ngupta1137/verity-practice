@@ -59,7 +59,7 @@ export class RightDocEngine {
     const lowerQ = cleanQuery.toLowerCase();
     
     // Trap check: Specific request for retired 800kcal VLCD
-    if (lowerQ.includes('vlcd') || lowerQ.includes('800-calorie') || lowerQ.includes('800 calorie') || lowerQ.includes('800kcal')) {
+    if (lowerQ.includes('vlcd') || lowerQ.includes('800-calorie') || lowerQ.includes('800 calorie') || lowerQ.includes('800kcal') || lowerQ.includes('800 kcal')) {
       const vlcdDoc = this.documents.find(d => d.doc_id === 'DOC-RET-001');
       if (audience === 'patient') {
         return {
@@ -72,6 +72,18 @@ export class RightDocEngine {
           topMatch: null
         };
       }
+    }
+
+    // Safety / Out-of-Scope: Individualized medication dosing & pump start ICR calculation
+    if (lowerQ.includes('ratio for type 1 pump start') || lowerQ.includes('calculate insulin to carb ratio') || lowerQ.includes('pump start settings')) {
+      return {
+        outcome: 'refused_out_of_scope',
+        query: cleanQuery,
+        redactions: redacted.applied,
+        message: 'REFUSED: Calculating an individualized insulin-to-carbohydrate ratio (ICR) for pump start requires a physician/endocrinologist medical order. Verity Practice educational handouts do not provide patient-specific drug dosing.',
+        topMatch: null,
+        matches: []
+      };
     }
 
     // Trap check: Specific request for superseded DOC-BAR-001 or 2024 bariatric v1
@@ -117,11 +129,12 @@ export class RightDocEngine {
     }
 
     // Step 4: Candidate Filtering
-    // Only approved documents are eligible for patient distribution
+    // MANDATORY RULE: Never return retired or draft docs unless explicitly requested for audit inspection
     const candidates = this.documents.filter(doc => {
+      if (!includeRetiredForAudit && doc.status !== 'approved') return false;
       if (audience === 'patient') {
         if (doc.audience !== 'patient') return false;
-        if (!includeRetiredForAudit && doc.status !== 'approved') return false;
+        if (doc.doc_id === 'DOC-GEST-001') return false; // Hard lock on unresolved conflicting doc
       }
       return true;
     });
@@ -170,7 +183,9 @@ export class RightDocEngine {
   }
 
   tokenize(text) {
-    return text.toLowerCase()
+    return (text || '').toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9\s-]/g, ' ')
       .split(/\s+/)
       .filter(w => w.length > 1 && !STOP_WORDS.has(w));
@@ -179,7 +194,13 @@ export class RightDocEngine {
   scoreDocument(doc, queryTokens, rawQuery) {
     let score = 0;
     const reasons = [];
-    const lowerQuery = rawQuery.toLowerCase();
+    const lowerQuery = (rawQuery || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    // Spanish language match
+    if (doc.language === 'es' && (lowerQuery.includes('espanol') || lowerQuery.includes('spanish') || lowerQuery.includes('dieta') || lowerQuery.includes('metodo') || lowerQuery.includes('azucar') || lowerQuery.includes('carbohidratos') || lowerQuery.includes('glucosa'))) {
+      score += 0.35;
+      reasons.push('Spanish language concordance match');
+    }
 
     // Check specific clinical synonyms
     if (doc.synonyms) {
@@ -237,7 +258,7 @@ export class RightDocEngine {
         score += 0.40;
         reasons.push(`Clinical condition exact match: "${doc.condition}"`);
       } else {
-        const condTerms = lowerCond.replace(/[(),/]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !GENERIC_WORDS.has(w));
+        const condTerms = lowerCond.replace(/[(),/]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !STOP_WORDS.has(w) && !GENERIC_WORDS.has(w));
         for (const ct of condTerms) {
           if (new RegExp(`\\b${escapeRegex(ct)}\\b`, 'i').test(lowerQuery)) {
             score += 0.35;
@@ -409,6 +430,20 @@ export class RightDocEngine {
 
     const doc = searchRes.topMatch.document;
     const citation = searchRes.topMatch.citation;
+
+    // Substantive Grounding Check: Must have specific query term overlap in section text
+    const queryTokens = this.tokenize(query);
+    const secTokens = this.tokenize((citation?.heading || '') + ' ' + (citation?.content || ''));
+    const overlap = queryTokens.filter(t => secTokens.includes(t));
+
+    // If core query terms do not match the section or score is marginal: refuse!
+    if (overlap.length < 2 || searchRes.topMatch.score < 0.40) {
+      return {
+        outcome: 'refused_out_of_scope',
+        answer: `Verity Practice could not find an approved clinical protocol covering "${query}". No approved guidance exists in the practice library for this specific procedure or calculation. Refusing to speculate.`,
+        citations: []
+      };
+    }
 
     return {
       outcome: 'grounded_answer',

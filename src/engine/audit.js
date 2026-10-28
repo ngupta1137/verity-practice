@@ -3,11 +3,15 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { checkStaleness, detectConflicts } from './conflicts.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export class AuditLedger {
   constructor(initialEntries = []) {
-    this.entries = [...initialEntries];
+    this.entries = [...initialEntries].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   }
 
   logEvent({
@@ -40,11 +44,32 @@ export class AuditLedger {
     };
 
     this.entries.unshift(entry);
+
+    // Persist to disk (wrapped in try/catch for read-only serverless execution)
+    try {
+      const candidates = [
+        path.resolve(process.cwd(), 'data/audit_log.json'),
+        path.resolve(__dirname, '../../data/audit_log.json'),
+        path.resolve(__dirname, '../data/audit_log.json')
+      ];
+      for (const p of candidates) {
+        if (fs.existsSync(path.dirname(p))) {
+          fs.writeFileSync(p, JSON.stringify(this.entries, null, 2), 'utf8');
+          break;
+        }
+      }
+    } catch (err) {
+      console.warn('Audit ledger persistence notice:', err.message);
+    }
+
     return entry;
   }
 
   getEntries(limit = 100) {
-    return this.entries.slice(0, limit);
+    return this.entries
+      .slice()
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+      .slice(0, limit);
   }
 
   getOwnerDashboardStats(allDocuments) {

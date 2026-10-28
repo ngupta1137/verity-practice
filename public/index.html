@@ -30,7 +30,8 @@
         <div class="role-selector">
           <label for="currentRole">Acting As:</label>
           <select id="currentRole">
-            <option value="dietitian" selected>Elena Gomez, RD (Staff Clinician)</option>
+            <option value="dietitian" selected>Elena Gomez, RD (Staff Clinician - Bariatrics & T2D)</option>
+            <option value="dietitian_amanda">Amanda Reed, RD (Staff Clinician - Renal & Women's Health)</option>
             <option value="owner">Dr. Sarah Jenkins, RDN (Practice Owner / Director)</option>
             <option value="front_desk">Marcus Vance (Front Desk Coordinator)</option>
           </select>
@@ -61,6 +62,9 @@
       </button>
       <button class="nav-tab" data-tab="tab-owner">
         <span>📊 Owner Dashboard & Audit</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-dsmes">
+        <span>📋 DSMES / MNT Records</span>
       </button>
       <button class="nav-tab" data-tab="tab-qa">
         <span>💬 Grounded Staff Q&A</span>
@@ -358,7 +362,10 @@
       <!-- Audit Log Table -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Complete Tamper-Evident Audit Ledger</span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="card-title">Audit Ledger (Simulated In-Memory & Persisted to data/audit_log.json)</span>
+            <span class="badge" style="background: #E8F5E9; color: var(--brand-green-dark); border: 1px solid #C8E6C9; font-size: 11px;">SIMULATED (IN-MEMORY + PERSISTED)</span>
+          </div>
           <button class="btn-demo-step" id="btnRefreshAudit" style="color: var(--ink); border-color: var(--border);">
             <span>🔄 Refresh Ledger</span>
           </button>
@@ -378,6 +385,87 @@
               </tr>
             </thead>
             <tbody id="auditTableBody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB: DSMES & MNT Patient Education Ledger -->
+    <section class="tab-pane" id="tab-dsmes">
+      <div class="section-header">
+        <h2>DSMES & Medical Nutrition Therapy (MNT) Education Records</h2>
+        <p>Patient-centric education delivery records with CPT billing codes (97802, 97803, G0108), clinician attestation, and pre-send safety verification timestamps for superbill generation.</p>
+      </div>
+
+      <!-- Filter Controls & Summary Cards -->
+      <div class="grid grid-4" style="margin-bottom: 24px;">
+        <div class="stat-card">
+          <div class="stat-num" id="statMntTotalEncounters">6</div>
+          <div class="stat-label">Total Education Deliveries</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statMntUnitsBilled">18</div>
+          <div class="stat-label">Billable Units (15-min increments)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statMntVerifiedPct">100%</div>
+          <div class="stat-label">Pre-Send Gatekeeper Verified</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="color: var(--brand-green-dark);" id="statMntClaimsReady">Ready</div>
+          <div class="stat-label">Superbill Batch Status</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 24px;">
+        <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 240px;">
+            <label for="dsmesPatientFilter" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Filter by Patient:</label>
+            <select id="dsmesPatientFilter" class="form-select" style="width: 100%;">
+              <option value="">All Patients (Complete Practice Ledger)</option>
+            </select>
+          </div>
+          <div style="flex: 1; min-width: 200px;">
+            <label for="dsmesProgramFilter" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Filter by Program:</label>
+            <select id="dsmesProgramFilter" class="form-select" style="width: 100%;">
+              <option value="">All Programs</option>
+              <option value="Diabetes Education">Diabetes Education (DSMES)</option>
+              <option value="Bariatric Surgery">Bariatric Surgery MNT</option>
+              <option value="Gestational Diabetes">Gestational Diabetes MNT</option>
+              <option value="Weight Management">Weight Management / GLP-1</option>
+            </select>
+          </div>
+          <div style="align-self: flex-end;">
+            <button class="btn-demo-step" id="btnExportSuperbill" style="height: 42px; border-color: var(--brand-green-dark); color: var(--brand-green-dark);">
+              <span>🧾 Generate Superbill Batch</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Patient Education Delivery & MNT Billing Ledger</span>
+          <span class="badge" style="background: #E8F5E9; color: var(--brand-green-dark); border: 1px solid #C8E6C9;">HIPAA-COMPLIANT SYNTHETIC AUDIT</span>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table" id="dsmesTable">
+            <thead>
+              <tr>
+                <th>Delivery Date</th>
+                <th>Patient</th>
+                <th>Program / Diagnosis</th>
+                <th>Education Delivered</th>
+                <th>Delivered By</th>
+                <th>CPT Billing Code & Units</th>
+                <th>Channel</th>
+                <th>Safety Status</th>
+              </tr>
+            </thead>
+            <tbody id="dsmesTableBody">
               <!-- Populated by JS -->
             </tbody>
           </table>

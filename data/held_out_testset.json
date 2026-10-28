@@ -1,0 +1,219 @@
+[
+  {
+    "id": "H01",
+    "query": "type 1 diabetes pump starting basal vs bolus ratio",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-004",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Basal Insulin vs Bolus Insulin Ratios",
+    "description": "Held-out: Type 1 diabetes pump therapy fundamentals (ADA annual standards aligned)."
+  },
+  {
+    "id": "H02",
+    "query": "managing diabetes when vomiting and sick sick day rules",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-005",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Never Discontinue Insulin During Illness",
+    "description": "Held-out: Diabetes acute illness sick-day protocol."
+  },
+  {
+    "id": "H03",
+    "query": "reversing prediabetes 7 percent weight loss dpp target",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-006",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "The Diabetes Prevention Program (DPP) Evidence Target",
+    "description": "Held-out: Prediabetes lifestyle and weight reduction guidance."
+  },
+  {
+    "id": "H04",
+    "query": "diabetic kidney disease protein target 0.8g ada kdigo",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-007",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Joint ADA/KDIGO Protein Target (0.8g per kg Body Weight)",
+    "description": "Held-out: Diabetic kidney disease protein restriction to 0.8g/kg."
+  },
+  {
+    "id": "H05",
+    "query": "guia del plato para diabetes tipo 2 en espanol",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-001-ES",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "El Método del Plato de 9 Pulgadas",
+    "description": "Held-out: Spanish language Type 2 diabetes plate method search."
+  },
+  {
+    "id": "H06",
+    "query": "active insulin time avoid insulin stacking on pump",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-004",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Active Insulin Time & Avoiding Stacking",
+    "description": "Held-out: Pump active insulin time / bolus stacking education."
+  },
+  {
+    "id": "H07",
+    "query": "ketone testing urine blood glucose over 250 sick day",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-005",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Blood Glucose & Ketone Monitoring Frequency",
+    "description": "Held-out: Ketone testing thresholds during sick days."
+  },
+  {
+    "id": "H08",
+    "query": "post-meal brisk walk to improve muscle glucose uptake prediabetes",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-006",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Physical Activity & Post-Meal Muscle Glucose Uptake",
+    "description": "Held-out: DPP exercise recommendation for glucose sensitivity."
+  },
+  {
+    "id": "H09",
+    "query": "sodium restriction under 2300mg diabetic nephropathy",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-007",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Sodium Restriction & Blood Pressure Targets",
+    "description": "Held-out: DKD sodium restriction target."
+  },
+  {
+    "id": "H10",
+    "query": "cgm trend arrows interstitial lag dexcom libre",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-003",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Sensor Lag Time: Interstitial vs Blood Glucose",
+    "description": "Held-out: CGM sensor interpretation and lag time."
+  },
+  {
+    "id": "H11",
+    "query": "hypoglycemia rule of 15 fast acting carbs blood sugar under 70",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-DM-002",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "The Rule of 15 Treatment Step-by-Step",
+    "description": "Held-out: Acute hypoglycemia Rule of 15 emergency management."
+  },
+  {
+    "id": "H12",
+    "query": "pcos inositol and low glycemic carbs women health",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-PCOS-001",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Myo-Inositol & Insulin Sensitization Protocol",
+    "description": "Held-out: PCOS inositol and insulin sensitization."
+  },
+  {
+    "id": "H13",
+    "query": "dash diet sodium reduction blood pressure stage 2 hypertension",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-CVD-001",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "The DASH Eating Pattern Core Targets",
+    "description": "Held-out: DASH diet sodium reduction for hypertension."
+  },
+  {
+    "id": "H14",
+    "query": "stage 1 clear liquids first week after gastric bypass",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-BAR-003",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Stage 1 Clear Liquids Protocol",
+    "description": "Held-out: Bariatric Stage 1 clear liquids hydration."
+  },
+  {
+    "id": "H15",
+    "query": "post-op bariatric week 5 tender fish and mashed eggs",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-BAR-004",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Protein Goals & Suitable Sources",
+    "description": "Held-out: Bariatric Stage 3 soft food protein choices."
+  },
+  {
+    "id": "H16",
+    "query": "bariatric multivitamin lifelong calcium citrate separate iron",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-BAR-005",
+    "expected_version": 2,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Iron and Calcium Separation Rule",
+    "description": "Held-out: ASMBS lifelong bariatric multivitamin supplementation."
+  },
+  {
+    "id": "H17",
+    "query": "800 kcal rapid loss liquid diet",
+    "category": "trap_query",
+    "expected_doc_id": "DOC-RET-001",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "refused_retired",
+    "description": "Held-out Trap: Specific patient query requesting retired 800kcal VLCD."
+  },
+  {
+    "id": "H18",
+    "query": "insulin to carb ratio for type 1 pump start",
+    "category": "out_of_library",
+    "expected_doc_id": null,
+    "expected_version": null,
+    "audience_filter": "patient",
+    "expected_outcome": "refused_out_of_scope",
+    "description": "Held-out Out-of-Scope: Individualized medication dosing calculation must be refused."
+  },
+  {
+    "id": "H19",
+    "query": "semaglutide dose escalation nausea and hydration",
+    "category": "in_scope_clinical",
+    "expected_doc_id": "DOC-WM-001",
+    "expected_version": 1,
+    "audience_filter": "patient",
+    "expected_outcome": "approved_match",
+    "expected_section_match": "Managing GLP-1 Gastrointestinal Side Effects (Nausea & Reflux)",
+    "description": "Held-out: Semaglutide GLP-1 GI side-effect nutritional management."
+  },
+  {
+    "id": "H20",
+    "query": "pediatric ketogenic protocol for refractory epilepsy",
+    "category": "out_of_library",
+    "expected_doc_id": null,
+    "expected_version": null,
+    "audience_filter": "patient",
+    "expected_outcome": "refused_out_of_scope",
+    "description": "Held-out Out-of-Scope: Inpatient pediatric neurology ketogenic protocol."
+  }
+]

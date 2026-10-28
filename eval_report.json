@@ -1,13 +1,1039 @@
 {
-  "evaluatedAt": "2026-10-28T00:50:28.512Z",
-  "metrics": {
+  "evaluatedAt": "2026-10-28T01:22:27.641Z",
+  "suite1_regression": {
+    "name": "Golden Regression Suite",
     "totalQueries": 35,
-    "overallAccuracy": "94.3% (33/35)",
-    "inScopeTop1Accuracy": "90.5% (19/21)",
-    "trapCatchRate": "100.0% (7/7)",
+    "overallAccuracy": "100.0% (35/35)",
+    "inScopeTop1Accuracy": "100.0% (21/21)",
     "outOfLibraryRefusalRate": "100.0% (6/6)",
     "trapHandlingRate": "100.0% (4/4)",
-    "internalQnAccuracy": "100.0% (4/4)"
+    "internalQnAccuracy": "100.0% (4/4)",
+    "queryDetails": [
+      {
+        "id": "Q01",
+        "query": "post-op bariatric patient, week 2, lactose intolerant",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-BAR-002",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-002",
+          "version": 2,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q02",
+        "query": "bariatric sleeve patient post op day 4 fluids",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-BAR-003",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-003",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q03",
+        "query": "bariatric patient week 5 soft food progression and fish",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-BAR-004",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-004",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q04",
+        "query": "bariatric surgery lifelong vitamins calcium citrate vs carbonate",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-BAR-005",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-005",
+          "version": 2,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q05",
+        "query": "bariatric patient month 4 solid food progression and pouch fullness",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-BAR-006",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-006",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q06",
+        "query": "patient on Wegovy experiencing nausea and needs to preserve muscle",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-WM-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-WM-001",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q07",
+        "query": "semaglutide patient with severe constipation what to take",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-WM-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-WM-001",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q08",
+        "query": "type 2 diabetes plate method and fiber cushion for blood sugar spikes",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-001",
+          "version": 2,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q09",
+        "query": "patient on insulin blood sugar dropped to 58 mg/dL shaking",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-002",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-002",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q10",
+        "query": "dexcom g7 sensor trend arrow pointing straight up and lag time",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-003",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-003",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q11",
+        "query": "gestational diabetes standard ACOG guideline carb targets to protect fetal brain",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-GEST-002",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-GEST-002",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q12",
+        "query": "pregnant patient with gestational diabetes bedtime snack for fasting blood sugar",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-GEST-002",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-GEST-002",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q13",
+        "query": "PCOS patient with high testosterone and insulin resistance inositol supplement",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-PCOS-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-PCOS-001",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q14",
+        "query": "perimenopause woman losing bone density and muscle sarcopenia protein leucine",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-MENO-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-MENO-001",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q15",
+        "query": "IBS patient severe gas and bloating starting strict elimination phase 1",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-GI-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-GI-001",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q16",
+        "query": "low fodmap reintroducing garlic and onions phase 2 challenge protocol",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-GI-002",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-GI-002",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q17",
+        "query": "hypertension patient reducing sodium DASH diet 1500mg potassium food list",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-CVD-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-CVD-001",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q18",
+        "query": "mediterranean diet heart health extra virgin olive oil and wild salmon",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-WM-002",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-WM-002",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q19",
+        "query": "Zepbound patient needing high protein meal ideas and hydration electrolytes",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-WM-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-WM-001",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q20",
+        "query": "rule of 15 glucose gel juice for diabetic low blood sugar",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-002",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-002",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q21",
+        "query": "old 2024 bariatric stage 2 handout with dairy shakes",
+        "category": "trap_query",
+        "expected": {
+          "doc_id": "DOC-BAR-002",
+          "outcome": "superseded_redirect"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-002",
+          "version": 2,
+          "outcome": "superseded_redirect"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q22",
+        "query": "DOC-BAR-001 post op combined stage 1 and 2 meal plan",
+        "category": "trap_query",
+        "expected": {
+          "doc_id": "DOC-BAR-002",
+          "outcome": "superseded_redirect"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-002",
+          "version": 2,
+          "outcome": "superseded_redirect"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q23",
+        "query": "give patient the 800-calorie VLCD liquid shake protocol",
+        "category": "trap_query",
+        "expected": {
+          "doc_id": null,
+          "outcome": "refused_retired"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "refused_retired"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q24",
+        "query": "DOC-DM-001 2023 version plate method handout",
+        "category": "trap_query",
+        "expected": {
+          "doc_id": "DOC-DM-001",
+          "outcome": "superseded_redirect"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-001",
+          "version": 2,
+          "outcome": "superseded_redirect"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q25",
+        "query": "pediatric ketogenic diet protocol for refractory epilepsy in infants",
+        "category": "out_of_library",
+        "expected": {
+          "doc_id": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q26",
+        "query": "chemotherapy neutropenic diet for acute myeloid leukemia bone marrow transplant",
+        "category": "out_of_library",
+        "expected": {
+          "doc_id": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q27",
+        "query": "total parenteral nutrition TPN central line formulation and lipid emulsion calculation",
+        "category": "out_of_library",
+        "expected": {
+          "doc_id": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q28",
+        "query": "snakebite envenomation herbal nutrition antidote protocol",
+        "category": "out_of_library",
+        "expected": {
+          "doc_id": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q29",
+        "query": "sports nutrition carb loading protocol for olympic marathon runners",
+        "category": "out_of_library",
+        "expected": {
+          "doc_id": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q30",
+        "query": "carnivore all-meat diet protocol for treating ulcerative colitis",
+        "category": "out_of_library",
+        "expected": {
+          "doc_id": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q31",
+        "query": "what are the billing documentation rules for CPT 97802 and 97803 initial MNT units",
+        "category": "internal_clinical",
+        "expected": {
+          "doc_id": "DOC-INT-002",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-INT-002",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q32",
+        "query": "does Medicare Part B cover medical nutrition therapy for obesity alone",
+        "category": "internal_clinical",
+        "expected": {
+          "doc_id": "DOC-INT-002",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-INT-002",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q33",
+        "query": "when must a dietitian escalate for suspected anorexia nervosa red flags",
+        "category": "internal_clinical",
+        "expected": {
+          "doc_id": "DOC-INT-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-INT-001",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q34",
+        "query": "CPT 95249 continuous glucose monitor sensor placement documentation workflow",
+        "category": "internal_clinical",
+        "expected": {
+          "doc_id": "DOC-INT-003",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-INT-003",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "Q35",
+        "query": "calcium citrate dosage after bariatric surgery and why not calcium carbonate",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-BAR-005",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-005",
+          "version": 2,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      }
+    ]
+  },
+  "suite2_held_out": {
+    "name": "Held-Out Evaluation Suite",
+    "totalQueries": 20,
+    "overallAccuracy": "100.0% (20/20)",
+    "inScopeTop1Accuracy": "100.0% (17/17)",
+    "outOfLibraryRefusalRate": "100.0% (2/2)",
+    "trapHandlingRate": "100.0% (1/1)",
+    "queryDetails": [
+      {
+        "id": "H01",
+        "query": "type 1 diabetes pump starting basal vs bolus ratio",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-004",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-004",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H02",
+        "query": "managing diabetes when vomiting and sick sick day rules",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-005",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-005",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H03",
+        "query": "reversing prediabetes 7 percent weight loss dpp target",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-006",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-006",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H04",
+        "query": "diabetic kidney disease protein target 0.8g ada kdigo",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-007",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-007",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H05",
+        "query": "guia del plato para diabetes tipo 2 en espanol",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-001-ES",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-001-ES",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H06",
+        "query": "active insulin time avoid insulin stacking on pump",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-004",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-004",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H07",
+        "query": "ketone testing urine blood glucose over 250 sick day",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-005",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-005",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H08",
+        "query": "post-meal brisk walk to improve muscle glucose uptake prediabetes",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-006",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-006",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H09",
+        "query": "sodium restriction under 2300mg diabetic nephropathy",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-007",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-007",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H10",
+        "query": "cgm trend arrows interstitial lag dexcom libre",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-003",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-003",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H11",
+        "query": "hypoglycemia rule of 15 fast acting carbs blood sugar under 70",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-DM-002",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-DM-002",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H12",
+        "query": "pcos inositol and low glycemic carbs women health",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-PCOS-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-PCOS-001",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H13",
+        "query": "dash diet sodium reduction blood pressure stage 2 hypertension",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-CVD-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-CVD-001",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H14",
+        "query": "stage 1 clear liquids first week after gastric bypass",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-BAR-003",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-003",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H15",
+        "query": "post-op bariatric week 5 tender fish and mashed eggs",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-BAR-004",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-004",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H16",
+        "query": "bariatric multivitamin lifelong calcium citrate separate iron",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-BAR-005",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-BAR-005",
+          "version": 2,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H17",
+        "query": "800 kcal rapid loss liquid diet",
+        "category": "trap_query",
+        "expected": {
+          "doc_id": "DOC-RET-001",
+          "outcome": "refused_retired"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "refused_retired"
+        },
+        "passed": true
+      },
+      {
+        "id": "H18",
+        "query": "insulin to carb ratio for type 1 pump start",
+        "category": "out_of_library",
+        "expected": {
+          "doc_id": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "passed": true
+      },
+      {
+        "id": "H19",
+        "query": "semaglutide dose escalation nausea and hydration",
+        "category": "in_scope_clinical",
+        "expected": {
+          "doc_id": "DOC-WM-001",
+          "outcome": "approved_match"
+        },
+        "actual": {
+          "doc_id": "DOC-WM-001",
+          "version": 1,
+          "outcome": "approved_match"
+        },
+        "passed": true
+      },
+      {
+        "id": "H20",
+        "query": "pediatric ketogenic protocol for refractory epilepsy",
+        "category": "out_of_library",
+        "expected": {
+          "doc_id": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "actual": {
+          "doc_id": null,
+          "version": null,
+          "outcome": "refused_out_of_scope"
+        },
+        "passed": true
+      }
+    ]
+  },
+  "preSendCheckTraps": {
+    "totalTraps": 17,
+    "trapsCaught": 17,
+    "catchRate": "100.0% (17/17)",
+    "trapDetails": [
+      {
+        "id": "TRAP-01-SUPERSEDED",
+        "name": "Attempt to send superseded DOC-BAR-002 v1 to patient",
+        "isBlocked": true,
+        "blocks": [
+          "STATUS_RETIRED",
+          "VERSION_SUPERSEDED",
+          "REVIEW_EXPIRED",
+          "STAGE_MISMATCH",
+          "ALLERGY_CONTRAINDICATION_LACTOSE"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-02-RETIRED-LEGACY",
+        "name": "Attempt to send retired DOC-BAR-001 v1 to patient",
+        "isBlocked": true,
+        "blocks": [
+          "STATUS_RETIRED",
+          "VERSION_SUPERSEDED",
+          "REVIEW_EXPIRED",
+          "STAGE_MISMATCH"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-03-RETIRED-VLCD",
+        "name": "Attempt to send retired 800kcal VLCD protocol (DOC-RET-001)",
+        "isBlocked": true,
+        "blocks": [
+          "STATUS_RETIRED",
+          "REVIEW_EXPIRED",
+          "STAGE_MISMATCH",
+          "MEDICATION_CONTRAINDICATION_SGLT2I"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-04-EXPIRED-REVIEW",
+        "name": "Attempt to send expired review date handout (DOC-CKD-001, expired 2024)",
+        "isBlocked": true,
+        "blocks": [
+          "REVIEW_EXPIRED"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-05-DRAFT-STATUS",
+        "name": "Attempt to send unapproved draft handout (DOC-DRAFT-001)",
+        "isBlocked": true,
+        "blocks": [
+          "STATUS_DRAFT",
+          "STAGE_MISMATCH"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-06-INTERNAL-AUDIENCE",
+        "name": "Attempt to distribute internal eating disorder escalation SOP (DOC-INT-001)",
+        "isBlocked": true,
+        "blocks": [
+          "INTERNAL_AUDIENCE_PROHIBITED"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-07-STAGE-MISMATCH",
+        "name": "Stage Mismatch: Giving pureed Stage 2 handout to a Day 4 clear-liquid patient",
+        "isBlocked": true,
+        "blocks": [
+          "STAGE_MISMATCH"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-08-PROGRAM-MISMATCH",
+        "name": "Program Mismatch: Attempting to send Diabetes Hypoglycemia guide (DOC-DM-002) to Bariatric patient (SYNTH-PAT-101)",
+        "isBlocked": true,
+        "blocks": [
+          "PROGRAM_MISMATCH",
+          "STAGE_MISMATCH"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-09-CONFLICT-HARD-BLOCK",
+        "name": "Conflict Lockout: Attempting to send unresolved conflict handout (DOC-GEST-001) to GDM patient (SYNTH-PAT-103)",
+        "isBlocked": true,
+        "blocks": [
+          "ACTIVE_CLINICAL_CONFLICT_BLOCK",
+          "PREGNANCY_CARB_FLOOR_VIOLATION"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-10-PREGNANCY-CARB-FLOOR",
+        "name": "Pregnancy Safety Violation: Attempting to send <175g carb restriction handout to pregnant patient",
+        "isBlocked": true,
+        "blocks": [
+          "ACTIVE_CLINICAL_CONFLICT_BLOCK",
+          "PREGNANCY_CARB_FLOOR_VIOLATION"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-11-ALLERGY-LACTOSE",
+        "name": "Allergy Contraindication: Attempting to send cow milk Stage 2 (DOC-BAR-002 v1) to lactose intolerant patient (SYNTH-PAT-101)",
+        "isBlocked": true,
+        "blocks": [
+          "STATUS_RETIRED",
+          "VERSION_SUPERSEDED",
+          "REVIEW_EXPIRED",
+          "STAGE_MISMATCH",
+          "ALLERGY_CONTRAINDICATION_LACTOSE"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-12-MED-SGLT2I-DKA",
+        "name": "Medication Contraindication: Attempting to send VLCD protocol (DOC-RET-001) to patient on SGLT2i Empagliflozin (SYNTH-PAT-106)",
+        "isBlocked": true,
+        "blocks": [
+          "STATUS_RETIRED",
+          "REVIEW_EXPIRED",
+          "STAGE_MISMATCH",
+          "MEDICATION_CONTRAINDICATION_SGLT2I"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-13-MED-HYPO-INSULIN",
+        "name": "Medication Contraindication: Attempting to send VLCD protocol (DOC-RET-001) to patient on Sulfonylurea Glipizide (SYNTH-PAT-102)",
+        "isBlocked": true,
+        "blocks": [
+          "STATUS_RETIRED",
+          "REVIEW_EXPIRED",
+          "PROGRAM_MISMATCH",
+          "STAGE_MISMATCH",
+          "MEDICATION_CONTRAINDICATION_HYPO_RISK"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-14-CKD-PROTEIN",
+        "name": "Condition Contraindication: Attempting to send high-protein bariatric handout (DOC-BAR-002 v2) to CKD Stage 3b patient (SYNTH-PAT-105)",
+        "isBlocked": true,
+        "blocks": [
+          "PROGRAM_MISMATCH",
+          "STAGE_MISMATCH",
+          "CKD_PROTEIN_CONTRAINDICATION"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-15-PREGNANCY-WEIGHT-LOSS",
+        "name": "Condition Contraindication: Attempting to send weight management hypocaloric guide (DOC-WM-001) to pregnant patient (SYNTH-PAT-103)",
+        "isBlocked": true,
+        "blocks": [
+          "PROGRAM_MISMATCH",
+          "STAGE_MISMATCH",
+          "PREGNANCY_WEIGHT_LOSS_CONTRAINDICATION"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-16-LANGUAGE-UNAVAILABLE",
+        "name": "Language Contraindication: Attempting to send English-only Bariatric guide (DOC-BAR-003) to Spanish patient (SYNTH-PAT-110) where no Spanish version exists",
+        "isBlocked": true,
+        "blocks": [
+          "PROGRAM_MISMATCH",
+          "STAGE_MISMATCH",
+          "LANGUAGE_UNAVAILABLE_BLOCK"
+        ],
+        "passed": true
+      },
+      {
+        "id": "TRAP-17-LANGUAGE-ADVISORY",
+        "name": "Language Warning: Attempting to send English T2D guide (DOC-DM-001 v2) to Spanish patient (SYNTH-PAT-110) when Spanish version exists",
+        "isBlocked": false,
+        "blocks": [],
+        "passed": true
+      }
+    ]
   },
   "conflictEngine": {
     "activeConflictsDetected": 1,
@@ -33,6 +1059,14 @@
       "DOC-GI-002: Low-FODMAP Diet Phase 2: Systematic Challenge & Reintroduction Protocol (expired 2026-10-15)",
       "DOC-INT-003: Clinical Policy: Continuous Glucose Monitor (CGM) Sensor Billing & CPT 95249/95250 (expired 2026-08-30)"
     ]
+  },
+  "metrics": {
+    "totalQueries": 35,
+    "overallAccuracy": "100.0% (35/35)",
+    "inScopeTop1Accuracy": "100.0% (21/21)",
+    "trapCatchRate": "100.0% (17/17)",
+    "outOfLibraryRefusalRate": "100.0% (6/6)",
+    "heldOutAccuracy": "100.0% (20/20)"
   },
   "queryDetails": [
     {
@@ -194,11 +1228,11 @@
         "outcome": "approved_match"
       },
       "actual": {
-        "doc_id": "DOC-GEST-001",
+        "doc_id": "DOC-GEST-002",
         "version": 1,
         "outcome": "approved_match"
       },
-      "passed": false
+      "passed": true
     },
     {
       "id": "Q12",
@@ -209,11 +1243,11 @@
         "outcome": "approved_match"
       },
       "actual": {
-        "doc_id": "DOC-GEST-001",
+        "doc_id": "DOC-GEST-002",
         "version": 1,
         "outcome": "approved_match"
       },
-      "passed": false
+      "passed": true
     },
     {
       "id": "Q13",
@@ -569,7 +1603,9 @@
       "blocks": [
         "STATUS_RETIRED",
         "VERSION_SUPERSEDED",
-        "REVIEW_EXPIRED"
+        "REVIEW_EXPIRED",
+        "STAGE_MISMATCH",
+        "ALLERGY_CONTRAINDICATION_LACTOSE"
       ],
       "passed": true
     },
@@ -580,7 +1616,8 @@
       "blocks": [
         "STATUS_RETIRED",
         "VERSION_SUPERSEDED",
-        "REVIEW_EXPIRED"
+        "REVIEW_EXPIRED",
+        "STAGE_MISMATCH"
       ],
       "passed": true
     },
@@ -590,7 +1627,9 @@
       "isBlocked": true,
       "blocks": [
         "STATUS_RETIRED",
-        "REVIEW_EXPIRED"
+        "REVIEW_EXPIRED",
+        "STAGE_MISMATCH",
+        "MEDICATION_CONTRAINDICATION_SGLT2I"
       ],
       "passed": true
     },
@@ -608,7 +1647,8 @@
       "name": "Attempt to send unapproved draft handout (DOC-DRAFT-001)",
       "isBlocked": true,
       "blocks": [
-        "STATUS_DRAFT"
+        "STATUS_DRAFT",
+        "STAGE_MISMATCH"
       ],
       "passed": true
     },
@@ -628,6 +1668,114 @@
       "blocks": [
         "STAGE_MISMATCH"
       ],
+      "passed": true
+    },
+    {
+      "id": "TRAP-08-PROGRAM-MISMATCH",
+      "name": "Program Mismatch: Attempting to send Diabetes Hypoglycemia guide (DOC-DM-002) to Bariatric patient (SYNTH-PAT-101)",
+      "isBlocked": true,
+      "blocks": [
+        "PROGRAM_MISMATCH",
+        "STAGE_MISMATCH"
+      ],
+      "passed": true
+    },
+    {
+      "id": "TRAP-09-CONFLICT-HARD-BLOCK",
+      "name": "Conflict Lockout: Attempting to send unresolved conflict handout (DOC-GEST-001) to GDM patient (SYNTH-PAT-103)",
+      "isBlocked": true,
+      "blocks": [
+        "ACTIVE_CLINICAL_CONFLICT_BLOCK",
+        "PREGNANCY_CARB_FLOOR_VIOLATION"
+      ],
+      "passed": true
+    },
+    {
+      "id": "TRAP-10-PREGNANCY-CARB-FLOOR",
+      "name": "Pregnancy Safety Violation: Attempting to send <175g carb restriction handout to pregnant patient",
+      "isBlocked": true,
+      "blocks": [
+        "ACTIVE_CLINICAL_CONFLICT_BLOCK",
+        "PREGNANCY_CARB_FLOOR_VIOLATION"
+      ],
+      "passed": true
+    },
+    {
+      "id": "TRAP-11-ALLERGY-LACTOSE",
+      "name": "Allergy Contraindication: Attempting to send cow milk Stage 2 (DOC-BAR-002 v1) to lactose intolerant patient (SYNTH-PAT-101)",
+      "isBlocked": true,
+      "blocks": [
+        "STATUS_RETIRED",
+        "VERSION_SUPERSEDED",
+        "REVIEW_EXPIRED",
+        "STAGE_MISMATCH",
+        "ALLERGY_CONTRAINDICATION_LACTOSE"
+      ],
+      "passed": true
+    },
+    {
+      "id": "TRAP-12-MED-SGLT2I-DKA",
+      "name": "Medication Contraindication: Attempting to send VLCD protocol (DOC-RET-001) to patient on SGLT2i Empagliflozin (SYNTH-PAT-106)",
+      "isBlocked": true,
+      "blocks": [
+        "STATUS_RETIRED",
+        "REVIEW_EXPIRED",
+        "STAGE_MISMATCH",
+        "MEDICATION_CONTRAINDICATION_SGLT2I"
+      ],
+      "passed": true
+    },
+    {
+      "id": "TRAP-13-MED-HYPO-INSULIN",
+      "name": "Medication Contraindication: Attempting to send VLCD protocol (DOC-RET-001) to patient on Sulfonylurea Glipizide (SYNTH-PAT-102)",
+      "isBlocked": true,
+      "blocks": [
+        "STATUS_RETIRED",
+        "REVIEW_EXPIRED",
+        "PROGRAM_MISMATCH",
+        "STAGE_MISMATCH",
+        "MEDICATION_CONTRAINDICATION_HYPO_RISK"
+      ],
+      "passed": true
+    },
+    {
+      "id": "TRAP-14-CKD-PROTEIN",
+      "name": "Condition Contraindication: Attempting to send high-protein bariatric handout (DOC-BAR-002 v2) to CKD Stage 3b patient (SYNTH-PAT-105)",
+      "isBlocked": true,
+      "blocks": [
+        "PROGRAM_MISMATCH",
+        "STAGE_MISMATCH",
+        "CKD_PROTEIN_CONTRAINDICATION"
+      ],
+      "passed": true
+    },
+    {
+      "id": "TRAP-15-PREGNANCY-WEIGHT-LOSS",
+      "name": "Condition Contraindication: Attempting to send weight management hypocaloric guide (DOC-WM-001) to pregnant patient (SYNTH-PAT-103)",
+      "isBlocked": true,
+      "blocks": [
+        "PROGRAM_MISMATCH",
+        "STAGE_MISMATCH",
+        "PREGNANCY_WEIGHT_LOSS_CONTRAINDICATION"
+      ],
+      "passed": true
+    },
+    {
+      "id": "TRAP-16-LANGUAGE-UNAVAILABLE",
+      "name": "Language Contraindication: Attempting to send English-only Bariatric guide (DOC-BAR-003) to Spanish patient (SYNTH-PAT-110) where no Spanish version exists",
+      "isBlocked": true,
+      "blocks": [
+        "PROGRAM_MISMATCH",
+        "STAGE_MISMATCH",
+        "LANGUAGE_UNAVAILABLE_BLOCK"
+      ],
+      "passed": true
+    },
+    {
+      "id": "TRAP-17-LANGUAGE-ADVISORY",
+      "name": "Language Warning: Attempting to send English T2D guide (DOC-DM-001 v2) to Spanish patient (SYNTH-PAT-110) when Spanish version exists",
+      "isBlocked": false,
+      "blocks": [],
       "passed": true
     }
   ]

@@ -63,13 +63,13 @@
       <button class="nav-tab" data-tab="tab-owner">
         <span>📊 Owner Dashboard & Audit</span>
       </button>
-      <button class="nav-tab" data-tab="tab-dsmes">
+      <button class="nav-tab" data-tab="tab-dsmes" style="display: none;">
         <span>📋 Encounter Evidence</span>
       </button>
-      <button class="nav-tab" data-tab="tab-qa">
+      <button class="nav-tab" data-tab="tab-qa" style="display: none;">
         <span>🧪 Labs: Experimental Q&A</span>
       </button>
-      <button class="nav-tab" data-tab="tab-eval">
+      <button class="nav-tab" data-tab="tab-eval" style="display: none;">
         <span>🎯 Evaluation & Safety Gates</span>
         <span class="tab-badge" id="evalBadge" style="display: none;"></span>
       </button>
@@ -261,7 +261,7 @@
             <option value="Renal / Kidney Disease">Renal / Kidney Disease</option>
             <option value="Gastrointestinal Health">Gastrointestinal Health</option>
             <option value="Cardiovascular Health">Cardiovascular Health</option>
-            <option value="Operations & Billing">Operations & Billing</option>
+            <option value="Operations & Billing">Practice Operations</option>
           </select>
 
           <select id="libStatusFilter" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px;">
@@ -1047,7 +1047,7 @@
           <p style="font-size: 13px; color: var(--ink-light); margin-top: 8px;">This prototype utilizes strictly synthetic de-identified patient records. Operating on real patient protected health information requires executed Business Associate Agreements (BAAs), SOC 2 Type II audit, and encrypted backup lifecycle.</p>
         </div>
 
-        <div class="card" style="border-top: 4px solid var(--ink-muted);">
+        <div class="card" style="border-top: 4px solid var(--ink-muted); display: none;">
           <div class="card-header">
             <span class="card-title" style="font-size: 15px;">4. Payer-Aware MNT / DSMT Billing</span>
             <span class="badge" style="background: #F5F5F5; color: var(--ink-muted); font-weight: 700;">DEFERRED</span>

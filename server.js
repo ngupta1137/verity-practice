@@ -72,9 +72,8 @@ validateSeedIntegrity(patients, documents);
 
 let dsmesRecords = loadJSON('data/dsmes_records.json');
 
-// Single Source of Truth for Clinical Conflict State across Serverless Invocations
-let globalConflictResolved = false;
-
+// Session-Isolated Clinical Conflict State Manager
+// Every new visitor starts from clean seed state; changes apply strictly to the visitor's session.
 function parseConflictState(req) {
   // 1. Check custom header (from client apiFetch)
   const headerState = req?.headers?.['x-verity-conflict-state'];
@@ -90,16 +89,8 @@ function parseConflictState(req) {
   if (req?.query?.conflict_state === 'resolved') return true;
   if (req?.query?.conflict_state === 'baseline') return false;
 
-  // 4. Check disk /tmp for same-container persistence
-  try {
-    const tmpPath = path.resolve('/tmp', 'verity_conflict_state.json');
-    if (fs.existsSync(tmpPath)) {
-      const data = JSON.parse(fs.readFileSync(tmpPath, 'utf8'));
-      if (data && typeof data.resolved === 'boolean') return data.resolved;
-    }
-  } catch (e) {}
-
-  return globalConflictResolved;
+  // New visitors with no session cookie or header always start from seed state (false)
+  return false;
 }
 
 function getEffectiveDocuments(req) {
@@ -683,12 +674,6 @@ app.post('/api/conflicts/resolve', (req, res) => {
     });
   }
 
-  // Persist conflict resolution state across serverless lambdas
-  globalConflictResolved = true;
-  try {
-    fs.writeFileSync('/tmp/verity_conflict_state.json', JSON.stringify({ resolved: true, timestamp: Date.now() }), 'utf8');
-  } catch (err) {}
-
   res.setHeader('Set-Cookie', 'verity_conflict_state=resolved; Path=/; SameSite=Lax; Max-Age=86400');
 
   const activeDocs = getEffectiveDocuments({ headers: { 'x-verity-conflict-state': 'resolved' } });
@@ -767,11 +752,6 @@ app.post('/api/demo/reset', (req, res) => {
   if (role !== 'owner' && role !== 'clinical_director') {
     return res.status(403).json({ success: false, message: 'Permission Denied: Only the Practice Owner or Clinical Director can reset demo data.' });
   }
-
-  globalConflictResolved = false;
-  try {
-    fs.writeFileSync('/tmp/verity_conflict_state.json', JSON.stringify({ resolved: false, timestamp: Date.now() }), 'utf8');
-  } catch (err) {}
 
   res.setHeader('Set-Cookie', 'verity_conflict_state=baseline; Path=/; SameSite=Lax; Max-Age=0');
 

@@ -1855,6 +1855,41 @@ document.addEventListener('DOMContentLoaded', () => {
   // Setup Event Listeners
   // -------------------------------------------------------------
   function setupEventListeners() {
+    // Start Here One-Click Scenarios
+    document.getElementById('btnScenarioA')?.addEventListener('click', () => {
+      switchTab('tab-right-doc');
+      roleSelect.value = 'dietitian';
+      state.currentRole = 'dietitian';
+      updateRoleUI();
+      renderRightDocPatientContext();
+      if (rightDocPatientContext) rightDocPatientContext.value = 'SYNTH-PAT-101';
+      rightDocQuery.value = 'post-op bariatric patient, week 2, lactose intolerant';
+      executeRightDocSearch('post-op bariatric patient, week 2, lactose intolerant');
+    });
+
+    document.getElementById('btnScenarioB')?.addEventListener('click', async () => {
+      switchTab('tab-send-check');
+      roleSelect.value = 'dietitian';
+      state.currentRole = 'dietitian';
+      updateRoleUI();
+      sendCheckPatientSelect.value = 'SYNTH-PAT-102';
+      updatePatientPreview();
+      updateDocSelectorForRole();
+      sendCheckDocSelect.value = 'DOC-DM-001:1';
+      await runSendCheckSimulation('DOC-DM-001', 1, 'SYNTH-PAT-102');
+    });
+
+    document.getElementById('btnScenarioC')?.addEventListener('click', () => {
+      switchTab('tab-right-doc');
+      roleSelect.value = 'dietitian';
+      state.currentRole = 'dietitian';
+      updateRoleUI();
+      renderRightDocPatientContext();
+      if (rightDocPatientContext) rightDocPatientContext.value = 'SYNTH-PAT-107';
+      rightDocQuery.value = 'menopause bone health and muscle loss';
+      executeRightDocSearch('menopause bone health and muscle loss');
+    });
+
     // Right Doc Search
     btnSearchRightDoc.addEventListener('click', () => {
       executeRightDocSearch(rightDocQuery.value);

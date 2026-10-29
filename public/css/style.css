@@ -889,3 +889,162 @@ footer.app-footer {
   flex-wrap: wrap;
   gap: 12px;
 }
+
+/* Mobile Responsive Optimization (390px iPhone & Small Screens) */
+@media (max-width: 640px) {
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  .header-inner {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .brand-lockup {
+    justify-content: flex-start;
+  }
+
+  .brand-text h1 {
+    font-size: 17px;
+  }
+
+  .header-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .role-selector {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+  }
+
+  .role-selector select {
+    max-width: 220px;
+    font-size: 12px;
+  }
+
+  .demo-trigger-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .nav-tabs {
+    padding: 0 10px;
+    gap: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-tab {
+    padding: 10px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .app-main {
+    padding: 12px 10px;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .start-here-panel {
+    padding: 14px 12px !important;
+  }
+
+  .start-here-panel div[style*="grid"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .search-card {
+    padding: 14px 12px;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  select#rightDocPatientContext {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 12px;
+  }
+
+  .search-input-wrapper {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .search-input-wrapper textarea {
+    width: 100%;
+    font-size: 13px;
+    min-height: 70px;
+  }
+
+  .search-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .quick-prompts {
+    gap: 6px;
+  }
+
+  .prompt-chip {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .card {
+    padding: 14px 12px;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .result-banner {
+    padding: 12px 10px;
+  }
+
+  .inline-sendcheck-box {
+    padding: 10px 10px !important;
+  }
+
+  .match-card {
+    padding: 14px 12px;
+  }
+
+  .match-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .send-action-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .btn-send-check {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .data-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+}
+

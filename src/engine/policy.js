@@ -706,7 +706,9 @@ export function evaluatePolicy({
         reasons.push('REVIEW REQUIRED: Patient is prescribed insulin or sulfonylurea. Prolonged fasting (16:8) requires clinical review and medication adjustment to prevent severe nocturnal/fasting hypoglycemia.');
       }
 
-      if (normQ.includes('recurrent lows') || normQ.includes('frequent lows') || normQ.includes('shaky, sugar low') || normQ.includes('going low') || normQ.includes('low') || normQ.includes('lows') || normQ.includes('hypo')) {
+      // Educational delivery of Rule of 15 hypoglycemia action guide (DOC-DM-002) is approved protocol education
+      const isHypoProtocolDelivery = document?.doc_id === 'DOC-DM-002' && normQ.includes('rule of 15') && !normQ.includes('recurrent') && !normQ.includes('frequent');
+      if (!isHypoProtocolDelivery && (normQ.includes('recurrent lows') || normQ.includes('frequent lows') || normQ.includes('shaky, sugar low') || normQ.includes('going low') || normQ.includes('low') || normQ.includes('lows') || normQ.includes('hypo'))) {
         patientApplicability = 'review_required';
         matchedRules.push('RULE-SAFETY-HYPO-RECURRENT-REVIEW');
         reasons.push('REVIEW REQUIRED: Patient prescribed insulin or sulfonylurea experiencing hypoglycemia requires clinical review and hypoglycemia protocol education.');

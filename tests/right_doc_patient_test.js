@@ -73,11 +73,11 @@ assert(!reasonsStr2.includes('without a selected patient') && !reasonsStr2.inclu
   'Must not complain of "without a selected patient" when patient_id is provided');
 console.log('  [PASS] James Miller matched approved DOC-WM-001 v1 without "no patient selected" review.\n');
 
-// 3. Acceptance 1c: Roberto Cruz (SYNTH-PAT-102) + "what to do for low blood sugar, rule of 15"
-// -> DOC-DM-002 v1
+// 3. Acceptance 1b: Roberto Cruz (SYNTH-PAT-102) + "low blood sugar, rule of 15"
+// -> approved DOC-DM-002 v1
 console.log('[TEST 3] Roberto Cruz (SYNTH-PAT-102) low blood sugar rule of 15...');
 const res3 = simulateServerRightDocHandler({
-  query: 'what to do for low blood sugar, rule of 15',
+  query: 'low blood sugar, rule of 15',
   patient_id: 'SYNTH-PAT-102',
   role: 'dietitian'
 });
@@ -86,9 +86,26 @@ assert.strictEqual(res3.matches?.[0]?.document?.doc_id, 'DOC-DM-002',
   `Expected DOC-DM-002 but got ${res3.matches?.[0]?.document?.doc_id}`);
 assert.strictEqual(Number(res3.matches?.[0]?.document?.version), 1, 
   `Expected version 1 but got ${res3.matches?.[0]?.document?.version}`);
-console.log('  [PASS] Roberto Cruz matched DOC-DM-002 v1.\n');
+assert.strictEqual(res3.policy_decision?.outcome, 'ANSWER_WITH_APPROVED_SOURCE',
+  `Expected approved match for Roberto Cruz Rule of 15, got ${res3.policy_decision?.outcome}`);
+console.log('  [PASS] Roberto Cruz matched approved DOC-DM-002 v1.\n');
 
-// 4. Acceptance 1d: No patient selected -> current "review required" behavior unchanged
+// 4. Acceptance 1c: Angela Taylor (SYNTH-PAT-107) + "menopause bone health and muscle loss"
+// -> approved DOC-MENO-001
+console.log('[TEST 4] Angela Taylor (SYNTH-PAT-107) menopause bone health and muscle loss...');
+const resAngela = simulateServerRightDocHandler({
+  query: 'menopause bone health and muscle loss',
+  patient_id: 'SYNTH-PAT-107',
+  role: 'dietitian'
+});
+
+assert.strictEqual(resAngela.matches?.[0]?.document?.doc_id, 'DOC-MENO-001',
+  `Expected DOC-MENO-001 but got ${resAngela.matches?.[0]?.document?.doc_id}`);
+assert.strictEqual(resAngela.policy_decision?.outcome, 'ANSWER_WITH_APPROVED_SOURCE',
+  `Expected approved match for Angela Taylor, got ${resAngela.policy_decision?.outcome}`);
+console.log('  [PASS] Angela Taylor matched approved DOC-MENO-001.\n');
+
+// 5. Acceptance 1d: No patient selected -> current "review required" behavior unchanged
 console.log('[TEST 4] No patient selected retains "review required" behavior...');
 const res4 = simulateServerRightDocHandler({
   query: 'post-op bariatric patient, week 2, lactose intolerant',

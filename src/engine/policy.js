@@ -253,18 +253,21 @@ export function runSafetyTriage({ query = '', patient = null, user = null, conte
                    allMedText.includes('sglt2') ||
                    queryContext.details.medication_classes.includes('sglt2_inhibitor');
 
-  const hasVomitingOrIllness = normQ.includes('vomit') || 
-                              normQ.includes('nausea') ||
+  const isGlp1Query = normQ.includes('wegovy') || normQ.includes('ozempic') || normQ.includes('mounjaro') || normQ.includes('zepbound') || normQ.includes('semaglutide') || normQ.includes('tirzepatide') || normQ.includes('glp');
+
+  const hasAcuteDkaSymptoms = normQ.includes('vomit') || 
                               normQ.includes('stomach pain') ||
                               normQ.includes('abdominal pain') ||
                               normQ.includes('trouble breathing') ||
                               normQ.includes('shortness of breath') ||
                               normQ.includes('flu') || 
-                              normQ.includes('ill') || 
                               normQ.includes('fever') || 
                               normQ.includes('not eating') || 
                               normQ.includes("can't eat") || 
                               normQ.includes('cant eat');
+
+  const hasVomitingOrIllness = hasAcuteDkaSymptoms || 
+                              (normQ.includes('nausea') && (!isGlp1Query || normQ.includes('jardiance') || normQ.includes('farxiga') || normQ.includes('sglt2') || normQ.includes('steglatro') || normQ.includes('invokana') || normQ.includes('empagliflozin')));
 
   const hasSglt2Keto = hasSglt2 && (normQ.includes('keto') || normQ.includes('vlcd') || normQ.includes('fasting'));
   let sglt2KetoBlock = null;
@@ -607,7 +610,7 @@ export function evaluatePolicy({
       if (recommendsBelow175) {
         patientApplicability = 'not_applicable';
         matchedRules.push('RULE-POP-PREGNANCY-FLOOR');
-        reasons.push(`BLOCKED: Pregnancy carbohydrate floor violation. Handout or dietary request recommends carbohydrate restriction below 175g/day. Fetal neurological development requires >= 175g carbs/day.`);
+        reasons.push(`BLOCKED: Pregnancy carbohydrate floor violation. Handout or dietary request recommends carbohydrate restriction below 175g/day. 175 g/day is the Dietary Reference Intake minimum carbohydrate for pregnancy.`);
       }
     }
 

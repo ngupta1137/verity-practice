@@ -359,7 +359,7 @@
   {
     "doc_id": "DOC-GEST-002",
     "version": 1,
-    "title": "Gestational Diabetes Nutritional Care Guide: ADA & ACOG Standard Protocol",
+    "title": "Gestational Diabetes Nutritional Care Guide: ADA Standards of Care Protocol",
     "program": "Gestational Diabetes",
     "condition": "Gestational Diabetes Mellitus (GDM)",
     "patient_stage": "Trimester 2 & 3",
@@ -369,11 +369,10 @@
     "status": "approved",
     "review_by": "2026-11-30",
     "effective_date": "2024-11-30",
-    "summary": "Clinical guidelines for Gestational Diabetes specifying 175 g/day minimum (Dietary Reference Intakes, cited in ADA Standards of Care). Mandates an individualized carbohydrate distribution across 3 meals and 2-3 snacks with an absolute minimum floor of 175g total carbohydrates daily (RDA in pregnancy) to protect fetal neurological development and prevent maternal starvation ketonuria without imposing rigid per-meal ceilings.",
+    "summary": "Clinical guidelines for Gestational Diabetes specifying 175 g/day minimum (Dietary Reference Intakes, cited in ADA Standards of Care). Mandates an individualized carbohydrate distribution across 3 meals and 2-3 snacks with an absolute minimum floor of 175g total carbohydrates daily (Dietary Reference Intake in pregnancy) without imposing rigid per-meal ceilings.",
     "tags": [
       "gestational diabetes",
       "pregnancy",
-      "acog",
       "ada",
       "gdm",
       "carb targets",
@@ -384,7 +383,7 @@
     ],
     "synonyms": [
       "gestational diabetes standard protocol",
-      "pregnancy carb target acog",
+      "pregnancy carb target 175g",
       "gdm meal guide",
       "gestational diabetes 175g rda minimum"
     ],

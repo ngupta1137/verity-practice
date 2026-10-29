@@ -693,9 +693,9 @@ export class RightDocEngine {
       score += 0.40;
       reasons.push('Emergency Rule of 15 hypoglycemia protocol');
     }
-    if (lowerQuery.includes('acog') && doc.doc_id === 'DOC-GEST-002') {
+    if ((lowerQuery.includes('175g') || lowerQuery.includes('standards of care')) && doc.doc_id === 'DOC-GEST-002') {
       score += 0.35;
-      reasons.push('ADA & ACOG gestational diabetes consensus standard');
+      reasons.push('ADA Standards of Care gestational diabetes standard');
     }
     if (lowerQuery.includes('97802') && doc.doc_id === 'DOC-INT-002') {
       score += 0.50;

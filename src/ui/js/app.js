@@ -17,6 +17,39 @@ document.addEventListener('DOMContentLoaded', () => {
     evalReport: null
   };
 
+  // Unified Conflict State Manager (propagate across serverless instances and hard reloads)
+  function getClientConflictState() {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const stored = localStorage.getItem('verity_conflict_state');
+        if (stored) return stored;
+      }
+    } catch (e) {}
+    try {
+      if (typeof document !== 'undefined' && document.cookie) {
+        if (document.cookie.includes('verity_conflict_state=resolved')) return 'resolved';
+      }
+    } catch (e) {}
+    return 'baseline';
+  }
+
+  function apiFetch(url, options = {}) {
+    const conflictState = getClientConflictState();
+    const headers = {
+      ...(options.headers || {}),
+      'x-verity-conflict-state': conflictState
+    };
+    return fetch(url, { ...options, headers });
+  }
+
+  // Immediate badge computation on DOM load from single conflict state
+  const isResolvedOnLoad = getClientConflictState() === 'resolved';
+  const initialConfBadge = document.getElementById('conflictsBadge');
+  if (initialConfBadge) {
+    initialConfBadge.textContent = isResolvedOnLoad ? '0' : '1';
+    initialConfBadge.style.display = isResolvedOnLoad ? 'none' : 'inline-block';
+  }
+
   // DOM Elements
   const tabs = document.querySelectorAll('.nav-tab');
   const panes = document.querySelectorAll('.tab-pane');
@@ -108,9 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadInitialData() {
     try {
       const [docsRes, patientsRes, dashRes] = await Promise.all([
-        fetch('/api/documents'),
-        fetch('/api/patients'),
-        fetch('/api/dashboard')
+        apiFetch('/api/documents'),
+        apiFetch('/api/patients'),
+        apiFetch('/api/dashboard')
       ]);
 
       const docsData = await docsRes.json();
@@ -212,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const selectedPatientId = rightDocPatientContext?.value || undefined;
-      const res = await fetch('/api/right-doc', {
+      const res = await apiFetch('/api/right-doc', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -603,7 +636,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sendCheckDetails.innerHTML = `<p style="color: var(--ink-muted);">Evaluating unified policy engine (validity, applicability, authorization)...</p>`;
 
     try {
-      const res = await fetch('/api/send-check', {
+      const res = await apiFetch('/api/send-check', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -811,7 +844,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function executeFinalDelivery(docId, version, patientId) {
     try {
-      const res = await fetch('/api/send', {
+      const res = await apiFetch('/api/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -866,7 +899,7 @@ document.addEventListener('DOMContentLoaded', () => {
     modalGateList.innerHTML = `<p style="font-size: 13px; color: var(--ink-muted);">Verifying 3-decision clinical policy...</p>`;
 
     try {
-      const res = await fetch('/api/send-check', {
+      const res = await apiFetch('/api/send-check', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1019,7 +1052,7 @@ document.addEventListener('DOMContentLoaded', () => {
     diffOutputContainer.innerHTML = `<p style="color: var(--ink-muted);">Computing word-level diff across document sections...</p>`;
 
     try {
-      const res = await fetch('/api/documents/diff', {
+      const res = await apiFetch('/api/documents/diff', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1091,7 +1124,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // -------------------------------------------------------------
   async function loadConflicts() {
     try {
-      const res = await fetch('/api/dashboard');
+      const res = await apiFetch('/api/dashboard');
       const data = await res.json();
       state.conflicts = data.conflicts || [];
       const confBadge = document.getElementById('conflictsBadge');
@@ -1147,7 +1180,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadExposureQueue() {
     try {
-      const res = await fetch('/api/conflicts/exposure-queue');
+      const res = await apiFetch('/api/conflicts/exposure-queue');
       const data = await res.json();
       state.exposureQueue = data.queue || [];
 
@@ -1202,7 +1235,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function reviewExposure(expId, patId, docId) {
     try {
-      const res = await fetch('/api/conflicts/exposure-review', {
+      const res = await apiFetch('/api/conflicts/exposure-review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1294,8 +1327,8 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadDashboard() {
     try {
       const [dashRes, auditRes] = await Promise.all([
-        fetch('/api/dashboard'),
-        fetch('/api/audit-log')
+        apiFetch('/api/dashboard'),
+        apiFetch('/api/audit-log')
       ]);
 
       const dashData = await dashRes.json();
@@ -1402,7 +1435,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     try {
-      const res = await fetch('/api/qa', {
+      const res = await apiFetch('/api/qa', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1475,7 +1508,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // -------------------------------------------------------------
   async function loadDsmesRecords() {
     try {
-      const res = await fetch('/api/dsmes-mnt');
+      const res = await apiFetch('/api/dsmes-mnt');
       const data = await res.json();
       state.dsmesRecords = data.records || [];
       renderDsmesTable();
@@ -1561,7 +1594,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // -------------------------------------------------------------
   async function loadEvaluationData() {
     try {
-      const res = await fetch('/api/eval');
+      const res = await apiFetch('/api/eval');
       const data = await res.json();
       state.evalReport = data;
 
@@ -1896,7 +1929,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('btnSubmitConflictResolution');
         if (btn) btn.disabled = true;
 
-        const res = await fetch('/api/conflicts/resolve', {
+        const res = await apiFetch('/api/conflicts/resolve', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1911,6 +1944,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const data = await res.json();
         if (data.success) {
+          // Persist conflict resolution across hard reloads and serverless lambdas
+          try {
+            if (typeof localStorage !== 'undefined') localStorage.setItem('verity_conflict_state', 'resolved');
+          } catch (e) {}
+          try {
+            if (typeof document !== 'undefined') document.cookie = 'verity_conflict_state=resolved; Path=/; SameSite=Lax; Max-Age=86400';
+          } catch (e) {}
+
+          const confBadge = document.getElementById('conflictsBadge');
+          if (confBadge) {
+            confBadge.textContent = '0';
+            confBadge.style.display = 'none';
+          }
+
           showFeedback('success', `Conflict resolved with recorded clinical rationale! Retired DOC-GEST-001, unlocked DOC-GEST-002 as practice standard. Exposure Queue generated.`);
           await loadInitialData();
           renderLibraryTable();
@@ -2064,13 +2111,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       try {
-        const res = await fetch('/api/demo/reset', {
+        const res = await apiFetch('/api/demo/reset', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ role: state.currentRole })
         });
         const result = await res.json();
         if (result.success) {
+          // Clear persistent conflict state back to baseline
+          try {
+            if (typeof localStorage !== 'undefined') localStorage.removeItem('verity_conflict_state');
+          } catch (e) {}
+          try {
+            if (typeof document !== 'undefined') document.cookie = 'verity_conflict_state=baseline; Path=/; SameSite=Lax; Max-Age=0';
+          } catch (e) {}
+
+          const confBadge = document.getElementById('conflictsBadge');
+          if (confBadge) {
+            confBadge.textContent = '1';
+            confBadge.style.display = 'inline-block';
+          }
+
           const feedback = document.getElementById('conflictResolutionFeedback');
           if (feedback) {
             feedback.style.display = 'none';

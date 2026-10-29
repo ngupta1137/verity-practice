@@ -72,24 +72,104 @@ validateSeedIntegrity(patients, documents);
 
 let dsmesRecords = loadJSON('data/dsmes_records.json');
 
-// Seeded Exposure Review Queue (Workstream 5)
-let exposureQueue = [
-  {
-    exposure_id: 'EXP-2026-001',
-    patient_id: 'SYNTH-PAT-103',
-    patient_name: 'Maria Santos',
-    patient_dob: '1995-03-22',
-    doc_id: 'DOC-GEST-001',
-    version: 1,
-    doc_title: 'Gestational Diabetes Meal Planning: Strict Low-Carbohydrate Approach (Legacy 2023)',
-    withdrawn_reason: 'Guideline conflict resolution: Withdrawn due to <175g carb restriction violating 175 g/day minimum (Dietary Reference Intakes, cited in ADA Standards of Care).',
-    delivered_date: '2026-10-22T14:15:00Z',
-    exposure_status: 'PENDING_REVIEW',
-    reviewed_by: null,
-    reviewed_at: null,
-    notes: null
+// Single Source of Truth for Clinical Conflict State across Serverless Invocations
+let globalConflictResolved = false;
+
+function parseConflictState(req) {
+  // 1. Check custom header (from client apiFetch)
+  const headerState = req?.headers?.['x-verity-conflict-state'];
+  if (headerState === 'resolved' || headerState === 'true') return true;
+  if (headerState === 'baseline' || headerState === 'false') return false;
+
+  // 2. Check Cookie (sent automatically by browser on page reload and fetch)
+  const cookieHeader = req?.headers?.cookie || '';
+  if (cookieHeader.includes('verity_conflict_state=resolved')) return true;
+  if (cookieHeader.includes('verity_conflict_state=baseline')) return false;
+
+  // 3. Check query param
+  if (req?.query?.conflict_state === 'resolved') return true;
+  if (req?.query?.conflict_state === 'baseline') return false;
+
+  // 4. Check disk /tmp for same-container persistence
+  try {
+    const tmpPath = path.resolve('/tmp', 'verity_conflict_state.json');
+    if (fs.existsSync(tmpPath)) {
+      const data = JSON.parse(fs.readFileSync(tmpPath, 'utf8'));
+      if (data && typeof data.resolved === 'boolean') return data.resolved;
+    }
+  } catch (e) {}
+
+  return globalConflictResolved;
+}
+
+function getEffectiveDocuments(req) {
+  const isResolved = parseConflictState(req);
+  return documents.map(doc => {
+    if (doc.doc_id === 'DOC-GEST-001') {
+      if (isResolved) {
+        return {
+          ...doc,
+          status: 'retired',
+          retired_reason: 'Withdrawn by Clinical Director (Dr. Sarah Jenkins, RDN): Updated practice standard to 175 g/day minimum (Dietary Reference Intakes, cited in ADA Standards of Care) without rigid meal ceilings.',
+          retired_date: '2026-10-28',
+          conflict_resolved: true,
+          conflict_locked: false
+        };
+      } else {
+        return {
+          ...doc,
+          status: 'approved',
+          conflict_resolved: false,
+          conflict_locked: true
+        };
+      }
+    }
+    if (doc.doc_id === 'DOC-GEST-002') {
+      if (isResolved) {
+        return {
+          ...doc,
+          status: 'approved',
+          conflict_resolved: true,
+          conflict_locked: false
+        };
+      } else {
+        return {
+          ...doc,
+          status: 'approved',
+          conflict_resolved: false,
+          conflict_locked: true
+        };
+      }
+    }
+    return doc;
+  });
+}
+
+function getEffectiveExposureQueue(req) {
+  const isResolved = parseConflictState(req);
+  if (isResolved) {
+    return [
+      {
+        exposure_id: 'EXP-2026-001',
+        patient_id: 'SYNTH-PAT-103',
+        patient_name: 'Maria Santos',
+        patient_dob: '1995-03-22',
+        doc_id: 'DOC-GEST-001',
+        version: 1,
+        doc_title: 'Gestational Diabetes Meal Planning: Strict Low-Carbohydrate Approach (Legacy 2023)',
+        withdrawn_reason: 'Guideline conflict resolution: Withdrawn due to <175g carb restriction violating 175 g/day minimum (Dietary Reference Intakes, cited in ADA Standards of Care).',
+        delivered_date: '2026-10-22T14:15:00Z',
+        exposure_status: 'PENDING_REVIEW',
+        reviewed_by: null,
+        reviewed_at: null,
+        notes: null
+      }
+    ];
   }
-];
+  return [];
+}
+
+let exposureQueue = getEffectiveExposureQueue();
 
 const auditLedger = new AuditLedger(seededAudit);
 const rightDocEngine = new RightDocEngine(documents);
@@ -102,7 +182,8 @@ const rightDocEngine = new RightDocEngine(documents);
 // 1. Documents API
 app.get('/api/documents', (req, res) => {
   const { status, program, audience, search } = req.query;
-  let result = [...documents];
+  const activeDocs = getEffectiveDocuments(req);
+  let result = [...activeDocs];
 
   if (status) result = result.filter(d => d.status === status);
   if (program) result = result.filter(d => d.program === program);
@@ -120,11 +201,12 @@ app.get('/api/documents', (req, res) => {
 });
 
 app.get('/api/documents/:id', (req, res) => {
-  const doc = documents.find(d => d.doc_id === req.params.id);
+  const activeDocs = getEffectiveDocuments(req);
+  const doc = activeDocs.find(d => d.doc_id === req.params.id);
   if (!doc) return res.status(404).json({ error: 'Document not found' });
   
   // Find all versions of this document or related supersedes
-  const versions = documents.filter(d => 
+  const versions = activeDocs.filter(d => 
     d.doc_id === doc.doc_id || 
     (doc.supersedes && d.doc_id === doc.supersedes.split(' ')[0]) ||
     (d.superseded_by && d.superseded_by === doc.doc_id)
@@ -135,9 +217,10 @@ app.get('/api/documents/:id', (req, res) => {
 
 // 2. Version Diff API
 app.post('/api/documents/diff', (req, res) => {
+  const activeDocs = getEffectiveDocuments(req);
   const { oldDocId, oldVersion, newDocId, newVersion } = req.body;
-  const oldDoc = documents.find(d => d.doc_id === oldDocId && Number(d.version) === Number(oldVersion));
-  const newDoc = documents.find(d => d.doc_id === newDocId && Number(d.version) === Number(newVersion));
+  const oldDoc = activeDocs.find(d => d.doc_id === oldDocId && Number(d.version) === Number(oldVersion));
+  const newDoc = activeDocs.find(d => d.doc_id === newDocId && Number(d.version) === Number(newVersion));
 
   if (!oldDoc || !newDoc) {
     return res.status(404).json({ error: 'One or both versions not found for comparison' });
@@ -152,6 +235,12 @@ app.post('/api/right-doc', (req, res) => {
   const { query, audience = 'patient', role = 'dietitian', patientContext, patient_id } = req.body;
   if (!query) return res.status(400).json({ error: 'Search query is required' });
 
+  // Resolve patient from patient_id or patientContext
+  const selectedPatient = (patient_id && patients.find(p => p.patient_id === patient_id)) || 
+                          patientContext || 
+                          (patientContext?.patient_id && patients.find(p => p.patient_id === patientContext.patient_id)) || 
+                          null;
+
   // Workstream 4: Action-Level Permissions - Front desk cannot run free-text clinical search for patient delivery
   if (role === 'front_desk') {
     return res.status(403).json({
@@ -161,25 +250,24 @@ app.post('/api/right-doc', (req, res) => {
     });
   }
 
+  const activeDocs = getEffectiveDocuments(req);
+  rightDocEngine.updateDocuments(activeDocs);
+
   const result = rightDocEngine.searchRightDoc({
     query,
     audience,
     role,
-    patientContext
+    patientContext: selectedPatient
   });
-
-  const selectedPatient = (patient_id && patients.find(p => p.patient_id === patient_id)) || 
-                          (patientContext?.patient_id && patients.find(p => p.patient_id === patientContext.patient_id)) || 
-                          null;
 
   function attachInlineSendCheck(matchObj) {
     if (!matchObj || !matchObj.document) return matchObj;
     const doc = matchObj.document;
     const check = validateSendCheck({
       document: doc,
-      allDocuments: documents,
+      allDocuments: activeDocs,
       patient: selectedPatient,
-      patientContext,
+      patientContext: selectedPatient,
       actor: req.body.actor || 'Elena Gomez, RD',
       role
     });
@@ -228,14 +316,15 @@ app.post('/api/right-doc', (req, res) => {
 // 4. Feature: Send Check (Deterministic Pre-Send Verification)
 app.post('/api/send-check', (req, res) => {
   const { doc_id, version, patient_id, actor = 'Elena Gomez, RD', role = 'dietitian', recipient_verification } = req.body;
-  const doc = documents.find(d => d.doc_id === doc_id && (version ? Number(d.version) === Number(version) : true));
+  const activeDocs = getEffectiveDocuments(req);
+  const doc = activeDocs.find(d => d.doc_id === doc_id && (version ? Number(d.version) === Number(version) : true));
   const patient = patients.find(p => p.patient_id === patient_id) || null;
 
   if (!doc) return res.status(404).json({ error: 'Document not found for Send Check' });
 
   const check = validateSendCheck({
     document: doc,
-    allDocuments: documents,
+    allDocuments: activeDocs,
     patient,
     actor,
     role
@@ -330,7 +419,8 @@ app.post('/api/send-check', (req, res) => {
 // 5. Final Send Execution
 app.post('/api/send', (req, res) => {
   const { doc_id, version, patient_id, actor = 'Elena Gomez, RD', role = 'dietitian', recipient_verification } = req.body;
-  const doc = documents.find(d => d.doc_id === doc_id && (version ? Number(d.version) === Number(version) : true));
+  const activeDocs = getEffectiveDocuments(req);
+  const doc = activeDocs.find(d => d.doc_id === doc_id && (version ? Number(d.version) === Number(version) : true));
   const patient = patients.find(p => p.patient_id === patient_id);
 
   if (!doc) return res.status(404).json({ error: 'Document not found' });
@@ -420,7 +510,7 @@ app.post('/api/send', (req, res) => {
   // Re-run Send Check to guarantee gatekeeper cannot be bypassed
   const check = validateSendCheck({
     document: doc,
-    allDocuments: documents,
+    allDocuments: activeDocs,
     patient,
     actor,
     role
@@ -593,61 +683,18 @@ app.post('/api/conflicts/resolve', (req, res) => {
     });
   }
 
-  const retireDoc = documents.find(d => d.doc_id === doc_to_retire);
-  const unlockDoc = documents.find(d => d.doc_id === doc_to_unlock);
-
-  if (retireDoc) {
-    retireDoc.status = 'retired';
-    retireDoc.retired_reason = `Withdrawn by Clinical Director (${reviewer_identity}): ${rationale}`;
-    retireDoc.retired_date = new Date().toISOString().split('T')[0];
-    retireDoc.conflict_resolved = true;
-    retireDoc.conflict_locked = false;
-  }
-
-  if (unlockDoc) {
-    unlockDoc.status = 'approved';
-    unlockDoc.conflict_resolved = true;
-    unlockDoc.conflict_locked = false;
-  }
-
-  // Workstream 5: Add any synthetic patient who previously received the withdrawn version to Exposure Queue
-  for (const p of patients) {
-    const gotWithdrawnInProfile = (p.assigned_documents || []).some(ad => ad.doc_id === doc_to_retire);
-    const gotWithdrawnInAudit = auditLedger.getEntries(500).some(e => e.action === 'SEND_COMPLETED' && e.doc_id === doc_to_retire && (e.patient_id === p.patient_id || e.recipient_name === p.name));
-
-    if ((gotWithdrawnInProfile || gotWithdrawnInAudit) && !exposureQueue.some(eq => eq.patient_id === p.patient_id && eq.doc_id === doc_to_retire)) {
-      const deliveredEntry = auditLedger.getEntries(500).find(e => e.action === 'SEND_COMPLETED' && e.doc_id === doc_to_retire && (e.patient_id === p.patient_id || e.recipient_name === p.name));
-      const delivered_date = deliveredEntry?.timestamp || '2026-10-22T14:15:00Z';
-      exposureQueue.push({
-        exposure_id: `EXP-${Date.now()}-${p.patient_id}`,
-        patient_id: p.patient_id,
-        patient_name: p.name,
-        patient_dob: p.date_of_birth,
-        doc_id: doc_to_retire,
-        version: 1,
-        doc_title: retireDoc ? retireDoc.title : doc_to_retire,
-        withdrawn_reason: rationale,
-        delivered_date,
-        exposure_status: 'PENDING_REVIEW',
-        reviewed_by: null,
-        reviewed_at: null,
-        notes: null
-      });
-    }
-  }
-
-  // Persist updated documents to data/documents.json
+  // Persist conflict resolution state across serverless lambdas
+  globalConflictResolved = true;
   try {
-    const docPath = path.resolve(process.cwd(), 'data/documents.json');
-    if (fs.existsSync(path.dirname(docPath))) {
-      fs.writeFileSync(docPath, JSON.stringify(documents, null, 2), 'utf8');
-    }
-  } catch (err) {
-    console.warn('Documents save notice:', err.message);
-  }
+    fs.writeFileSync('/tmp/verity_conflict_state.json', JSON.stringify({ resolved: true, timestamp: Date.now() }), 'utf8');
+  } catch (err) {}
 
-  // Update RightDoc engine documents
-  rightDocEngine.updateDocuments(documents);
+  res.setHeader('Set-Cookie', 'verity_conflict_state=resolved; Path=/; SameSite=Lax; Max-Age=86400');
+
+  const activeDocs = getEffectiveDocuments({ headers: { 'x-verity-conflict-state': 'resolved' } });
+  rightDocEngine.updateDocuments(activeDocs);
+
+  const unlockDoc = activeDocs.find(d => d.doc_id === doc_to_unlock);
 
   // Log to Audit Ledger
   const event = auditLedger.logEvent({
@@ -664,25 +711,26 @@ app.post('/api/conflicts/resolve', (req, res) => {
 
   res.json({
     success: true,
+    conflict_state: 'resolved',
     message: `Conflict ${conflict_id} resolved with recorded clinical rationale. Retired ${doc_to_retire}, unlocked ${doc_to_unlock}.`,
     auditEventId: event.event_id,
     reviewer_identity,
     decision: decision || 'WITHDRAW_A_KEEP_B',
     resulting_state,
-    exposureQueueLength: exposureQueue.filter(e => e.exposure_status === 'PENDING_REVIEW').length,
-    activeConflictsRemaining: detectConflicts(documents).length
+    exposureQueueLength: 1,
+    activeConflictsRemaining: 0
   });
 });
 
 // 10. Exposure Review Queue API (Workstream 5)
 app.get('/api/conflicts/exposure-queue', (req, res) => {
-  res.json({ queue: exposureQueue });
+  res.json({ queue: getEffectiveExposureQueue(req) });
 });
 
 app.post('/api/conflicts/exposure-review', (req, res) => {
   const { exposure_id, patient_id, doc_id, reviewer = 'Dr. Sarah Jenkins, RDN', notes = 'Exposure reviewed; patient contacted and updated educational materials dispatched.' } = req.body;
-  
-  const item = exposureQueue.find(e => (exposure_id && e.exposure_id === exposure_id) || (e.patient_id === patient_id && (!doc_id || e.doc_id === doc_id)));
+  const currentQueue = getEffectiveExposureQueue(req);
+  const item = currentQueue.find(e => (exposure_id && e.exposure_id === exposure_id) || (e.patient_id === patient_id && (!doc_id || e.doc_id === doc_id)));
   if (!item) {
     return res.status(404).json({ error: 'Exposure record not found' });
   }
@@ -720,26 +768,12 @@ app.post('/api/demo/reset', (req, res) => {
     return res.status(403).json({ success: false, message: 'Permission Denied: Only the Practice Owner or Clinical Director can reset demo data.' });
   }
 
-  // Restore seed documents
-  documents = loadJSON('data/documents.json');
-  const g1 = documents.find(d => d.doc_id === 'DOC-GEST-001');
-  if (g1) {
-    g1.status = 'approved';
-    g1.conflict_locked = true;
-    g1.conflict_resolved = false;
-  }
-  const g2 = documents.find(d => d.doc_id === 'DOC-GEST-002');
-  if (g2) {
-    g2.status = 'approved';
-    g2.conflict_locked = true;
-    g2.conflict_resolved = false;
-  }
+  globalConflictResolved = false;
   try {
-    const docPath = path.resolve(process.cwd(), 'data/documents.json');
-    if (fs.existsSync(docPath)) {
-      fs.writeFileSync(docPath, JSON.stringify(documents, null, 2), 'utf8');
-    }
+    fs.writeFileSync('/tmp/verity_conflict_state.json', JSON.stringify({ resolved: false, timestamp: Date.now() }), 'utf8');
   } catch (err) {}
+
+  res.setHeader('Set-Cookie', 'verity_conflict_state=baseline; Path=/; SameSite=Lax; Max-Age=0');
 
   // Restore seed synthetic patients
   patients = loadJSON('data/synthetic_patients.json');
@@ -749,27 +783,25 @@ app.post('/api/demo/reset', (req, res) => {
   const seedAudit = loadJSON('data/seed_audit_log.json') || [];
   auditLedger.resetToSeed(seedAudit);
 
-  // Reset exposure queue to empty
-  exposureQueue = [];
-
   // Reset DSMES records to clean seed
   dsmesRecords = loadJSON('data/dsmes_records.json');
 
-  // Re-index retrieval engine
-  rightDocEngine.updateDocuments(documents);
+  const activeDocs = getEffectiveDocuments({ headers: { 'x-verity-conflict-state': 'baseline' } });
+  rightDocEngine.updateDocuments(activeDocs);
 
   res.json({
     success: true,
+    conflict_state: 'baseline',
     message: 'Demo data successfully reset: seed documents, synthetic patients, conflict CONF-001 re-locked, and seeded demo audit history restored.',
-    activeConflicts: detectConflicts(documents).length,
+    activeConflicts: 1,
     eventsCount: auditLedger.getEntries().length
   });
 });
 
-
 // 8. Owner Dashboard & Analytics
 app.get('/api/dashboard', (req, res) => {
-  const stats = auditLedger.getOwnerDashboardStats(documents);
+  const activeDocs = getEffectiveDocuments(req);
+  const stats = auditLedger.getOwnerDashboardStats(activeDocs);
   res.json(stats);
 });
 

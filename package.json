@@ -7,8 +7,8 @@
   "scripts": {
     "start": "node server.js",
     "smoke-test": "node tests/smoke_test.js",
-    "test": "node tests/smoke_test.js && node src/eval/runner.js",
-    "build": "node tests/smoke_test.js && node src/eval/runner.js",
+    "test": "node tests/smoke_test.js && node tests/right_doc_patient_test.js && node src/eval/runner.js",
+    "build": "node tests/smoke_test.js && node tests/right_doc_patient_test.js && node src/eval/runner.js",
     "eval": "node src/eval/runner.js"
   },
   "keywords": [],
